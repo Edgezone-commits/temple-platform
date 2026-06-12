@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🙏 Shree Laxminarayan Mandir — Temple Platform
 
 Official website and management platform for **Shree Laxminarayan Mandir**, Hetauda, Nepal.
@@ -58,3 +59,6 @@ temple-platform/
 
 ## License
 Private — Shree Laxminarayan Mandir, Hetauda, Nepal
+=======
+# temple-platform
+>>>>>>> 484a25e72bcb21b950c3268963faeff0ed0df2f4
