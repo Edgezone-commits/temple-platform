@@ -1,1 +1,1 @@
-# Shree Laxminarayan Mandir - Routers Package
+# backend/app/routers/__init__.py

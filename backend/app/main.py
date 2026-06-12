@@ -1,42 +1,39 @@
-"""
-Shree Laxminarayan Mandir - FastAPI Application
-Main entry point for the backend API.
-"""
+# backend/app/main.py
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import get_settings
 
-settings = get_settings()
+from app.config import settings
+from app.routers import events, poojas, books
 
 app = FastAPI(
-    title=settings.app_name,
-    description="Backend API for Shree Laxminarayan Mandir, Hetauda, Nepal",
-    version="1.0.0",
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description="Backend API for Shree Laxminarayan Mandir — Hetauda, Nepal",
     docs_url="/docs",
     redoc_url="/redoc",
 )
 
-# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins.split(","),
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(events.router, prefix="/api/v1")
+app.include_router(poojas.router, prefix="/api/v1")
+app.include_router(books.router,  prefix="/api/v1")
 
-@app.get("/")
-async def root():
+@app.get("/", tags=["Health"])
+def root():
     return {
-        "message": "Jai Shree Laxminarayan! 🙏",
-        "temple": "Shree Laxminarayan Mandir",
-        "location": "Hetauda, Nepal",
-        "tradition": "Sri Vaishnava Totadri",
-        "api_docs": "/docs",
+        "status": "ok",
+        "app": settings.APP_NAME,
+        "version": settings.APP_VERSION,
     }
 
-
-@app.get("/health")
-async def health_check():
+@app.get("/health", tags=["Health"])
+def health():
     return {"status": "healthy"}
