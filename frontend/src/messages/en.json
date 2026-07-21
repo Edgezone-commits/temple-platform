@@ -1,0 +1,108 @@
+{
+  "marquee": {
+    "items": [
+      "🙏 ॐ नमो नारायणाय",
+      "श्री लक्ष्मीनारायणाय नमः",
+      "सर्वे भवन्तु सुखिनः",
+      "Shree Laxminarayan Mandir — Hetauda, Nepal",
+      "Sri Vaishnava Totadri Tradition",
+      "🙏 ॐ नमो नारायणाय",
+      "श्री लक्ष्मीनारायणाय नमः",
+      "सर्वे भवन्तु सुखिनः",
+      "Shree Laxminarayan Mandir — Hetauda, Nepal",
+      "Sri Vaishnava Totadri Tradition"
+    ]
+  },
+  "header": {
+    "phone": "+977-XXXXXXXXX",
+    "location": "Hetauda, Makwanpur, Nepal",
+    "templeName": "Shree Laxminarayan Mandir",
+    "templeNameNe": "श्री लक्ष्मीनारायण मन्दिर",
+    "tradition": "Sri Vaishnava Totadri Tradition · Hetauda, Nepal"
+  },
+  "nav": {
+    "home": "Home",
+    "homeNe": "गृहपृष्ठ",
+    "events": "Events",
+    "eventsNe": "कार्यक्रम",
+    "poojas": "Poojas",
+    "poojasNe": "पूजा सेवा",
+    "bookPooja": "Book Pooja",
+    "bookPoojaNe": "बुकिङ",
+    "books": "Books",
+    "booksNe": "पुस्तकालय",
+    "bhajans": "Bhajans",
+    "bhajansNe": "भजन संग्रह",
+    "contact": "Contact",
+    "contactNe": "सम्पर्क"
+  },
+  "hero": {
+    "eyebrow": "Sri Vaishnava Totadri · Hetauda, Nepal",
+    "title": "Shree Laxminarayan Mandir",
+    "titleNe": "श्री लक्ष्मीनारायण मन्दिर",
+    "subtitle": "Hetauda, Makwanpur · हेटौंडा, मकवानपुर",
+    "cta1": "Book a Pooja",
+    "cta2": "View Events →"
+  },
+  "timings": {
+    "morning": "Morning Darshan",
+    "morningTime": "5:00 AM – 12:00 PM",
+    "morningNe": "बिहान ५:०० – दिउँसो १२:०० बजे",
+    "afternoon": "Afternoon Break",
+    "afternoonTime": "12:00 PM – 4:00 PM",
+    "afternoonNe": "बन्द — दिउँसो",
+    "evening": "Evening Darshan",
+    "eveningTime": "4:00 PM – 8:00 PM",
+    "eveningNe": "साँझ ४:०० – रात ८:०० बजे"
+  },
+  "about": {
+    "eyebrow": "Our Temple",
+    "title": "A Sacred Home of Lord Laxminarayan",
+    "titleNe": "भगवान लक्ष्मीनारायणको पवित्र धाम",
+    "p1": "Shree Laxminarayan Mandir is a revered Sri Vaishnava temple in Hetauda dedicated to Lord Laxminarayan — the divine union of Vishnu and Lakshmi.",
+    "p2": "The temple follows the Totadri sampradaya, preserving ancient Vaishnava traditions through daily rituals, grand festivals, and religious education rooted in Vedic culture.",
+    "p3": "All poojas are conducted in strict accordance with the Pancharatra Agama shastra, honoring the teachings of Thodadri Nambi and the Alvars.",
+    "daysOpen": "Days Open Yearly",
+    "festivals": "Annual Festivals",
+    "suprabhatam": "Suprabhatam Daily",
+    "blessings": "Blessings for All",
+    "deityCaption": "Sri Laxminarayan · श्री लक्ष्मीनारायण"
+  },
+  "altar": {
+    "title": "The Sacred Sanctum — Garbhagriha",
+    "subtitle": "श्री वैष्णव परम्परा"
+  },
+  "services": {
+    "eyebrow": "What We Offer",
+    "title": "Seva & Spiritual Services",
+    "titleNe": "सेवा र आध्यात्मिक सुविधाहरू",
+    "pooja": "Pooja Booking",
+    "poojaDesc": "Reserve special poojas and homams performed by trained priests for your family's wellbeing.",
+    "poojaCta": "Book Now →",
+    "archana": "Archana",
+    "archanaDesc": "Offer flowers and prayers with your name, gothram, and nakshatra to Lord Laxminarayan.",
+    "archanaCta": "Offer Archana →",
+    "library": "Sacred Library",
+    "libraryDesc": "Read and download Vedic scriptures, stotras, and texts in Sanskrit, Nepali, and English.",
+    "libraryCta": "Browse Books →",
+    "bhajans": "Bhajans",
+    "bhajansDesc": "Listen to devotional bhajans, ashtapadis, and mangalashtak compositions with lyrics.",
+    "bhajansCta": "Listen Now →"
+  },
+  "eventsPreview": {
+    "eyebrow": "Calendar",
+    "title": "Upcoming Celebrations",
+    "titleNe": "आगामी उत्सव तथा कार्यक्रमहरू",
+    "viewAll": "View Full Calendar →"
+  },
+  "footer": {
+    "address": "Hetauda, Makwanpur District\nBagmati Province, Nepal",
+    "phone": "+977-XXXXXXXXX",
+    "email": "info@laxminarayanmandir.org",
+    "quickLinks": "Quick Links",
+    "services": "Services",
+    "timings": "Darshan Timings",
+    "copyright": "© 2025 Shree Laxminarayan Mandir, Hetauda, Nepal. All rights reserved.",
+    "mantra": "ॐ नमो नारायणाय 🙏"
+  }
+}
