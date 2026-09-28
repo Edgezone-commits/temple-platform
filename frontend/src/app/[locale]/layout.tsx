@@ -6,10 +6,6 @@ import {
   Cinzel_Decorative, Cinzel, Crimson_Text,
   Noto_Sans_Devanagari, EB_Garamond,
 } from 'next/font/google';
-import MarqueeStrip from '@/components/layout/MarqueeStrip';
-import Header      from '@/components/layout/Header';
-import Navigation  from '@/components/layout/Navigation';
-import Footer      from '@/components/layout/Footer';
 
 const cinzelDec  = Cinzel_Decorative({ subsets:['latin'], weight:['400','700','900'], variable:'--font-cinzel-decorative', display:'swap' });
 const cinzel     = Cinzel({ subsets:['latin'], weight:['400','500','600','700'], variable:'--font-cinzel', display:'swap' });
@@ -41,11 +37,8 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale} className={fontVars}>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages} timeZone="Asia/Kathmandu">
-          <MarqueeStrip />
-          <Header locale={locale as 'en' | 'ne'} />
-          <Navigation />
-          <main>{children}</main>
-          <Footer />
+          {/* Site chrome lives in (site)/layout.tsx; (auth) pages have none. */}
+          {children}
         </NextIntlClientProvider>
       </body>
     </html>

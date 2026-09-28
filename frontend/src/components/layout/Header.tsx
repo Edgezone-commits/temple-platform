@@ -3,10 +3,15 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
+import { signOut } from '@/lib/auth/actions';
 
-interface HeaderProps { locale: 'en' | 'ne' }
+interface HeaderProps {
+  locale: 'en' | 'ne';
+  /** Logged-in visitor (from the server), or null. */
+  account: { name: string; isAdmin: boolean } | null;
+}
 
-export default function Header({ locale }: HeaderProps) {
+export default function Header({ locale, account }: HeaderProps) {
   const t = useTranslations('header');
   const router = useRouter();
   const pathname = usePathname();
@@ -23,9 +28,23 @@ export default function Header({ locale }: HeaderProps) {
           <span>📞 {t('phone')}</span>
           <span>📍 {t('location')}</span>
         </div>
-        <div className="lang-toggle">
-          <button className={`lang-btn ${locale==='en'?'active':''}`} onClick={() => switchLocale('en')}>EN</button>
-          <button className={`lang-btn ${locale==='ne'?'active':''}`} onClick={() => switchLocale('ne')}>नेपाली</button>
+        <div className="header-account">
+          {account ? (
+            <>
+              <span className="header-user" title={t('account', { name: account.name })}>👤 {account.name}</span>
+              {account.isAdmin && <Link href="/admin" className="header-acct-link">{t('admin')}</Link>}
+              <form action={signOut}>
+                <input type="hidden" name="locale" value={locale} />
+                <button type="submit" className="header-acct-link">{t('logout')}</button>
+              </form>
+            </>
+          ) : (
+            <Link href="/login" className="header-acct-link">{t('login')}</Link>
+          )}
+          <div className="lang-toggle">
+            <button className={`lang-btn ${locale==='en'?'active':''}`} onClick={() => switchLocale('en')}>EN</button>
+            <button className={`lang-btn ${locale==='ne'?'active':''}`} onClick={() => switchLocale('ne')}>नेपाली</button>
+          </div>
         </div>
       </div>
 

@@ -56,16 +56,16 @@ The pages in `(auth)/`, `api/auth/*`, `auth/callback`, `lib/auth-actions.ts`, an
 
 | # | Finding | Status |
 |---|---------|--------|
-| A1 | **Doesn't compile.** 14 TypeScript errors: `cookies()` is async since Next 15 and wasn't awaited. `forgot-password/page.tsx` is an empty file. | → Phase 5 (rebuild) |
-| A2 | `(auth)/layout.tsx` renders its own `<html><body>` *inside* `[locale]/layout.tsx`, which already renders `<html>`. The result is nested `<html>` (invalid), and the header/footer are **not** hidden. The route-group structure needs to change. | → Phase 5 |
-| A3 | "OTP" reset actually calls `resetPasswordForEmail(..., { redirectTo })`, which sends a **magic link**. OTP-style needs the email template to include `{{ .Token }}`, and the app to use `verifyOtp({ type: 'recovery' })`. | → Phase 5 |
-| A4 | Two parallel implementations of the same thing: Server Actions (`auth-actions.ts`) **and** API routes (`api/auth/*`). The pages use the API routes. The brief asks for Server Actions only. | → Phase 5 (API routes removed) |
-| A5 | Uses `NEXT_PUBLIC_APP_URL`, but `.env.local` defines `NEXT_PUBLIC_SITE_URL`. Every redirect would fall back to localhost in production. | → Phase 5 |
-| A6 | OAuth callback always redirects to `/en` on error, and reads the locale from user metadata that is never set. | → Phase 5 |
+| A1 | **Doesn't compile.** 14 TypeScript errors: `cookies()` is async since Next 15 and wasn't awaited. `forgot-password/page.tsx` is an empty file. | FIXED (P5) |
+| A2 | `(auth)/layout.tsx` renders its own `<html><body>` *inside* `[locale]/layout.tsx`, which already renders `<html>`. The result is nested `<html>` (invalid), and the header/footer are **not** hidden. The route-group structure needs to change. | FIXED (P5) |
+| A3 | "OTP" reset actually calls `resetPasswordForEmail(..., { redirectTo })`, which sends a **magic link**. OTP-style needs the email template to include `{{ .Token }}`, and the app to use `verifyOtp({ type: 'recovery' })`. | FIXED (P5) |
+| A4 | Two parallel implementations of the same thing: Server Actions (`auth-actions.ts`) **and** API routes (`api/auth/*`). The pages use the API routes. The brief asks for Server Actions only. | FIXED (P5) |
+| A5 | Uses `NEXT_PUBLIC_APP_URL`, but `.env.local` defines `NEXT_PUBLIC_SITE_URL`. Every redirect would fall back to localhost in production. | FIXED (P5) |
+| A6 | OAuth callback always redirects to `/en` on error, and reads the locale from user metadata that is never set. | FIXED (P5) |
 | A7 | `DATABASE_SETUP.sql` admin policies query `profiles` from *within* a `profiles` policy, which is **infinite recursion** in Postgres RLS (error 42P17). | FIXED (P1) — `is_admin()` SECURITY DEFINER helper in `database/schema_v2.sql` (recursion reproduced, then verified gone, in `database/tests/test_schema_v2.py`) |
 | A8 | `DATABASE_SETUP.sql` has "Service role can insert profiles" `WITH CHECK (true)`. That lets **any** anon/authenticated user insert arbitrary profiles, including `role='admin'`. It's a **privilege-escalation hole**. The same file also lets users `UPDATE` their own row with no column restriction, so a devotee could set `role='admin'` on themselves. | FIXED (P1) — policy dropped, no INSERT policy, `profiles_protect_role` trigger (escalation reproduced against the draft, then verified blocked) |
 
-These files are **not** included in the Phase 0 commit, because committing code that doesn't compile would violate the "no broken commits" rule. They are left untouched in the working tree and will be reworked in Phase 5 (Phase 1 supersedes `DATABASE_SETUP.sql`).
+These files were **not** included in the Phase 0 commit, because committing code that doesn't compile would violate the "no broken commits" rule. They are left untouched in the working tree and were rebuilt in Phase 5: Server Actions only, route groups, OTP reset. Phase 1 supersedes `DATABASE_SETUP.sql`.
 
 ---
 

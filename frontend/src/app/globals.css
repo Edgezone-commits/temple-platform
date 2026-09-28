@@ -385,3 +385,77 @@ a{text-decoration:none}
 }
 @media (hover:none){.lightbox-hint{display:none}}
 @media (prefers-reduced-motion:reduce){.gallery-tile img,.lightbox[open],.lightbox-figure{transition:none;animation:none}}
+
+/* ── Header account links ── */
+.header-account{display:flex;align-items:center;gap:.8rem;flex-shrink:0}
+.header-account form{display:contents}
+.header-user{max-width:14rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--gold-300)}
+.header-acct-link{font-family:var(--ff-heading);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold-300);background:none;border:none;cursor:pointer;padding:2px 0;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+.header-acct-link:hover{color:var(--gold-100);border-bottom-color:var(--gold-500)}
+@media (max-width:760px){.header-user{display:none}.header-account{gap:.6rem}}
+
+/* ── Auth pages ((auth) route group) ── */
+.auth-shell{min-height:100dvh;background:
+  radial-gradient(ellipse at top,rgba(201,148,58,.14),transparent 60%),
+  linear-gradient(160deg,var(--maroon-950),var(--maroon-900) 45%,var(--maroon-800));
+  position:relative;padding:1rem 1rem 3rem}
+.auth-shell::before{content:'';position:absolute;inset:0;opacity:.05;pointer-events:none;
+  background-image:repeating-linear-gradient(45deg,var(--gold-500) 0,var(--gold-500) 1px,transparent 0,transparent 50%),
+  repeating-linear-gradient(-45deg,var(--gold-500) 0,var(--gold-500) 1px,transparent 0,transparent 50%);background-size:22px 22px}
+.auth-topbar{position:relative;display:flex;justify-content:space-between;align-items:center;max-width:960px;margin:0 auto}
+.auth-back{font-family:var(--ff-meta);font-style:italic;color:rgba(232,201,122,.7);font-size:.95rem;transition:color .2s}
+.auth-back:hover{color:var(--gold-100)}
+.auth-column{position:relative;max-width:460px;margin:2rem auto 0}
+.auth-brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.2rem}
+.auth-logo{height:64px;width:auto;filter:drop-shadow(0 2px 10px rgba(201,148,58,.35));margin-bottom:.6rem}
+.auth-brand-name{font-family:var(--ff-display);font-size:1.35rem;color:var(--gold-300);line-height:1.25}
+.auth-brand-alt{font-family:var(--ff-deva);font-size:.95rem;color:var(--gold-500)}
+.auth-card{background:var(--ivory-50);border-top:3px solid var(--gold-500);padding:2.2rem 2rem 1.8rem;
+  box-shadow:0 24px 70px rgba(0,0,0,.45);position:relative;animation:auth-in .35s ease-out}
+.auth-card::before{content:'';position:absolute;inset:6px;border:1px solid var(--ivory-300);pointer-events:none}
+@keyframes auth-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.auth-head{text-align:center;margin-bottom:1.4rem;position:relative}
+.auth-head h1{font-family:var(--ff-display);font-size:1.45rem;color:var(--maroon-800);line-height:1.3;margin-bottom:.3rem}
+.auth-head p{color:var(--text-mid);font-size:.98rem;line-height:1.5}
+.auth-form{display:flex;flex-direction:column;gap:1rem;position:relative}
+.auth-field{display:flex;flex-direction:column;gap:.3rem}
+.auth-field label{font-family:var(--ff-heading);font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-mid)}
+.auth-field input{font-family:var(--ff-body);font-size:1rem;color:var(--text-dark);background:var(--ivory-100);
+  border:1px solid var(--ivory-300);padding:10px 12px;width:100%;transition:border-color .2s,box-shadow .2s}
+.auth-field input:focus{outline:none;border-color:var(--gold-500);box-shadow:0 0 0 3px rgba(201,148,58,.2)}
+.auth-field small{font-size:.8rem;color:var(--text-light)}
+.auth-code{letter-spacing:.4em;font-family:var(--ff-heading)!important;font-size:1.2rem!important;text-align:center}
+.auth-password{position:relative}
+.auth-password input{padding-right:2.8rem}
+.auth-password button{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;
+  border:none;background:none;cursor:pointer;font-size:1rem;opacity:.65;transition:opacity .2s}
+.auth-password button:hover{opacity:1}
+.auth-row-end{display:flex;justify-content:flex-end;margin-top:-.4rem}
+.auth-link{color:var(--maroon-600);border-bottom:1px solid var(--gold-300);transition:color .2s}
+.auth-link:hover{color:var(--gold-700)}
+.auth-submit{width:100%;text-align:center;margin-top:.3rem}
+.auth-submit:disabled{opacity:.7;cursor:progress;transform:none}
+.auth-or{display:flex;align-items:center;gap:.8rem;margin:1.3rem 0;color:var(--text-light);
+  font-family:var(--ff-meta);font-style:italic;position:relative}
+.auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-500),transparent)}
+.auth-oauth{display:flex;flex-direction:column;gap:.6rem;position:relative}
+.auth-oauth-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:.7rem;padding:11px 14px;
+  font-family:var(--ff-body);font-size:1rem;cursor:pointer;border:1px solid var(--ivory-300);transition:filter .2s,box-shadow .2s}
+.auth-oauth-btn:hover{box-shadow:0 3px 12px rgba(61,15,15,.12)}
+.auth-oauth-btn.google{background:#fff;color:#1f1f1f}
+.auth-oauth-btn.facebook{background:#1877F2;color:#fff;border-color:#1877F2}
+.auth-oauth-btn.facebook:hover{filter:brightness(1.07)}
+.auth-oauth-btn:disabled{opacity:.7;cursor:progress}
+.auth-oauth-icon{display:inline-flex}
+.auth-foot{text-align:center;margin-top:1.4rem;color:var(--text-mid);font-size:.95rem;position:relative}
+.auth-alert{padding:.7rem .9rem;margin-bottom:1rem;font-size:.95rem;line-height:1.5;border-left:3px solid;position:relative}
+.auth-alert.error{background:#fbeaea;border-color:var(--maroon-600);color:var(--maroon-800)}
+.auth-alert.success{background:#eaf5ea;border-color:#2f6b3a;color:#1e4a26}
+.auth-alert.info{background:#fff4dc;border-color:var(--gold-500);color:var(--text-mid)}
+.auth-done{text-align:center;display:flex;flex-direction:column;align-items:center;gap:.8rem;position:relative}
+.auth-done-icon{font-size:2.6rem}
+.auth-done h1{font-family:var(--ff-display);font-size:1.35rem;color:var(--maroon-800)}
+.auth-done p{color:var(--text-mid);line-height:1.6}
+@media (max-width:520px){.auth-card{padding:1.8rem 1.2rem 1.5rem}.auth-column{margin-top:1.2rem}}
+@media (prefers-reduced-motion:reduce){.auth-card{animation:none}}

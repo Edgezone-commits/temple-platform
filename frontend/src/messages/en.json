@@ -19,7 +19,11 @@
     "templeName": "Shree Laxminarayan Mandir",
     "templeNameNe": "श्री लक्ष्मीनारायण मन्दिर",
     "tradition": "Sri Vaishnava Totadri Tradition · Hetauda, Nepal",
-    "bookCta": "Book a Pooja"
+    "bookCta": "Book a Pooja",
+    "login": "Log in",
+    "logout": "Log out",
+    "admin": "Admin",
+    "account": "Signed in as {name}"
   },
   "nav": {
     "home": "Home",
@@ -119,70 +123,6 @@
     "homam": "Homam",
     "donate": "Donate",
     "aiPandit": "Ask the Pandit (coming soon)"
-  },
-  "auth": {
-    "common": {
-      "email": "Email",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
-      "password": "Password",
-      "passwordRequired": "Password is required",
-      "confirmPassword": "Confirm Password",
-      "loading": "Loading...",
-      "or": "or",
-      "errorGeneric": "An error occurred. Please try again.",
-      "noAccount": "Don't have an account?",
-      "hasAccount": "Already have an account?",
-      "signUp": "Sign Up",
-      "logIn": "Log In"
-    },
-    "login": {
-      "title": "Welcome Back",
-      "submitButton": "Sign In",
-      "forgotPassword": "Forgot password?",
-      "googleButton": "Continue with Google",
-      "facebookButton": "Continue with Facebook"
-    },
-    "signup": {
-      "title": "Create Your Account",
-      "submitButton": "Sign Up",
-      "name": "Full Name",
-      "namePlaceholder": "Your name",
-      "nameRequired": "Full name is required",
-      "passwordTooShort": "Password must be at least 6 characters",
-      "confirmPasswordRequired": "Please confirm your password",
-      "passwordsMismatch": "Passwords do not match",
-      "googleButton": "Sign Up with Google",
-      "facebookButton": "Sign Up with Facebook"
-    },
-    "forgotPassword": {
-      "title": "Reset Your Password",
-      "subtitle": "Enter your email address and we'll send you a code to reset your password.",
-      "submitButton": "Send Reset Code",
-      "emailHint": "We'll send a 6-digit code to this email address.",
-      "checkEmail": "Check Your Email",
-      "checkEmailMessage": "We've sent a 6-digit reset code to your email address.",
-      "checkEmailCode": "Check your email and return to the next step to reset your password.",
-      "resetPasswordButton": "Reset Password",
-      "backToLogin": "Back to Sign In"
-    },
-    "resetPassword": {
-      "title": "Reset Your Password",
-      "subtitle": "Enter the 6-digit code from your email and create a new password.",
-      "submitButton": "Reset Password",
-      "code": "Reset Code",
-      "codeRequired": "Reset code is required",
-      "codeInvalid": "Code must be 6 digits",
-      "codeHint": "Enter the 6-digit code from your email",
-      "newPassword": "New Password",
-      "confirmPasswordRequired": "Please confirm your password",
-      "passwordTooShort": "Password must be at least 6 characters",
-      "passwordsMismatch": "Passwords do not match",
-      "successTitle": "Password Reset Successful",
-      "successMessage": "Your password has been reset successfully. You can now log in with your new password.",
-      "redirecting": "Redirecting to login",
-      "backToLogin": "Back to Sign In"
-    }
   },
   "pages": {
     "events": {
@@ -492,5 +432,74 @@
     "empty": "Photos of the temple will be shared here soon.",
     "emptyCategory": "No photos in this category yet.",
     "keyboardHint": "Use ← → to browse, Esc to close"
+  },
+  "auth": {
+    "backToSite": "← Back to the temple website",
+    "email": "Email",
+    "emailPh": "you@example.com",
+    "password": "Password",
+    "passwordPh": "Your password",
+    "newPassword": "New password",
+    "newPasswordPh": "At least 8 characters",
+    "confirmPassword": "Confirm password",
+    "confirmPh": "Type it again",
+    "name": "Full name",
+    "namePh": "Your name",
+    "or": "or",
+    "google": "Continue with Google",
+    "facebook": "Continue with Facebook",
+    "working": "Please wait…",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Log in to book poojas faster and follow your bookings.",
+      "submit": "Log in",
+      "forgot": "Forgot password?",
+      "noAccount": "New here?",
+      "signupLink": "Create an account",
+      "resetDone": "Your password has been changed. Please log in with the new password."
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Join the temple community.",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "checkEmailTitle": "Check your email",
+      "checkEmailBody": "We sent a confirmation link to {email}. Open it to activate your account, then log in.",
+      "passwordHint": "At least 8 characters."
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email and we'll send you a 6-digit code to reset it.",
+      "submit": "Send code",
+      "back": "Back to log in"
+    },
+    "reset": {
+      "title": "Set a new password",
+      "subtitle": "Enter the 6-digit code from your email and choose a new password.",
+      "sent": "If an account exists for {email}, a code is on its way. It expires in 1 hour.",
+      "code": "6-digit code",
+      "codePh": "123456",
+      "submit": "Change password",
+      "resend": "Didn't get a code? Send again"
+    },
+    "errors": {
+      "invalidCredentials": "That email and password don't match. Please try again.",
+      "emailNotConfirmed": "Please confirm your email first — check your inbox for the link.",
+      "userExists": "An account with this email already exists. Try logging in instead.",
+      "weakPassword": "Please choose a password of at least 8 characters.",
+      "passwordMismatch": "The two passwords don't match.",
+      "invalidEmail": "Please enter a valid email address.",
+      "nameRequired": "Please enter your name.",
+      "codeInvalid": "That code is wrong or has expired. Request a new one.",
+      "rateLimited": "Too many attempts. Please wait a few minutes and try again.",
+      "samePassword": "The new password must be different from the old one.",
+      "notConfigured": "Login isn't set up on this server yet.",
+      "oauth": "Signing in with that provider didn't work. Please try again or use email.",
+      "link": "That link is invalid or has expired. Please try again.",
+      "generic": "Something went wrong. Please try again."
+    }
   }
 }

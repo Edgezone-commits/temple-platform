@@ -13,6 +13,8 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import en from '@/messages/en.json';
 import { formatterFor } from '@/lib/format';
+import { getBrowserClient } from '@/lib/supabase/client';
+import { supabaseConfigured } from '@/lib/supabase/env';
 import { pick } from '@/lib/localize';
 import type { Pooja } from '@/lib/types';
 
@@ -52,8 +54,14 @@ export default function BookingForm({ poojas, initialPoojaId }: Props) {
     e.preventDefault();
     setLoading(true); setError('');
     try {
+      // Logged-in devotees send their token so the booking is linked to their account.
+      const headers: Record<string, string> = { 'Content-Type':'application/json' };
+      if (supabaseConfigured) {
+        const { data } = await getBrowserClient().auth.getSession();
+        if (data.session) headers.Authorization = `Bearer ${data.session.access_token}`;
+      }
       const res = await fetch(`${API}/api/v1/bookings/`, {
-        method:'POST', headers:{ 'Content-Type':'application/json' },
+        method:'POST', headers,
         body: JSON.stringify({
           pooja_id: form.pooja,
           devotee_name: form.name,
