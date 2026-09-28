@@ -61,8 +61,8 @@ The pages in `(auth)/`, `api/auth/*`, `auth/callback`, `lib/auth-actions.ts`, an
 | A4 | Two parallel implementations of the same thing: Server Actions (`auth-actions.ts`) **and** API routes (`api/auth/*`). The pages use the API routes. The brief asks for Server Actions only. | → Phase 5 (API routes removed) |
 | A5 | Uses `NEXT_PUBLIC_APP_URL`, but `.env.local` defines `NEXT_PUBLIC_SITE_URL`. Every redirect would fall back to localhost in production. | → Phase 5 |
 | A6 | OAuth callback always redirects to `/en` on error, and reads the locale from user metadata that is never set. | → Phase 5 |
-| A7 | `DATABASE_SETUP.sql` admin policies query `profiles` from *within* a `profiles` policy, which is **infinite recursion** in Postgres RLS (error 42P17). | → Phase 1 (`is_admin()` SECURITY DEFINER helper) |
-| A8 | `DATABASE_SETUP.sql` has "Service role can insert profiles" `WITH CHECK (true)`. That lets **any** anon/authenticated user insert arbitrary profiles, including `role='admin'`. It's a **privilege-escalation hole**. The same file also lets users `UPDATE` their own row with no column restriction, so a devotee could set `role='admin'` on themselves. | → Phase 1 (policy removed, role column locked by trigger) |
+| A7 | `DATABASE_SETUP.sql` admin policies query `profiles` from *within* a `profiles` policy, which is **infinite recursion** in Postgres RLS (error 42P17). | FIXED (P1) — `is_admin()` SECURITY DEFINER helper in `database/schema_v2.sql` (recursion reproduced, then verified gone, in `database/tests/test_schema_v2.py`) |
+| A8 | `DATABASE_SETUP.sql` has "Service role can insert profiles" `WITH CHECK (true)`. That lets **any** anon/authenticated user insert arbitrary profiles, including `role='admin'`. It's a **privilege-escalation hole**. The same file also lets users `UPDATE` their own row with no column restriction, so a devotee could set `role='admin'` on themselves. | FIXED (P1) — policy dropped, no INSERT policy, `profiles_protect_role` trigger (escalation reproduced against the draft, then verified blocked) |
 
 These files are **not** included in the Phase 0 commit, because committing code that doesn't compile would violate the "no broken commits" rule. They are left untouched in the working tree and will be reworked in Phase 5 (Phase 1 supersedes `DATABASE_SETUP.sql`).
 
@@ -89,7 +89,7 @@ These files are **not** included in the Phase 0 commit, because committing code 
 | # | Severity | Finding | Status |
 |---|----------|---------|--------|
 | S1 | **Critical** | **Every write endpoint is unauthenticated.** Anyone on the internet can `POST/PATCH/DELETE` events, poojas, books, and bhajans, and can `GET` the full bookings list (devotee names, phones, emails). The backend uses the **service-role key**, which bypasses RLS, so database policies don't help. | FIXED (P0) — `require_admin` dependency verifies the Supabase JWT and checks `profiles.role = 'admin'`. It fails closed (403) until Phase 1 creates `profiles`. |
-| S2 | High | Privilege escalation in the draft `DATABASE_SETUP.sql` (A8). | → Phase 1 |
+| S2 | High | Privilege escalation in the draft `DATABASE_SETUP.sql` (A8). | FIXED (P1) |
 | S3 | Medium | Booking submission has no server-side sanity checks: past dates are accepted, and notes length is unlimited. | FIXED (P0) — date ≥ today, length limits |
 | S4 | Info | Service-role key location: only in `backend/.env` (git-ignored). Frontend `.env.local` only has the anon key. **Not** exposed client-side. Git history was scanned for JWTs / API keys: none found. | OK |
 | S5 | Info | `backend/.env.example` contained the real project ref URL. That isn't a secret, but it was replaced with a placeholder anyway. | FIXED (P0) |
