@@ -10,6 +10,7 @@ const navItems = [
   { href:'/poojas/book', lk:'bookPooja', sk:'bookPoojaNe' },
   { href:'/books',       lk:'books',     sk:'booksNe'     },
   { href:'/bhajans',     lk:'bhajans',   sk:'bhajansNe'   },
+  { href:'/gallery',     lk:'gallery',   sk:'galleryNe'   },
   { href:'/contact',     lk:'contact',   sk:'contactNe'   },
 ] as const;
 

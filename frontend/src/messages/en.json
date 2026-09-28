@@ -37,7 +37,9 @@
     "contact": "Contact",
     "contactNe": "सम्पर्क",
     "calendar": "Calendar",
-    "calendarNe": "पात्रो"
+    "calendarNe": "पात्रो",
+    "gallery": "Gallery",
+    "galleryNe": "तस्बिर"
   },
   "hero": {
     "eyebrow": "Sri Vaishnava Totadri · Hetauda, Nepal",
@@ -217,6 +219,11 @@
       "eyebrow": "Nepali Patro",
       "title": "Temple Calendar",
       "titleNe": "मन्दिर पात्रो"
+    },
+    "gallery": {
+      "eyebrow": "Darshan in Pictures",
+      "title": "Photo Gallery",
+      "titleNe": "तस्बिर संग्रह"
     }
   },
   "contact": {
@@ -393,6 +400,15 @@
       "sankranti": "Sankranti",
       "special_pooja": "Special Pooja",
       "other": "Observance"
+    },
+    "gallery": {
+      "temple": "Temple",
+      "deity": "Deities",
+      "festival": "Festivals",
+      "pooja": "Poojas",
+      "community": "Community",
+      "history": "History",
+      "other": "Other"
     }
   },
   "poojaGrid": {
@@ -463,5 +479,18 @@
     "todayBadge": "Today",
     "multiDay": "until {date}",
     "saturdayHint": "Saturdays are shown in red, as in a Nepali patro."
+  },
+  "gallery": {
+    "open": "Open photo: {caption}",
+    "untitled": "Temple photo",
+    "close": "Close",
+    "prev": "Previous photo",
+    "next": "Next photo",
+    "counter": "{i} of {n}",
+    "fromEvent": "From: {event}",
+    "photoCount": "{n, plural, one {# photo} other {# photos}}",
+    "empty": "Photos of the temple will be shared here soon.",
+    "emptyCategory": "No photos in this category yet.",
+    "keyboardHint": "Use ← → to browse, Esc to close"
   }
 }

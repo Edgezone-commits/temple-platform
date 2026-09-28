@@ -8,7 +8,7 @@ from datetime import date, datetime
 from typing import Literal, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 # ===========================================================================
@@ -134,5 +134,63 @@ class TempleInfoResponse(TempleInfoCreate):
     id: UUID
     created_at: datetime
     updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ===========================================================================
+# Gallery — photos in the public 'gallery' Storage bucket
+# ===========================================================================
+GalleryCategory = Literal["temple", "deity", "festival", "pooja", "community", "history", "other"]
+
+
+def _check_image_url(v: Optional[str]) -> Optional[str]:
+    """Allow absolute http(s) URLs (Supabase Storage) or site-relative paths like /images/x.jpg."""
+    if v is None:
+        return v
+    v = v.strip()
+    if not (v.startswith("https://") or v.startswith("http://") or (v.startswith("/") and not v.startswith("//"))):
+        raise ValueError("image_url must be an http(s) URL or a site-relative path starting with /")
+    return v
+
+
+class GalleryCreate(BaseModel):
+    image_url: str = Field(..., min_length=2, max_length=1000)
+    storage_path: Optional[str] = Field(None, max_length=500)   # path inside the bucket, for deletion
+    caption_en: Optional[str] = Field(None, max_length=500)
+    caption_ne: Optional[str] = Field(None, max_length=500)
+    category: GalleryCategory = "temple"
+    event_id: Optional[UUID] = None
+    taken_on: Optional[date] = None
+    sort_order: int = 0
+    is_published: bool = True
+
+    _url = field_validator("image_url")(_check_image_url)
+
+
+class GalleryUpdate(BaseModel):
+    image_url: Optional[str] = Field(None, min_length=2, max_length=1000)
+    storage_path: Optional[str] = Field(None, max_length=500)
+    caption_en: Optional[str] = Field(None, max_length=500)
+    caption_ne: Optional[str] = Field(None, max_length=500)
+    category: Optional[GalleryCategory] = None
+    event_id: Optional[UUID] = None
+    taken_on: Optional[date] = None
+    sort_order: Optional[int] = None
+    is_published: Optional[bool] = None
+
+    _url = field_validator("image_url")(_check_image_url)
+
+
+class GalleryEventSummary(BaseModel):
+    title_en: str
+    title_ne: Optional[str] = None
+
+
+class GalleryResponse(GalleryCreate):
+    id: UUID
+    created_at: datetime
+    updated_at: datetime
+    event: Optional[GalleryEventSummary] = None   # joined from events when event_id is set
 
     model_config = ConfigDict(from_attributes=True)

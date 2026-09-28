@@ -37,7 +37,9 @@
     "contact": "सम्पर्क",
     "contactNe": "Contact",
     "calendar": "पात्रो",
-    "calendarNe": "Calendar"
+    "calendarNe": "Calendar",
+    "gallery": "तस्बिर",
+    "galleryNe": "Gallery"
   },
   "hero": {
     "eyebrow": "श्री वैष्णव तोताद्री · हेटौंडा, नेपाल",
@@ -217,6 +219,11 @@
       "eyebrow": "नेपाली पात्रो",
       "title": "मन्दिर पात्रो",
       "titleNe": "Temple Calendar"
+    },
+    "gallery": {
+      "eyebrow": "तस्बिरमा दर्शन",
+      "title": "तस्बिर संग्रह",
+      "titleNe": "Photo Gallery"
     }
   },
   "contact": {
@@ -393,6 +400,15 @@
       "sankranti": "संक्रान्ति",
       "special_pooja": "विशेष पूजा",
       "other": "व्रत/पर्व"
+    },
+    "gallery": {
+      "temple": "मन्दिर",
+      "deity": "विग्रह",
+      "festival": "पर्व",
+      "pooja": "पूजा",
+      "community": "समुदाय",
+      "history": "इतिहास",
+      "other": "अन्य"
     }
   },
   "poojaGrid": {
@@ -463,5 +479,18 @@
     "todayBadge": "आज",
     "multiDay": "{date} सम्म",
     "saturdayHint": "नेपाली पात्रोमा झैं शनिबार रातो रङमा देखाइएको छ।"
+  },
+  "gallery": {
+    "open": "तस्बिर खोल्नुहोस्: {caption}",
+    "untitled": "मन्दिरको तस्बिर",
+    "close": "बन्द गर्नुहोस्",
+    "prev": "अघिल्लो तस्बिर",
+    "next": "अर्को तस्बिर",
+    "counter": "{n} मध्ये {i}",
+    "fromEvent": "कार्यक्रम: {event}",
+    "photoCount": "{count} तस्बिर",
+    "empty": "मन्दिरका तस्बिरहरू छिट्टै यहाँ राखिनेछन्।",
+    "emptyCategory": "यस वर्गमा अहिलेसम्म कुनै तस्बिर छैन।",
+    "keyboardHint": "हेर्न ← → र बन्द गर्न Esc थिच्नुहोस्"
   }
 }

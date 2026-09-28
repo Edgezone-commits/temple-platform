@@ -11,7 +11,7 @@
  * to refresh the public pages immediately.
  */
 import 'server-only';
-import type { Archana, Bhajan, Book, CalendarEntry, Pooja, TempleEvent } from './types';
+import type { Archana, Bhajan, Book, CalendarEntry, GalleryPhoto, Pooja, TempleEvent } from './types';
 
 // API_URL lets a deployed frontend reach the backend on a private address;
 // locally both point at http://localhost:8000.
@@ -57,3 +57,5 @@ export const getBhajans = () => apiGet<Bhajan[]>('/bhajans/?limit=100', 'bhajans
 
 export const getCalendar = (opts: { start?: string; end?: string; limit?: number } = {}) =>
   apiGet<CalendarEntry[]>(`/calendar/${qs(opts)}`, 'calendar');
+
+export const getGallery = () => apiGet<GalleryPhoto[]>('/gallery/?limit=500', 'gallery');

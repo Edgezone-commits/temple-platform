@@ -18,6 +18,9 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+/* Safety net: never let one over-wide block widen the whole page on phones
+   (that shifts fixed overlays like the lightbox). 'clip' keeps sticky working. */
+html,body{overflow-x:clip}
 body{background:var(--ivory-100);color:var(--text-dark);font-family:var(--ff-body);
   font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
 img{display:block;max-width:100%}
@@ -79,6 +82,22 @@ a{text-decoration:none}
 
 /* ── Nav ── */
 .main-nav{background:var(--maroon-800);border-bottom:2px solid var(--gold-700)}
+.header-contact{display:flex;gap:1.5rem;min-width:0}
+.header-cta{display:flex;justify-content:flex-end}
+.header-logo{height:68px}
+/* Phones: slimmer header, horizontally scrollable nav (no page-wide overflow).
+   Phase 8 revisits the header/nav design as a whole. */
+@media (max-width:760px){
+  .header-top{padding:4px .75rem;gap:.6rem}
+  .header-contact{gap:.8rem;overflow:hidden;white-space:nowrap}
+  .header-contact span:last-child{display:none}
+  .header-main{grid-template-columns:1fr auto;padding:.6rem .75rem}
+  .header-cta,.temple-tradition{display:none}
+  .header-logo{height:48px}
+  .nav-inner{justify-content:flex-start;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .nav-inner::-webkit-scrollbar{display:none}
+  .nav-link{padding:.7rem .85rem;flex-shrink:0}
+}
 .nav-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:center}
 .nav-link{font-family:var(--ff-heading);font-size:.72rem;font-weight:600;
   letter-spacing:.16em;text-transform:uppercase;color:var(--gold-300);
@@ -194,6 +213,11 @@ a{text-decoration:none}
 .footer-link{font-size:.9rem;color:rgba(232,201,122,.4);cursor:pointer;
   transition:color .2s;text-decoration:none;display:block;margin-bottom:.5rem}
 .footer-link:hover{color:var(--gold-300)}
+.footer-grid{max-width:1280px;margin:0 auto;padding:3.5rem 2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem}
+.footer-bottom{border-top:1px solid rgba(201,148,58,.12);padding:1rem 2rem;max-width:1280px;margin:0 auto;
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+@media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr;gap:2rem}}
+@media (max-width:520px){.footer-grid{grid-template-columns:1fr;padding:2.5rem 1.25rem}.footer-bottom{padding:1rem 1.25rem}}
 
 /* ── Filter buttons ── */
 .filter-btn{font-family:var(--ff-heading);font-size:.68rem;letter-spacing:.15em;
@@ -315,3 +339,49 @@ a{text-decoration:none}
   .cal-sec-month{display:none}
   .cal-agenda li{grid-template-columns:4.2rem 1fr;gap:.7rem;padding:.7rem}
 }
+
+/* ── Gallery (/gallery) ── */
+.gallery-toolbar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:2rem}
+.gallery-count{margin-left:auto;font-family:var(--ff-meta);font-style:italic;color:var(--text-light);font-size:.9rem}
+.gallery-grid{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+.gallery-tile{position:relative;display:block;width:100%;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--ivory-300);
+  padding:0;cursor:zoom-in;background:var(--maroon-900)}
+.gallery-tile img{transition:transform .5s ease}
+.gallery-tile:hover img,.gallery-tile:focus-visible img{transform:scale(1.05)}
+.gallery-tile:focus-visible{outline:3px solid var(--gold-500);outline-offset:2px}
+.gallery-tile-caption{position:absolute;left:0;right:0;bottom:0;padding:1.6rem .9rem .7rem;text-align:left;
+  background:linear-gradient(180deg,transparent,rgba(14,3,3,.85));color:var(--gold-100);font-size:.9rem;line-height:1.35;
+  opacity:.92;transition:opacity .25s}
+.gallery-tile-cat{display:block;font-family:var(--ff-heading);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold-500);margin-bottom:2px}
+.lightbox{border:none;padding:0;margin:0;inset:0;width:100%;height:100%;max-width:100%;max-height:100%;background:transparent;color:var(--gold-100)}
+.lightbox::backdrop{background:rgba(14,3,3,.94);backdrop-filter:blur(3px)}
+.lightbox[open]{animation:lb-in .2s ease-out}
+@keyframes lb-in{from{opacity:0}to{opacity:1}}
+.lightbox-inner{position:relative;display:flex;flex-direction:column;height:100%;padding:.8rem 1rem 1rem}
+.lightbox-top{display:flex;justify-content:space-between;align-items:center}
+.lightbox-counter{font-family:var(--ff-heading);font-size:.72rem;letter-spacing:.16em;color:rgba(232,201,122,.7)}
+.lightbox-btn{width:46px;height:46px;border-radius:50%;border:1px solid rgba(201,148,58,.45);background:rgba(30,6,6,.6);
+  color:var(--gold-300);font-size:1.4rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s,border-color .2s;flex-shrink:0}
+.lightbox-btn:hover,.lightbox-btn:focus-visible{background:var(--gold-500);color:var(--maroon-950);border-color:var(--gold-500);outline:none}
+.lightbox-stage{flex:1;display:flex;align-items:center;gap:1rem;min-height:0}
+.lightbox-figure{flex:1;height:100%;display:flex;flex-direction:column;min-width:0;animation:lb-in .25s ease-out}
+.lightbox-img{position:relative;flex:1;min-height:0}
+.lightbox-figure figcaption{text-align:center;padding:.9rem 1rem 0;display:flex;flex-direction:column;gap:.2rem}
+.lightbox-cat{font-family:var(--ff-heading);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-500)}
+.lightbox-caption{font-family:var(--ff-body);font-size:1.1rem;color:var(--gold-100)}
+.lightbox-caption.deva{font-family:var(--ff-deva);font-size:1rem}
+.lightbox-event{font-family:var(--ff-meta);font-style:italic;font-size:.9rem;color:rgba(232,201,122,.6)}
+.lightbox-hint{text-align:center;font-size:.72rem;color:rgba(232,201,122,.35);margin-top:.4rem}
+@media (max-width:640px){
+  .gallery-grid{grid-template-columns:repeat(2,1fr);gap:.5rem}
+  .gallery-tile-caption{font-size:.78rem;padding:1.2rem .5rem .45rem}
+  .gallery-count{width:100%;margin-left:0}
+  .lightbox-stage{position:relative}
+  .lightbox-prev,.lightbox-next{position:absolute;z-index:2;top:50%;transform:translateY(-50%);width:40px;height:40px}
+  .lightbox-prev{left:0}.lightbox-next{right:0}
+  .lightbox-hint{display:none}
+}
+@media (hover:none){.lightbox-hint{display:none}}
+@media (prefers-reduced-motion:reduce){.gallery-tile img,.lightbox[open],.lightbox-figure{transition:none;animation:none}}

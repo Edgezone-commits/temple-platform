@@ -11,8 +11,7 @@ export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-gold-line" />
-      <div style={{ maxWidth:'1280px', margin:'0 auto', padding:'3.5rem 2rem',
-        display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr', gap:'3rem' }}>
+      <div className="footer-grid">
 
         <div>
           <Image src="/images/logo.png" alt="Temple Logo" width={200} height={84}
@@ -39,6 +38,7 @@ export default function Footer() {
           <Link href="/poojas/book" className="footer-link">{tn('bookPooja')}</Link>
           <Link href="/books"       className="footer-link">{tn('books')}</Link>
           <Link href="/bhajans"     className="footer-link">{tn('bhajans')}</Link>
+          <Link href="/gallery"     className="footer-link">{tn('gallery')}</Link>
         </div>
 
         <div>
@@ -61,7 +61,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div style={{ borderTop:'1px solid rgba(201,148,58,.12)', padding:'1rem 2rem', maxWidth:'1280px', margin:'0 auto', display:'flex', justifyContent:'space-between' }}>
+      <div className="footer-bottom">
         <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.78rem', color:'rgba(201,148,58,.28)' }}>{t('copyright')}</span>
         <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.78rem', color:'rgba(201,148,58,.28)' }}>{t('mantra')}</span>
       </div>

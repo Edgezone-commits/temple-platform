@@ -25,6 +25,7 @@ def fake():
         "archanas": {"is_available": True, "currency": "NPR", "sort_order": 0},
         "calendar_events": {"is_published": True, "is_major": False, "category": "festival"},
         "temple_info": {"category": "general", "sort_order": 0},
+        "gallery": {"category": "temple", "sort_order": 0, "is_published": True},
     }
     app.dependency_overrides[get_supabase] = lambda: fake
     yield fake
@@ -160,3 +161,37 @@ def test_temple_info(client, fake):
     fake.seed("temple_info", key="timings.morning", category="timings", value_en="5:00 AM – 12:00 PM")
     assert client.get("/api/v1/temple-info/").json()[0]["key"] == "timings.morning"
     assert client.post("/api/v1/temple-info/", json={"key": "Bad Key!"}, headers=ADMIN).status_code == 422
+
+
+# ---------------------------------------------------------------- gallery
+def test_gallery(client, fake):
+    fake.add_user("admin-token", role="admin")
+    fake.add_user("devotee-token")
+    ev = fake.seed("events", title_en="Brahmotsavam", title_ne="ब्रह्मोत्सवम्", event_date=D(10))
+    fake.seed("gallery", image_url="/images/altar.jpg", category="deity", sort_order=2)
+    fake.seed("gallery", image_url="https://x.supabase.co/storage/v1/object/public/gallery/a.jpg",
+              category="festival", event_id=ev["id"], caption_en="Procession", sort_order=1)
+    fake.seed("gallery", image_url="/images/hidden.jpg", is_published=False)
+
+    r = client.get("/api/v1/gallery/")
+    assert r.status_code == 200
+    rows = r.json()
+    assert [g["category"] for g in rows] == ["festival", "deity"]           # sort_order, hidden excluded
+    assert rows[0]["event"] == {"title_en": "Brahmotsavam", "title_ne": "ब्रह्मोत्सवम्"}
+    assert rows[1]["event"] is None
+    assert [g["category"] for g in client.get("/api/v1/gallery/?category=deity").json()] == ["deity"]
+    assert client.get("/api/v1/gallery/?category=bogus").status_code == 422
+    assert len(client.get("/api/v1/gallery/?all=true", headers=ADMIN).json()) == 3
+    assert client.get("/api/v1/gallery/?all=true", headers=DEVOTEE).status_code == 403
+
+    ok = {"image_url": "https://x.supabase.co/storage/v1/object/public/gallery/b.jpg", "category": "pooja",
+          "storage_path": "b.jpg", "caption_ne": "पूजा"}
+    assert client.post("/api/v1/gallery/", json=ok).status_code == 401
+    r = client.post("/api/v1/gallery/", json=ok, headers=ADMIN)
+    assert r.status_code == 201 and r.json()["caption_ne"] == "पूजा"
+    for bad in ("javascript:alert(1)", "//evil.example/x.jpg", "data:image/png;base64,AAA"):
+        assert client.post("/api/v1/gallery/", json={**ok, "image_url": bad}, headers=ADMIN).status_code == 422, bad
+    gid = r.json()["id"]
+    assert client.patch(f"/api/v1/gallery/{gid}", json={"image_url": "javascript:x"}, headers=ADMIN).status_code == 422
+    assert client.delete(f"/api/v1/gallery/{gid}", headers=ADMIN).status_code == 204
+    assert client.get(f"/api/v1/gallery/{gid}").status_code == 404        # hard delete

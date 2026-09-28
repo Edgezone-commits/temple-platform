@@ -11,6 +11,7 @@
 --   • Event dates are PLACEHOLDERS spread over the coming months — replace
 --     them with the temple's real programme dates.
 --   • Prices/durations are the ones from the old mock-up.
+--   • Gallery starts with the three photos bundled in frontend/public/images.
 --   • Books and bhajans have no PDF/audio yet; the site shows them as
 --     "coming soon" until pdf_url / audio_url are filled in.
 --
@@ -145,3 +146,14 @@ values
   ('booking.policy',    'rituals', 'Please book poojas at least 24 hours in advance. Payment is made at the temple on the day; no advance payment is required.', 'कृपया पूजा कम्तीमा २४ घण्टा अगाडि बुक गर्नुहोस्। भुक्तानी पूजाकै दिन मन्दिरमा गरिन्छ; अग्रिम भुक्तानी आवश्यक छैन।', 1),
   ('booking.bring',     'rituals', 'Bring flowers (lotus or marigold preferred), fruits for naivedyam, and wear clean traditional attire. Footwear is not allowed inside.', 'फूल (कमल वा सयपत्री उत्तम), नैवेद्यका लागि फलफूल ल्याउनुहोस् र सफा परम्परागत पोशाक लगाउनुहोस्। भित्र जुत्ता-चप्पल लैजान पाइँदैन।', 2)
 on conflict (key) do nothing;
+
+-- ---------- gallery ----------------------------------------------------------
+-- The three temple photos that ship with the site (frontend/public/images).
+-- New photos uploaded from the admin dashboard go to the 'gallery' Storage bucket.
+insert into public.gallery (image_url, caption_en, caption_ne, category, sort_order)
+select v.* from (values
+  ('/images/deity.jpg',    'Sri Laxminarayan — the presiding deities', 'श्री लक्ष्मीनारायण — मूल विग्रह', 'deity',  1),
+  ('/images/altar.jpg',    'The sacred sanctum (garbhagriha)',         'पवित्र गर्भगृह',                   'temple', 2),
+  ('/images/interior.jpg', 'Inside the temple',                        'मन्दिरभित्र',                       'temple', 3)
+) as v(image_url, caption_en, caption_ne, category, sort_order)
+where not exists (select 1 from public.gallery g where g.image_url = v.image_url);

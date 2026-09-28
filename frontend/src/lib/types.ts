@@ -94,3 +94,16 @@ export interface CalendarEntry {
   is_major: boolean;
   event_id: string | null;
 }
+
+export type GalleryCategory = 'temple' | 'deity' | 'festival' | 'pooja' | 'community' | 'history' | 'other';
+
+export interface GalleryPhoto {
+  id: string;
+  image_url: string;           // Supabase Storage public URL or site path (/images/...)
+  caption_en: string | null;
+  caption_ne: string | null;
+  category: GalleryCategory;
+  event_id: string | null;
+  taken_on: string | null;
+  event: { title_en: string; title_ne: string | null } | null;
+}

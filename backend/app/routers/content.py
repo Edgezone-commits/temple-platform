@@ -5,6 +5,8 @@
 #   /calendar      public list of published calendar entries, filterable by
 #                  date range and category (used by /events strip + /calendar)
 #   /temple-info   public bilingual key/value facts (timings, contact, history)
+#   /gallery       public photos (Supabase Storage URLs), filterable by category,
+#                  each with the linked event's title when event_id is set
 
 from datetime import date
 from typing import Any, Optional
@@ -19,6 +21,7 @@ from app.schemas.content import (
     ArchanaCreate, ArchanaUpdate, ArchanaResponse,
     CalendarCategory, CalendarEventCreate, CalendarEventUpdate, CalendarEventResponse,
     TempleInfoCreate, TempleInfoUpdate, TempleInfoResponse,
+    GalleryCategory, GalleryCreate, GalleryUpdate, GalleryResponse,
 )
 
 archanas_router = crud_router(
@@ -64,3 +67,31 @@ def list_calendar(
     if category:
         query = query.eq("category", category)
     return query.order("event_date").limit(limit).execute().data
+
+
+gallery_router = crud_router(
+    table="gallery", prefix="/gallery", tag="Gallery", label="Photo",
+    create_model=GalleryCreate, update_model=GalleryUpdate, response_model=GalleryResponse,
+    visible_field="is_published", order_by=[("sort_order", False), ("created_at", True)],
+    include_list=False,
+)
+
+
+@gallery_router.get("/", response_model=list[GalleryResponse])
+def list_gallery(
+    category: Optional[GalleryCategory] = Query(None),
+    limit: int = Query(200, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+    all: bool = Query(False, description="Admins: include unpublished photos"),
+    db: Client = Depends(get_supabase),
+    user: Optional[Any] = Depends(get_optional_user),
+):
+    query = db.table("gallery").select("*, event:events(title_en, title_ne)")
+    if not gallery_router.show_hidden(all, user, db):  # type: ignore[attr-defined]
+        query = query.eq("is_published", True)
+    if category:
+        query = query.eq("category", category)
+    return (
+        query.order("sort_order").order("created_at", desc=True)
+        .range(offset, offset + limit - 1).execute().data
+    )

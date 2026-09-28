@@ -19,7 +19,7 @@ export default function Header({ locale }: HeaderProps) {
     <header style={{ position:'sticky', top:0, zIndex:200, boxShadow:'0 4px 24px rgba(0,0,0,.55)' }}>
       {/* Top bar */}
       <div className="header-top">
-        <div style={{ display:'flex', gap:'1.5rem' }}>
+        <div className="header-contact">
           <span>📞 {t('phone')}</span>
           <span>📍 {t('location')}</span>
         </div>
@@ -37,11 +37,11 @@ export default function Header({ locale }: HeaderProps) {
           <div className="temple-tradition">{t('tradition')}</div>
         </div>
         <Link href="/" aria-label="Home">
-          <Image src="/images/logo.png" alt="Temple Logo" width={260} height={110}
-            style={{ height:'68px', width:'auto', filter:'drop-shadow(0 2px 10px rgba(201,148,58,.35))' }}
+          <Image src="/images/logo.png" alt="Temple Logo" width={260} height={110} className="header-logo"
+            style={{ width:'auto', filter:'drop-shadow(0 2px 10px rgba(201,148,58,.35))' }}
             priority />
         </Link>
-        <div style={{ display:'flex', justifyContent:'flex-end' }}>
+        <div className="header-cta">
           <Link href="/poojas/book" className="btn-primary" style={{ fontSize:'.7rem', padding:'8px 18px' }}>
             🙏 {t('bookCta')}
           </Link>
