@@ -3,13 +3,13 @@
 # Public:  GET /poojas, GET /poojas/{id}, POST /bookings
 # Admin:   pooja writes, all booking reads/updates (they contain devotee PII)
 
-from typing import Optional
+from typing import Any, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase import Client
 
-from app.auth import require_admin
+from app.auth import get_optional_user, require_admin
 from app.database import get_supabase, fetch_one
 from app.schemas.poojas import (
     PoojaCreate, PoojaUpdate, PoojaResponse,
@@ -83,9 +83,17 @@ BOOKING_SELECT = "*, pooja:poojas(name_en, name_ne)"  # alias the join to match 
 
 
 @booking_router.post("/", response_model=BookingResponse, status_code=201)
-def create_booking(payload: BookingCreate, db: Client = Depends(get_supabase)):
-    """Public endpoint — devotees submit pooja bookings."""
+def create_booking(
+    payload: BookingCreate,
+    db: Client = Depends(get_supabase),
+    user: Optional[Any] = Depends(get_optional_user),
+):
+    """Public endpoint — devotees submit pooja bookings.
+    If the request carries a valid Supabase token, the booking is linked to
+    that account (so the devotee can later see it under RLS "read own")."""
     data = payload.model_dump(mode="json", exclude_none=True)
+    if user is not None:
+        data["user_id"] = str(user.id)
 
     if "pooja_id" in data:
         pooja = fetch_one(db.table("poojas").select("id, is_available").eq("id", data["pooja_id"]))

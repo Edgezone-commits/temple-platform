@@ -1,9 +1,13 @@
 # backend/app/schemas/events.py
 
 from datetime import date, time, datetime
-from typing import Optional
+from typing import Literal, Optional
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
+
+
+# Matches the Festivals / Ekadashi / Purnima / Special Poojas filter on /events.
+EventCategory = Literal["festival", "ekadashi", "purnima", "special_pooja", "other"]
 
 
 # ---------------------------------------------------------------------------
@@ -20,6 +24,7 @@ class EventBase(BaseModel):
     location_en: Optional[str] = None
     location_ne: Optional[str] = None
     image_url: Optional[str] = None
+    category: EventCategory = "festival"
     is_featured: bool = False
     is_active: bool = True
 
@@ -45,6 +50,7 @@ class EventUpdate(BaseModel):
     location_en: Optional[str] = None
     location_ne: Optional[str] = None
     image_url: Optional[str] = None
+    category: Optional[EventCategory] = None
     is_featured: Optional[bool] = None
     is_active: Optional[bool] = None
 

@@ -1,58 +1,84 @@
 "use client";
+/**
+ * Sacred library grid (data from GET /api/v1/books via books/page.tsx).
+ * Only the category filter runs in the browser.
+ * "Read" opens the PDF in a new tab; "Download" uses Supabase Storage's
+ * ?download query param (the HTML download attribute is ignored cross-origin).
+ */
 import { useState } from 'react';
+import Image from 'next/image';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import StateMessage from '@/components/ui/StateMessage';
+import { BOOK_ICON } from '@/lib/icons';
+import { pick, pickAlt } from '@/lib/localize';
+import type { Book } from '@/lib/types';
 
-type Cat = 'All'|'Scripture'|'Stotra'|'Philosophy'|'Biography';
-const CATS: Cat[] = ['All','Scripture','Stotra','Philosophy','Biography'];
+const CATS = ['scripture', 'stotra', 'philosophy', 'biography'] as const;
+const LANG_BG: Record<string, string> = { sa: 'var(--maroon-800)', ne: '#1a4a1a', en: '#1a1a4a' };
 
-const BOOKS = [
-  { icon:'📖', en:'Vishnu Sahasranama',             ne:'विष्णु सहस्रनाम',        author:'Vyasa Maharshi',      lang:'Sanskrit', cat:'Scripture'  },
-  { icon:'🕉️', en:'Sri Ranganatha Stotram',         ne:'श्री रंगनाथ स्तोत्रम्',  author:'Adi Shankaracharya',  lang:'Sanskrit', cat:'Stotra'     },
-  { icon:'🌺', en:'Laxminarayan Mahatmya',           ne:'लक्ष्मीनारायण माहात्म्य', author:'Temple Publication',  lang:'Nepali',   cat:'Scripture'  },
-  { icon:'📿', en:'Tiruppavai',                      ne:'तिरुप्पावई',              author:'Andal',               lang:'Sanskrit', cat:'Stotra'     },
-  { icon:'✨', en:'Introduction to Sri Vaishnavism', ne:'श्री वैष्णवधर्म परिचय',  author:'Temple Publication',  lang:'English',  cat:'Philosophy' },
-  { icon:'🌸', en:'Lakshmi Ashtakam',                ne:'लक्ष्मी अष्टकम्',         author:'Traditional',         lang:'Sanskrit', cat:'Stotra'     },
-  { icon:'🕊️', en:'Narayana Suktam',                 ne:'नारायण सूक्तम्',           author:'Yajurveda',           lang:'Sanskrit', cat:'Scripture'  },
-  { icon:'🦅', en:'Garuda Puranam (excerpts)',       ne:'गरुड पुराण (अंश)',         author:'Vyasa',               lang:'Nepali',   cat:'Scripture'  },
-  { icon:'🧘', en:'Ramanuja Darshan',                ne:'रामानुज दर्शन',            author:'Sri Ramanuja',        lang:'English',  cat:'Philosophy' },
-  { icon:'🌻', en:'Andal Biography',                 ne:'आण्डाल जीवनी',            author:'Temple Publication',  lang:'English',  cat:'Biography'  },
-  { icon:'📜', en:'Totadri Nambi Charitra',          ne:'तोताद्री नम्बि चरित्र',   author:'Temple Publication',  lang:'Nepali',   cat:'Biography'  },
-  { icon:'💎', en:'Divya Prabandham (selections)',   ne:'दिव्य प्रबन्धम् (चयन)',   author:'Alvars',              lang:'Sanskrit', cat:'Scripture'  },
-];
+const btn: React.CSSProperties = { flex:1, fontFamily:'var(--ff-heading)', fontSize:'.65rem', fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', padding:'6px', textAlign:'center', textDecoration:'none' };
 
-const LC: Record<string,string> = { Sanskrit:'var(--maroon-800)', Nepali:'#1a4a1a', English:'#1a1a4a' };
+function downloadUrl(url: string) {
+  return url.includes('?') ? `${url}&download=` : `${url}?download=`;
+}
 
-export default function BooksGrid() {
-  const [cat, setCat] = useState<Cat>('All');
-  const list = cat==='All' ? BOOKS : BOOKS.filter(b => b.cat===cat);
+export default function BooksGrid({ books }: { books: Book[] }) {
+  const t = useTranslations('books');
+  const tc = useTranslations('categories');
+  const ts = useTranslations('state');
+  const locale = useLocale();
+  const format = useFormatter();
+  const [cat, setCat] = useState<string>('all');
+
+  if (books.length === 0) return <StateMessage kind="empty" message={ts('emptyBooks')} />;
+  const list = cat === 'all' ? books : books.filter(b => b.category === cat);
+
   return (
-    <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
-      <div style={{ maxWidth:'1280px', margin:'0 auto' }}>
-        <div style={{ display:'flex', gap:'.7rem', flexWrap:'wrap', marginBottom:'2.5rem' }}>
-          {CATS.map(c => <button key={c} onClick={() => setCat(c)} className={`filter-btn ${cat===c?'active':''}`}>{c}</button>)}
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1.4rem' }}>
-          {list.map(({ icon, en, ne, author, lang }) => (
-            <div key={en} style={{ background:'var(--ivory-50)', border:'1px solid var(--ivory-300)', overflow:'hidden', transition:'transform .2s,box-shadow .2s', cursor:'pointer' }}
-              onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.transform='translateY(-3px)'; el.style.boxShadow='0 8px 24px rgba(107,26,26,.1)'; }}
-              onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.transform='none'; el.style.boxShadow='none'; }}>
-              <div style={{ height:'190px', background:'linear-gradient(135deg,var(--maroon-800),var(--maroon-600))', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'3rem', position:'relative' }}>
-                {icon}
-                <span style={{ position:'absolute', top:'.7rem', right:'.7rem', background:LC[lang]||'var(--maroon-800)', color:'var(--gold-300)', fontFamily:'var(--ff-heading)', fontSize:'.58rem', letterSpacing:'.1em', padding:'2px 7px' }}>{lang}</span>
-              </div>
-              <div style={{ padding:'1rem' }}>
-                <span style={{ fontFamily:'var(--ff-heading)', fontSize:'.82rem', fontWeight:700, color:'var(--maroon-800)', display:'block', lineHeight:1.3, marginBottom:'2px' }}>{en}</span>
-                <span style={{ fontFamily:'var(--ff-deva)', fontSize:'.75rem', color:'var(--text-light)', display:'block', marginBottom:'.4rem' }}>{ne}</span>
-                <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.8rem', color:'var(--text-light)' }}>{author}</span>
-              </div>
-              <div style={{ padding:'.8rem 1rem', borderTop:'1px solid var(--ivory-300)', display:'flex', gap:'.5rem' }}>
-                <button style={{ flex:1, fontFamily:'var(--ff-heading)', fontSize:'.65rem', fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', padding:'6px', border:'none', cursor:'pointer', background:'var(--gold-500)', color:'var(--maroon-950)' }}
-                  onClick={() => alert('Upload your PDFs to Supabase Storage bucket "book-pdfs" and add the URL to the database!')}>📄 Read</button>
-                <button style={{ flex:1, fontFamily:'var(--ff-heading)', fontSize:'.65rem', fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', padding:'6px', border:'1px solid var(--ivory-300)', cursor:'pointer', background:'var(--ivory-200)', color:'var(--text-mid)' }}>⬇ Download</button>
-              </div>
-            </div>
-          ))}
-        </div>
+    <>
+      <div style={{ display:'flex', gap:'.7rem', flexWrap:'wrap', marginBottom:'2.5rem' }} role="toolbar">
+        {(['all', ...CATS] as const).map(c => (
+          <button key={c} onClick={() => setCat(c)} aria-pressed={cat === c} className={`filter-btn ${cat === c ? 'active' : ''}`}>
+            {c === 'all' ? tc('all') : tc(`book.${c}`)}
+          </button>
+        ))}
       </div>
-    </div>
+
+      {list.length === 0 ? <StateMessage kind="empty" message={ts('emptyBooksCategory')} /> : (
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1.4rem' }}>
+          {list.map(b => {
+            const title = pick(b, 'title', locale);
+            const alt = pickAlt(b, 'title', locale);
+            const author = pick(b, 'author', locale);
+            const lang = tc.has(`language.${b.language}`) ? tc(`language.${b.language}`) : b.language;
+            return (
+              <article key={b.id} className="card-lift" style={{ display:'flex', flexDirection:'column' }}>
+                <div className="card-media" style={{ height:'190px' }}>
+                  {b.cover_image_url
+                    ? <Image src={b.cover_image_url} alt={title} fill sizes="(max-width:900px) 50vw, 25vw" style={{ objectFit:'cover' }} />
+                    : <span aria-hidden="true">{BOOK_ICON[b.category ?? ''] ?? '📖'}</span>}
+                  <span style={{ position:'absolute', top:'.7rem', right:'.7rem', background:LANG_BG[b.language] ?? 'var(--maroon-800)', color:'var(--gold-300)', fontFamily:'var(--ff-heading)', fontSize:'.58rem', letterSpacing:'.1em', padding:'2px 7px' }}>{lang}</span>
+                </div>
+                <div style={{ padding:'1rem', flex:1 }}>
+                  <h3 style={{ fontFamily:'var(--ff-heading)', fontSize:'.82rem', fontWeight:700, color:'var(--maroon-800)', lineHeight:1.3, marginBottom:'2px' }}>{title}</h3>
+                  {alt && <span style={{ fontFamily:'var(--ff-deva)', fontSize:'.75rem', color:'var(--text-light)', display:'block', marginBottom:'.4rem' }}>{alt}</span>}
+                  {author && <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.8rem', color:'var(--text-light)', display:'block' }}>{author}</span>}
+                  {b.total_pages != null && <span style={{ fontSize:'.75rem', color:'var(--text-light)' }}>{t('pages', { n: format.number(b.total_pages) })}</span>}
+                </div>
+                <div style={{ padding:'.8rem 1rem', borderTop:'1px solid var(--ivory-300)', display:'flex', gap:'.5rem' }}>
+                  {b.pdf_url ? (
+                    <>
+                      <a href={b.pdf_url} target="_blank" rel="noopener noreferrer" style={{ ...btn, background:'var(--gold-500)', color:'var(--maroon-950)' }}>{t('read')}</a>
+                      <a href={downloadUrl(b.pdf_url)} style={{ ...btn, border:'1px solid var(--ivory-300)', background:'var(--ivory-200)', color:'var(--text-mid)' }}>{t('download')}</a>
+                    </>
+                  ) : (
+                    <span style={{ ...btn, background:'var(--ivory-200)', color:'var(--text-light)', fontStyle:'italic', letterSpacing:'.06em', textTransform:'none', fontFamily:'var(--ff-meta)', fontWeight:400, fontSize:'.8rem' }}>{t('comingSoon')}</span>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 }

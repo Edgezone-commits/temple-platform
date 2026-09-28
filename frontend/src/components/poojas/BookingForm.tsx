@@ -6,11 +6,14 @@
  * valid HH:MM booking_time values, and bilingual labels.
  * Nakshatra/rashi are always submitted in canonical English so the admin inbox
  * is consistent regardless of the devotee's locale.
- * Phase 2 replaces the static pooja list with poojas fetched from the API.
+ * Phase 2: the pooja list comes from the API (passed in by the page) and the
+ * booking is sent with a real pooja_id.
  */
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import en from '@/messages/en.json';
+import { pick } from '@/lib/localize';
+import type { Pooja } from '@/lib/types';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -19,9 +22,18 @@ const lbl: React.CSSProperties = { fontFamily:'var(--ff-heading)', fontSize:'.67
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-export default function BookingForm() {
+interface Props {
+  /** Bookable poojas; null when the API couldn't be reached. */
+  poojas: Pooja[] | null;
+  /** Preselected pooja (from /poojas/book?pooja=<id>). */
+  initialPoojaId?: string;
+}
+
+export default function BookingForm({ poojas, initialPoojaId }: Props) {
   const t = useTranslations('booking');
-  const poojas     = t.raw('poojaOptions') as string[];
+  const tp = useTranslations('poojaGrid');
+  const locale = useLocale();
+  const format = useFormatter();
   const nakshatras = t.raw('nakshatras') as string[];
   const rashis     = t.raw('rashis') as string[];
   const times      = t.raw('times') as Record<string, string>;
@@ -29,7 +41,8 @@ export default function BookingForm() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({ pooja:'0', name:'', phone:'', email:'', date:'', time:'05:00', gothram:'', nakshatra:'', rashi:'', notes:'' });
+  const validInitial = poojas?.some(p => p.id === initialPoojaId) ? initialPoojaId! : '';
+  const [form, setForm] = useState({ pooja:validInitial, name:'', phone:'', email:'', date:'', time:'05:00', gothram:'', nakshatra:'', rashi:'', notes:'' });
 
   const ch = (e: React.ChangeEvent<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>) =>
     setForm(p => ({ ...p, [e.target.name]: e.target.value }));
@@ -37,11 +50,11 @@ export default function BookingForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true); setError('');
-    const poojaName = en.booking.poojaOptions[Number(form.pooja)];
     try {
       const res = await fetch(`${API}/api/v1/bookings/`, {
         method:'POST', headers:{ 'Content-Type':'application/json' },
         body: JSON.stringify({
+          pooja_id: form.pooja,
           devotee_name: form.name,
           devotee_phone: form.phone,
           devotee_email: form.email || undefined,
@@ -50,7 +63,7 @@ export default function BookingForm() {
           gothram: form.gothram || undefined,
           nakshatra: form.nakshatra ? en.booking.nakshatras[Number(form.nakshatra)] : undefined,
           rashi: form.rashi ? en.booking.rashis[Number(form.rashi)] : undefined,
-          notes: `Pooja: ${poojaName}${form.notes ? `. ${form.notes}` : ''}`,
+          notes: form.notes || undefined,
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -61,6 +74,14 @@ export default function BookingForm() {
       setLoading(false);
     }
   }
+
+  if (!poojas || poojas.length === 0) return (
+    <div role="status" style={{ background:'var(--ivory-50)', border:'1px solid var(--ivory-300)', borderLeft:'3px solid var(--gold-500)', padding:'2.5rem', textAlign:'center' }}>
+      <div style={{ fontSize:'2.5rem', marginBottom:'1rem' }} aria-hidden="true">🪔</div>
+      <h2 style={{ fontFamily:'var(--ff-display)', fontSize:'1.15rem', color:'var(--maroon-800)', marginBottom:'.8rem' }}>{t('unavailableTitle')}</h2>
+      <p style={{ fontSize:'1rem', color:'var(--text-mid)', lineHeight:1.7 }}>{t('unavailableBody')}</p>
+    </div>
+  );
 
   if (sent) return (
     <div style={{ background:'var(--ivory-50)', border:'1px solid var(--ivory-300)', padding:'3rem', textAlign:'center' }}>
@@ -81,7 +102,12 @@ export default function BookingForm() {
       <div style={{ marginBottom:'1rem' }}>
         <label style={lbl} htmlFor="b-pooja">{t('pooja')}</label>
         <select id="b-pooja" name="pooja" value={form.pooja} onChange={ch} style={inp} required>
-          {poojas.map((p, i) => <option key={i} value={i}>{p}</option>)}
+          <option value="" disabled>{t('poojaPlaceholder')}</option>
+          {poojas.map(p => (
+            <option key={p.id} value={p.id}>
+              {`${pick(p, 'name', locale)}${p.price != null ? ` — ${tp('currency')} ${format.number(p.price)}` : ''}`}
+            </option>
+          ))}
         </select>
       </div>
 

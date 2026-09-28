@@ -42,7 +42,7 @@ Each finding has a **status**:
 | F7 | `frontend/.env.example` says `NEXT_PUBLIC_API_URL=http://localhost:8000/api`, but the code appends `/api/v1` (→ `/api/api/v1`). Root `.env.example` uses `SUPABASE_SERVICE_ROLE_KEY` while the backend reads `SUPABASE_SERVICE_KEY`. | FIXED (P0) — examples aligned |
 | F8 | `README.md` contains unresolved merge-conflict markers (`<<<<<<< HEAD`). | FIXED (P0) |
 | F9 | Hard-coded **English-only** user-facing text: PageHero titles on every inner page, Header "Book a Pooja", Footer (services column, timings, the Nepali temple name is actually English), Contact page + form, BookingForm, BookingInfoPanel. | FIXED (P0) for all components *not* rewritten in Phase 2 |
-| F10 | English-only text inside the mock-data components: EventsGrid, CalendarStrip, BooksGrid, BhajanPlayer, PoojaGrid, ArchanaSection, EventsPreview. | → Phase 2 (these components are rewritten there) |
+| F10 | English-only text inside the mock-data components: EventsGrid, CalendarStrip, BooksGrid, BhajanPlayer, PoojaGrid, ArchanaSection, EventsPreview. | FIXED (P2) |
 | F11 | `ContactForm` doesn't send anything. It just flips to "Message Sent!". | FIXED (P0) — it now opens the visitor's mail client with the message pre-filled (honest behaviour), noted as a TODO for a backend endpoint |
 | F12 | `globals.css` does `@import "tailwindcss"` but no page uses Tailwind classes (only the deleted template did). | Kept: it only contributes the preflight reset, and removing it would subtly change spacing. Revisit in Phase 8. |
 | F13 | No responsive breakpoints. Grids are fixed at `repeat(3/4,1fr)` and `1fr 400px`, so layouts break on phones. | → Phase 8 (polish pass) |
@@ -68,7 +68,9 @@ These files are **not** included in the Phase 0 commit, because committing code 
 
 ---
 
-## 2. Hard-coded / mock data instead of backend fetches (→ Phase 2)
+## 2. Hard-coded / mock data instead of backend fetches — FIXED (P2)
+
+All of the components below now render data fetched on the server from FastAPI, with loading skeletons and empty/error states. The old mock content lives on as optional starter data in `database/seed.sql`. Timings are still translation strings; `temple_info` holds them for the AI assistant.
 
 | Component | Mock data | Should come from |
 |-----------|-----------|------------------|

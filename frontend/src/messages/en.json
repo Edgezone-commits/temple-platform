@@ -94,7 +94,8 @@
     "eyebrow": "Calendar",
     "title": "Upcoming Celebrations",
     "titleNe": "आगामी उत्सव तथा कार्यक्रमहरू",
-    "viewAll": "View Full Calendar →"
+    "viewAll": "View Full Calendar →",
+    "featured": "Featured"
   },
   "footer": {
     "address": "Hetauda, Makwanpur District\nBagmati Province, Nepal",
@@ -316,18 +317,9 @@
       "Kumbha (Aquarius)",
       "Meena (Pisces)"
     ],
-    "poojaOptions": [
-      "Sahasranama Archana — NPR 500",
-      "Abhishekam — NPR 1,100",
-      "Sudarshana Homam — NPR 3,100",
-      "Sri Sooktam Puja — NPR 1,500",
-      "Nakshatra Shanti — NPR 2,100",
-      "Satyanarayan Puja — NPR 2,500",
-      "Lakshmi Puja — NPR 1,800",
-      "Vishnu Sahasranama — NPR 800",
-      "Ashtottara Archana — NPR 100",
-      "Pushpanjali — NPR 51"
-    ]
+    "poojaPlaceholder": "-- Choose a pooja --",
+    "unavailableTitle": "Online booking is temporarily unavailable",
+    "unavailableBody": "Please call the temple on +977-XXXXXXXXX during darshan hours to book a pooja."
   },
   "bookingInfo": {
     "locationTitle": "📍 Temple Location",
@@ -340,5 +332,85 @@
     "bring": "Flowers (lotus or marigold preferred), fruits for naivedyam, clean traditional attire. Footwear not allowed inside.",
     "paymentTitle": "💳 Payment",
     "payment": "Payment is made at the temple on the day. No advance payment required."
+  },
+  "state": {
+    "error": "We couldn't load this right now. Please refresh in a moment.",
+    "errorHint": "If this keeps happening, please call the temple.",
+    "emptyEvents": "No upcoming events have been announced yet. Please check back soon.",
+    "emptyCategory": "No events in this category yet. Check back soon.",
+    "emptyPoojas": "Pooja services will be listed here soon.",
+    "emptyArchanas": "Archana offerings will be listed here soon.",
+    "emptyBooks": "The library is being prepared. Books will appear here soon.",
+    "emptyBooksCategory": "No books in this category yet.",
+    "emptyBhajans": "Bhajans will be added here soon.",
+    "emptyBhajansCategory": "No bhajans in this category yet.",
+    "emptyCalendar": "No upcoming observances have been added yet."
+  },
+  "categories": {
+    "all": "All",
+    "event": {
+      "festival": "Festivals",
+      "ekadashi": "Ekadashi",
+      "purnima": "Purnima",
+      "special_pooja": "Special Poojas",
+      "other": "Other"
+    },
+    "book": {
+      "scripture": "Scripture",
+      "stotra": "Stotra",
+      "philosophy": "Philosophy",
+      "biography": "Biography"
+    },
+    "language": {
+      "sa": "Sanskrit",
+      "ne": "Nepali",
+      "en": "English"
+    },
+    "bhajan": {
+      "suprabhatam": "Suprabhatam",
+      "stotra": "Stotra",
+      "bhajan": "Bhajan",
+      "vedic": "Vedic",
+      "ashtapadi": "Ashtapadi",
+      "mangalashtak": "Mangalashtak"
+    },
+    "calendar": {
+      "festival": "Festival",
+      "ekadashi": "Ekadashi",
+      "purnima": "Purnima",
+      "amavasya": "Amavasya",
+      "sankranti": "Sankranti",
+      "special_pooja": "Special Pooja",
+      "other": "Observance"
+    }
+  },
+  "poojaGrid": {
+    "infoTitle": "Booking Information",
+    "infoBody": "All poojas follow the Pancharatra Agama shastra. Please book at least 24 hours in advance. Walk-ins welcome subject to availability.",
+    "popular": "Popular",
+    "book": "Book →",
+    "minutes": "{n} min",
+    "currency": "NPR"
+  },
+  "archanas": {
+    "eyebrow": "Flower Offering",
+    "title": "Archana Services",
+    "titleNe": "अर्चना सेवाहरू",
+    "deity": "Deity: {deity}",
+    "offer": "Offer Now"
+  },
+  "books": {
+    "read": "📄 Read",
+    "download": "⬇ Download",
+    "comingSoon": "PDF coming soon",
+    "pages": "{n} pages"
+  },
+  "bhajans": {
+    "play": "Play",
+    "pause": "Pause",
+    "audioSoon": "Audio coming soon",
+    "nowPlaying": "Now playing",
+    "lyrics": "Lyrics",
+    "hideLyrics": "Hide lyrics"
   }
 }

@@ -8,6 +8,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
   }
   return {
     locale,
+    // The temple's timezone; avoids next-intl's server/client mismatch warning.
+    timeZone: 'Asia/Kathmandu',
     messages: (await import(`../messages/${locale}.json`)).default,
   };
 });

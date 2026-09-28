@@ -1,16 +1,33 @@
-import { use } from 'react';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import PageHero      from '@/components/ui/PageHero';
+import StateMessage  from '@/components/ui/StateMessage';
 import CalendarStrip from '@/components/events/CalendarStrip';
 import EventsGrid    from '@/components/events/EventsGrid';
+import { getCalendar, getEvents } from '@/lib/api';
+import { todayInNepal } from '@/lib/localize';
 
-export default function EventsPage({ params }: { params: Promise<{ locale: string }> }) {
-  setRequestLocale(use(params).locale);
+/** /events — upcoming events (GET /events?upcoming) + next observances strip. */
+export default async function EventsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  const [events, calendar, t] = await Promise.all([
+    getEvents({ upcoming: true }),
+    getCalendar({ start: todayInNepal(), limit: 6 }),
+    getTranslations('state'),
+  ]);
+
   return (
     <>
       <PageHero page="events" />
-      <CalendarStrip />
-      <EventsGrid />
+      <CalendarStrip entries={calendar.data ?? []} />
+      <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
+        <div style={{ maxWidth:'1280px', margin:'0 auto' }}>
+          {events.error
+            ? <StateMessage kind="error" message={t('error')} hint={t('errorHint')} />
+            : <EventsGrid events={events.data} />}
+        </div>
+      </div>
     </>
   );
 }

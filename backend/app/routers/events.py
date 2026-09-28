@@ -5,13 +5,14 @@
 
 from uuid import UUID
 from datetime import date
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from supabase import Client
 
 from app.auth import require_admin
 from app.database import get_supabase, fetch_one
-from app.schemas.events import EventCreate, EventUpdate, EventResponse
+from app.schemas.events import EventCategory, EventCreate, EventUpdate, EventResponse
 
 router = APIRouter(prefix="/events", tags=["Events"])
 
@@ -23,6 +24,7 @@ router = APIRouter(prefix="/events", tags=["Events"])
 def list_events(
     upcoming: bool = Query(False, description="Return only future events"),
     featured: bool = Query(False, description="Return only featured events"),
+    category: Optional[EventCategory] = Query(None, description="Filter by category"),
     limit: int  = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: Client  = Depends(get_supabase),
@@ -38,6 +40,8 @@ def list_events(
         query = query.gte("event_date", str(date.today()))
     if featured:
         query = query.eq("is_featured", True)
+    if category:
+        query = query.eq("category", category)
 
     return query.execute().data
 

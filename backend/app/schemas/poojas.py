@@ -17,6 +17,7 @@ class PoojaBase(BaseModel):
     price: Optional[float] = Field(None, ge=0)
     currency: str = "NPR"
     is_available: bool = True
+    is_popular: bool = False
     image_url: Optional[str] = None
     sort_order: int = 0
 
@@ -32,6 +33,7 @@ class PoojaUpdate(BaseModel):
     price: Optional[float] = Field(None, ge=0)
     currency: Optional[str] = None
     is_available: Optional[bool] = None
+    is_popular: Optional[bool] = None
     image_url: Optional[str] = None
     sort_order: Optional[int] = None
 
@@ -78,6 +80,7 @@ class BookingUpdate(BaseModel):
     booking_date: Optional[date] = None
     booking_time: Optional[time] = None
     notes: Optional[str] = Field(None, max_length=2000)
+    admin_notes: Optional[str] = Field(None, max_length=2000)
 
 class BookingResponse(BookingBase):
     id: UUID
@@ -85,5 +88,7 @@ class BookingResponse(BookingBase):
     created_at: datetime
     updated_at: datetime
     pooja: Optional[PoojaSummary] = None
+    user_id: Optional[UUID] = None
+    admin_notes: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

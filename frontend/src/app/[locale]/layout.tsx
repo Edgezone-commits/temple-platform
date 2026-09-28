@@ -40,7 +40,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} className={fontVars}>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages} timeZone="Asia/Kathmandu">
           <MarqueeStrip />
           <Header locale={locale as 'en' | 'ne'} />
           <Navigation />

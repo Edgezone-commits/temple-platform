@@ -52,16 +52,23 @@ def get_current_user(user: Optional[Any] = Depends(get_optional_user)) -> Any:
     return user
 
 
-def require_admin(
-    user: Any = Depends(get_current_user),
-    db: Client = Depends(get_supabase),
-) -> Any:
-    """Require a logged-in user whose profiles.role is 'admin'. Fails closed."""
+def is_admin_user(user: Optional[Any], db: Client) -> bool:
+    """True if `user` has profiles.role = 'admin'. Fails closed on any error."""
+    if user is None:
+        return False
     try:
         profile = fetch_one(db.table("profiles").select("role").eq("id", str(user.id)))
     except Exception:
         # e.g. profiles table not created yet — deny rather than allow.
-        profile = None
-    if not profile or profile.get("role") != "admin":
+        return False
+    return bool(profile) and profile.get("role") == "admin"
+
+
+def require_admin(
+    user: Any = Depends(get_current_user),
+    db: Client = Depends(get_supabase),
+) -> Any:
+    """Require a logged-in user whose profiles.role is 'admin'."""
+    if not is_admin_user(user, db):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return user
