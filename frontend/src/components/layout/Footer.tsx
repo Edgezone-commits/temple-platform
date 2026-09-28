@@ -34,6 +34,7 @@ export default function Footer() {
           <p className="footer-col-title">{t('quickLinks')}</p>
           <Link href="/"            className="footer-link">{tn('home')}</Link>
           <Link href="/events"      className="footer-link">{tn('events')}</Link>
+          <Link href="/calendar"    className="footer-link">{tn('calendar')}</Link>
           <Link href="/poojas"      className="footer-link">{tn('poojas')}</Link>
           <Link href="/poojas/book" className="footer-link">{tn('bookPooja')}</Link>
           <Link href="/books"       className="footer-link">{tn('books')}</Link>

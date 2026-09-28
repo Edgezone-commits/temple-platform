@@ -28,7 +28,7 @@ async function Header() {
         <h2 className="section-title light">{t('title')}</h2>
         <span className="section-title-ne light">{t('titleNe')}</span>
       </div>
-      <Link href="/events" style={{ fontFamily:'var(--ff-heading)', fontSize:'.7rem', letterSpacing:'.18em', textTransform:'uppercase', color:'var(--gold-500)', textDecoration:'none', borderBottom:'1px solid var(--gold-700)', paddingBottom:'2px', whiteSpace:'nowrap' }}>
+      <Link href="/calendar" style={{ fontFamily:'var(--ff-heading)', fontSize:'.7rem', letterSpacing:'.18em', textTransform:'uppercase', color:'var(--gold-500)', textDecoration:'none', borderBottom:'1px solid var(--gold-700)', paddingBottom:'2px', whiteSpace:'nowrap' }}>
         {t('viewAll')}
       </Link>
     </div>

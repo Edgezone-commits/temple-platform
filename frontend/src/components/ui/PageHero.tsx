@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 
-type Page = 'events' | 'poojas' | 'book' | 'books' | 'bhajans' | 'contact';
+type Page = 'events' | 'calendar' | 'poojas' | 'book' | 'books' | 'bhajans' | 'contact';
 
 /** Inner-page banner. Text comes from messages → pages.<page>.{eyebrow,title,titleNe}. */
 export default function PageHero({ page }: { page: Page }) {

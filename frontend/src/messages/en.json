@@ -35,7 +35,9 @@
     "bhajans": "Bhajans",
     "bhajansNe": "भजन संग्रह",
     "contact": "Contact",
-    "contactNe": "सम्पर्क"
+    "contactNe": "सम्पर्क",
+    "calendar": "Calendar",
+    "calendarNe": "पात्रो"
   },
   "hero": {
     "eyebrow": "Sri Vaishnava Totadri · Hetauda, Nepal",
@@ -206,6 +208,11 @@
       "eyebrow": "Get in Touch",
       "title": "Contact Us",
       "titleNe": "हामीलाई सम्पर्क गर्नुहोस्"
+    },
+    "calendar": {
+      "eyebrow": "Nepali Patro",
+      "title": "Temple Calendar",
+      "titleNe": "मन्दिर पात्रो"
     }
   },
   "contact": {
@@ -412,5 +419,45 @@
     "nowPlaying": "Now playing",
     "lyrics": "Lyrics",
     "hideLyrics": "Hide lyrics"
+  },
+  "calendar": {
+    "bs": "Bikram Sambat",
+    "ad": "Gregorian",
+    "switchTo": "Calendar system",
+    "today": "Today",
+    "prev": "Previous month",
+    "next": "Next month",
+    "weekdays": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
+    "bsMonths": [
+      "Baisakh",
+      "Jestha",
+      "Asar",
+      "Shrawan",
+      "Bhadra",
+      "Asoj",
+      "Kartik",
+      "Mangsir",
+      "Poush",
+      "Magh",
+      "Falgun",
+      "Chaitra"
+    ],
+    "more": "+{n} more",
+    "legend": "Legend",
+    "agendaTitle": "Observances this month",
+    "noEntries": "No observances have been added for this month yet.",
+    "provisional": "Bikram Sambat dates after Chaitra 2083 are provisional until the official Nepali calendar for that year is published.",
+    "computedNote": "Tithi-based dates are calculated for Hetauda. Please confirm special observances with the temple priest.",
+    "todayBadge": "Today",
+    "multiDay": "until {date}",
+    "saturdayHint": "Saturdays are shown in red, as in a Nepali patro."
   }
 }

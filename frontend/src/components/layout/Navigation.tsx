@@ -5,6 +5,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 const navItems = [
   { href:'/',            lk:'home',      sk:'homeNe'      },
   { href:'/events',      lk:'events',    sk:'eventsNe'    },
+  { href:'/calendar',    lk:'calendar',  sk:'calendarNe'  },
   { href:'/poojas',      lk:'poojas',    sk:'poojasNe'    },
   { href:'/poojas/book', lk:'bookPooja', sk:'bookPoojaNe' },
   { href:'/books',       lk:'books',     sk:'booksNe'     },
