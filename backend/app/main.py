@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import events, poojas, books, content
+from app.routers import events, poojas, books, content, chat
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -30,6 +30,7 @@ app.include_router(content.calendar_router,    prefix="/api/v1")
 app.include_router(content.temple_info_router, prefix="/api/v1")
 app.include_router(content.gallery_router,     prefix="/api/v1")
 app.include_router(content.leadership_router,  prefix="/api/v1")
+app.include_router(chat.router,                prefix="/api/v1")
 
 @app.get("/", tags=["Health"])
 def root():

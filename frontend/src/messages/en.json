@@ -124,7 +124,7 @@
     "abhishekam": "Abhishekam",
     "homam": "Homam",
     "donate": "Donate",
-    "aiPandit": "Ask the Pandit (coming soon)"
+    "aiPandit": "Ask the Pandit (AI)"
   },
   "pages": {
     "events": {
@@ -739,5 +739,32 @@
       "nakshatra": "Nakshatra",
       "rashi": "Rashi"
     }
+  },
+  "chat": {
+    "open": "Ask the Pandit",
+    "openShort": "Ask",
+    "title": "Ask the Pandit",
+    "subtitle": "AI assistant · answers from temple information",
+    "close": "Close chat",
+    "newChat": "New conversation",
+    "placeholder": "Ask about poojas, festivals, timings…",
+    "send": "Send",
+    "thinking": "Pandit ji is thinking…",
+    "welcome": "Namaste 🙏 I can help with darshan timings, poojas and booking, festivals and the temple's scriptures. You can ask in English or Nepali.",
+    "suggestions": [
+      "What are the darshan timings?",
+      "When is the next Ekadashi?",
+      "How do I book an Abhishekam?",
+      "मन्दिरमा कुन कुन पूजा हुन्छन्?"
+    ],
+    "sources": "Sources",
+    "error": "Sorry, I couldn't answer just now.",
+    "busy": "Too many questions — please wait a minute.",
+    "offline": "The assistant isn't available at the moment. Please call the temple.",
+    "retry": "Try again",
+    "disclaimer": "AI answers can be mistaken — please confirm important details with the temple.",
+    "you": "You",
+    "pandit": "Pandit (AI)",
+    "tooLong": "Please keep your question under 1000 characters."
   }
 }

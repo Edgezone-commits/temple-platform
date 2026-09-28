@@ -36,3 +36,6 @@ npm-debug.log*
 
 # Supabase
 supabase/.temp/
+
+# Python packaging (pip install -e ../ai-services)
+*.egg-info/

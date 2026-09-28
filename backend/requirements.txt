@@ -15,15 +15,17 @@ supabase>=2.15.0
 pydantic[email]>=2.11.0  # [email] pulls in email-validator, required by EmailStr
 pydantic-settings>=2.9.0
 
-# CORS
+# Form parsing
 python-multipart>=0.0.20
 
-# AI (shared with ai-services)
-google-genai>=1.16.0
-chromadb>=1.0.7
-langchain>=0.3.25
-langchain-google-genai>=2.1.5
-langchain-chroma>=0.2.4
+# AI — "Ask the Pandit" (Phase 7)
+# Gemini packages (google-genai, langchain-google-genai) and the unused
+# LangChain layer were removed; Claude is called through the official SDK.
+anthropic>=1.8,<2
+# The RAG package in ../ai-services (ChromaDB + multilingual embeddings).
+# Heavy (installs torch, ~1 GB); the rest of the API works without it —
+# /api/v1/chat then answers 503 until it's installed.
+-e ../ai-services
 
 # Utilities
 httpx>=0.28.0

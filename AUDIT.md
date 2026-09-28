@@ -48,7 +48,7 @@ Each finding has a **status**:
 | F13 | No responsive breakpoints. Grids are fixed at `repeat(3/4,1fr)` and `1fr 400px`, so layouts break on phones. | PARTLY (P4): header/nav/footer adapt on phones and `overflow-x: clip` stops page-wide overflow. The home timings bar, contact grid, and Devanagari letter-spacing on small caps labels are left for Phase 8. |
 | F15 | **The Nepali locale never worked.** next-intl read the locale from a proxy header that never reaches Server Components, so `/ne/*` rendered English text under `<html lang="ne">`. This was found while verifying F1. | FIXED (P0) — `setRequestLocale(locale)` in the layout and every page, plus `locale` passed to `NextIntlClientProvider` |
 | F16 | **Nepali numbers/dates broke after hydration (found in Phase 4, introduced in Phase 2).** Chrome ships no Nepali ICU data, so `Intl`/next-intl formatting in Client Components produced English dates and Latin digits in the browser, while the server rendered Devanagari. This caused React hydration error #418 on `/ne/events` and `/ne/poojas/book`, and the booking dropdown switched to "रु 500". | FIXED (P4) — `lib/format.ts` (table-driven, identical on server and browser) used everywhere; a Chrome sweep of all pages × both locales shows zero console errors |
-| F14 | Footer links "AI Pandit (Coming Soon)" → `/contact`. | → Phase 7 replaces it |
+| F14 | Footer links "AI Pandit (Coming Soon)" → `/contact`. | FIXED (P7): the footer link now opens the “Ask the Pandit” widget |
 
 ### Uncommitted auth work-in-progress (untracked files)
 

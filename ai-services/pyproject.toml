@@ -1,0 +1,23 @@
+# ai-services is installed into the backend's virtualenv as the `temple_rag`
+# package (backend/requirements.txt has `-e ../ai-services`).
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "temple-rag"
+version = "1.0.0"
+description = "Retrieval-augmented 'Ask the Pandit' assistant for Shree Laxminarayan Mandir"
+requires-python = ">=3.11"
+dependencies = [
+  "anthropic>=1.8,<2",            # Claude API (official SDK)
+  "chromadb>=1.0",                # vector store
+  "sentence-transformers>=5",     # multilingual e5 embeddings (pulls in torch)
+  "pypdf>=5",                     # PDF text extraction for books
+  "httpx>=0.28",                  # downloading book PDFs
+  "supabase>=2.15",               # reading temple content during ingestion
+  "python-dotenv>=1.1",
+]
+
+[tool.setuptools]
+packages = ["temple_rag"]

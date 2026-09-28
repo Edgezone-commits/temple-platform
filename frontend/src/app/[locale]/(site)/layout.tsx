@@ -7,6 +7,7 @@ import MarqueeStrip from '@/components/layout/MarqueeStrip';
 import Header      from '@/components/layout/Header';
 import Navigation  from '@/components/layout/Navigation';
 import Footer      from '@/components/layout/Footer';
+import PanditChat  from '@/components/chat/PanditChat';
 import { getAccount } from '@/lib/supabase/server';
 
 export default async function SiteLayout({ children, params }: {
@@ -21,6 +22,7 @@ export default async function SiteLayout({ children, params }: {
       <Navigation />
       <main>{children}</main>
       <Footer />
+      <PanditChat />
     </>
   );
 }

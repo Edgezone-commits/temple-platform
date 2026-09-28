@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import AskPanditLink from '@/components/chat/AskPanditLink';
 
 export default function Footer() {
   const t  = useTranslations('footer');
@@ -48,7 +49,7 @@ export default function Footer() {
           <Link href="/poojas"  className="footer-link">{t('abhishekam')}</Link>
           <Link href="/poojas"  className="footer-link">{t('homam')}</Link>
           <Link href="/contact" className="footer-link">{t('donate')}</Link>
-          <span className="footer-link" style={{ cursor:'default' }}>{t('aiPandit')}</span>
+          <AskPanditLink label={t('aiPandit')} />
         </div>
 
         <div>

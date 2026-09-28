@@ -85,10 +85,11 @@ class _Query:
     def execute(self):
         rows = self.db.tables.setdefault(self.table, [])
         if self.op == "insert":
-            row = {"id": str(uuid.uuid4()), "created_at": _now(), "updated_at": _now(),
-                   **self.db.defaults.get(self.table, {}), **copy.deepcopy(self.payload)}
-            rows.append(row)
-            return _Result(data=[copy.deepcopy(row)])
+            payloads = self.payload if isinstance(self.payload, list) else [self.payload]
+            new = [{"id": str(uuid.uuid4()), "created_at": _now(), "updated_at": _now(),
+                    **self.db.defaults.get(self.table, {}), **copy.deepcopy(p)} for p in payloads]
+            rows.extend(new)
+            return _Result(data=copy.deepcopy(new))
         if self.op == "update":
             hit = self._matching()
             for r in hit:

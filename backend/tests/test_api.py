@@ -230,3 +230,83 @@ def test_leadership(client, fake):
     assert r.status_code == 201 and r.json()["photo_url"] is None and r.json()["role_ne"] == "आचार्य"
     assert client.post("/api/v1/leadership/", json={**body, "video_url": "javascript:alert(1)"}, headers=ADMIN).status_code == 422
     assert client.post("/api/v1/leadership/", json=body).status_code == 401
+
+
+# ---------------------------------------------------------------- chat ("Ask the Pandit")
+class _FakeAnswer:
+    def __init__(self, text, language="en"):
+        self.text, self.language = text, language
+        self.sources = [{"n": 1, "title": "Temple info – timings.morning", "type": "temple_info", "url": ""}]
+        self.model, self.input_tokens, self.output_tokens = "claude-sonnet-5", 900, 40
+
+
+class _FakeAssistant:
+    def __init__(self):
+        self.calls = []
+
+    def answer(self, question, history=None, locale_hint="en"):
+        self.calls.append({"q": question, "history": history, "locale": locale_hint})
+        return _FakeAnswer(f"Answer to: {question}", "ne" if locale_hint == "ne" else "en")
+
+
+@pytest.fixture()
+def chat_env(monkeypatch, fake):
+    from app.routers import chat as chat_mod
+    fa = _FakeAssistant()
+    monkeypatch.setattr(chat_mod, "get_assistant", lambda: fa)
+    monkeypatch.setattr(chat_mod, "limiter", chat_mod.RateLimiter())
+    fake.defaults["chat_history"] = {}
+    return fa, chat_mod
+
+
+SID = "3f2a9a4e-8d36-4a55-9f0e-1c2b3d4e5f60"
+
+
+def test_chat_answers_and_stores_history(client, fake, chat_env):
+    fa, _ = chat_env
+    uid = fake.add_user("devotee-token")
+    r = client.post("/api/v1/chat/", json={"message": "  When does the temple open?  ", "session_id": SID}, headers=DEVOTEE)
+    assert r.status_code == 200, r.text
+    assert r.json()["answer"] == "Answer to: When does the temple open?"      # message trimmed
+    assert r.json()["sources"][0]["title"].startswith("Temple info")
+    rows = fake.tables["chat_history"]
+    assert [x["role"] for x in rows] == ["user", "assistant"]
+    assert all(x["user_id"] == uid and x["session_id"] == SID for x in rows)
+    assert rows[1]["input_tokens"] == 900 and rows[1]["model"] == "claude-sonnet-5"
+    # second turn: history comes from the DB, oldest first
+    client.post("/api/v1/chat/", json={"message": "And in the evening?", "session_id": SID, "locale": "ne"})
+    assert fa.calls[1]["history"] == [{"role": "user", "content": "When does the temple open?"},
+                                      {"role": "assistant", "content": "Answer to: When does the temple open?"}]
+    assert fa.calls[1]["locale"] == "ne"
+    assert fake.tables["chat_history"][-1]["user_id"] is None                  # anonymous turn
+
+
+def test_chat_validation_and_rate_limit(client, chat_env):
+    assert client.post("/api/v1/chat/", json={"message": "hi", "session_id": "not-a-uuid"}).status_code == 422
+    assert client.post("/api/v1/chat/", json={"message": "   ", "session_id": SID}).status_code == 422
+    assert client.post("/api/v1/chat/", json={"message": "x" * 1001, "session_id": SID}).status_code == 422
+    assert client.post("/api/v1/chat/", json={"message": "hi", "session_id": SID, "locale": "fr"}).status_code == 422
+    codes = [client.post("/api/v1/chat/", json={"message": f"q{i}", "session_id": SID}).status_code for i in range(10)]
+    assert codes[:8] == [200] * 8 and codes[8:] == [429, 429]                  # CHAT_PER_MINUTE = 8
+
+
+def test_chat_503_when_not_configured(client, fake, monkeypatch):
+    from app.routers import chat as chat_mod
+    monkeypatch.setattr(chat_mod, "_assistant", None)
+    monkeypatch.setattr(chat_mod.settings, "ANTHROPIC_API_KEY", "")
+    monkeypatch.setattr(chat_mod, "limiter", chat_mod.RateLimiter())
+    r = client.post("/api/v1/chat/", json={"message": "hi", "session_id": SID})
+    assert r.status_code == 503 and "not configured" in r.json()["detail"]
+
+
+def test_chat_claude_errors_become_503(client, fake, chat_env, monkeypatch):
+    import anthropic
+    import httpx2
+    fa, _ = chat_env
+
+    def boom(*a, **k):
+        raise anthropic.APIConnectionError(request=httpx2.Request("POST", "https://api.anthropic.com/v1/messages"))
+    monkeypatch.setattr(fa, "answer", boom)
+    r = client.post("/api/v1/chat/", json={"message": "hi", "session_id": SID})
+    assert r.status_code == 503 and "reach the AI service" in r.json()["detail"]
+    assert "chat_history" not in fake.tables or fake.tables["chat_history"] == []
