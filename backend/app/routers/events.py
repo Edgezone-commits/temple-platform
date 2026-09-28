@@ -5,12 +5,12 @@
 
 from uuid import UUID
 from datetime import date
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from supabase import Client
 
-from app.auth import require_admin
+from app.auth import get_optional_user, is_admin_user, require_admin
 from app.database import get_supabase, fetch_one
 from app.schemas.events import EventCategory, EventCreate, EventUpdate, EventResponse
 
@@ -25,17 +25,22 @@ def list_events(
     upcoming: bool = Query(False, description="Return only future events"),
     featured: bool = Query(False, description="Return only featured events"),
     category: Optional[EventCategory] = Query(None, description="Filter by category"),
-    limit: int  = Query(20, ge=1, le=100),
+    limit: int  = Query(20, ge=1, le=500),
     offset: int = Query(0, ge=0),
+    all: bool = Query(False, description="Admins: include inactive events"),
     db: Client  = Depends(get_supabase),
+    user: Optional[Any] = Depends(get_optional_user),
 ):
     query = (
         db.table("events")
         .select("*")
-        .eq("is_active", True)
-        .order("event_date", desc=False)
+        .order("event_date", desc=all)          # admins see newest first
         .range(offset, offset + limit - 1)
     )
+    if not all:
+        query = query.eq("is_active", True)
+    elif not is_admin_user(user, db):
+        raise HTTPException(403, "Admin access required for all=true")
     if upcoming:
         query = query.gte("event_date", str(date.today()))
     if featured:

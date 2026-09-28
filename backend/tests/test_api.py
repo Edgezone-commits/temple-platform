@@ -26,6 +26,7 @@ def fake():
         "calendar_events": {"is_published": True, "is_major": False, "category": "festival"},
         "temple_info": {"category": "general", "sort_order": 0},
         "gallery": {"category": "temple", "sort_order": 0, "is_published": True},
+        "leadership": {"is_founder": False, "sort_order": 0, "is_published": True},
     }
     app.dependency_overrides[get_supabase] = lambda: fake
     yield fake
@@ -195,3 +196,37 @@ def test_gallery(client, fake):
     assert client.patch(f"/api/v1/gallery/{gid}", json={"image_url": "javascript:x"}, headers=ADMIN).status_code == 422
     assert client.delete(f"/api/v1/gallery/{gid}", headers=ADMIN).status_code == 204
     assert client.get(f"/api/v1/gallery/{gid}").status_code == 404        # hard delete
+
+
+# ---------------------------------------------------------------- admin ?all=true on legacy lists
+def test_all_param_is_admin_only(client, fake):
+    fake.add_user("admin-token", role="admin")
+    fake.add_user("devotee-token")
+    fake.seed("events", title_en="Live", event_date=D(3))
+    fake.seed("events", title_en="Hidden", event_date=D(4), is_active=False)
+    fake.seed("poojas", name_en="Retired", is_available=False)
+    fake.seed("books", title_en="Draft", is_published=False, sort_order=0)
+    fake.seed("bhajans", title_en="Draft", is_published=False, sort_order=0)
+    assert [e["title_en"] for e in client.get("/api/v1/events/").json()] == ["Live"]
+    for path in ("/api/v1/events/?all=true", "/api/v1/poojas/?all=true", "/api/v1/books/?all=true", "/api/v1/bhajans/?all=true"):
+        assert client.get(path).status_code == 403, path
+        assert client.get(path, headers=DEVOTEE).status_code == 403, path
+        assert client.get(path, headers=ADMIN).status_code == 200, path
+    assert {e["title_en"] for e in client.get("/api/v1/events/?all=true", headers=ADMIN).json()} == {"Live", "Hidden"}
+    assert client.get("/api/v1/poojas/").json() == []
+    assert len(client.get("/api/v1/poojas/?all=true", headers=ADMIN).json()) == 1
+
+
+# ---------------------------------------------------------------- leadership
+def test_leadership(client, fake):
+    fake.add_user("admin-token", role="admin")
+    fake.seed("leadership", name_en="Current Priest", sort_order=1)
+    fake.seed("leadership", name_en="Founder Ji", is_founder=True, sort_order=5)
+    fake.seed("leadership", name_en="Draft", is_published=False)
+    rows = client.get("/api/v1/leadership/").json()
+    assert [r["name_en"] for r in rows] == ["Founder Ji", "Current Priest"]      # founders first
+    body = {"name_en": "Acharya Ji", "role_ne": "आचार्य", "video_url": "https://youtu.be/abc", "photo_url": ""}
+    r = client.post("/api/v1/leadership/", json=body, headers=ADMIN)
+    assert r.status_code == 201 and r.json()["photo_url"] is None and r.json()["role_ne"] == "आचार्य"
+    assert client.post("/api/v1/leadership/", json={**body, "video_url": "javascript:alert(1)"}, headers=ADMIN).status_code == 422
+    assert client.post("/api/v1/leadership/", json=body).status_code == 401

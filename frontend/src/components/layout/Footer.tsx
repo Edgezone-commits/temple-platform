@@ -39,6 +39,7 @@ export default function Footer() {
           <Link href="/books"       className="footer-link">{tn('books')}</Link>
           <Link href="/bhajans"     className="footer-link">{tn('bhajans')}</Link>
           <Link href="/gallery"     className="footer-link">{tn('gallery')}</Link>
+          <Link href="/history"     className="footer-link">{tn('history')}</Link>
         </div>
 
         <div>

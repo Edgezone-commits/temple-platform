@@ -5,6 +5,7 @@
 #   /calendar      public list of published calendar entries, filterable by
 #                  date range and category (used by /events strip + /calendar)
 #   /temple-info   public bilingual key/value facts (timings, contact, history)
+#   /leadership    founders + current leaders for the History page
 #   /gallery       public photos (Supabase Storage URLs), filterable by category,
 #                  each with the linked event's title when event_id is set
 
@@ -22,6 +23,7 @@ from app.schemas.content import (
     CalendarCategory, CalendarEventCreate, CalendarEventUpdate, CalendarEventResponse,
     TempleInfoCreate, TempleInfoUpdate, TempleInfoResponse,
     GalleryCategory, GalleryCreate, GalleryUpdate, GalleryResponse,
+    LeadershipCreate, LeadershipUpdate, LeadershipResponse,
 )
 
 archanas_router = crud_router(
@@ -95,3 +97,12 @@ def list_gallery(
         query.order("sort_order").order("created_at", desc=True)
         .range(offset, offset + limit - 1).execute().data
     )
+
+
+leadership_router = crud_router(
+    table="leadership", prefix="/leadership", tag="Leadership", label="Person",
+    create_model=LeadershipCreate, update_model=LeadershipUpdate, response_model=LeadershipResponse,
+    visible_field="is_published",
+    # founders first, then by the admin-chosen order
+    order_by=[("is_founder", True), ("sort_order", False), ("name_en", False)],
+)

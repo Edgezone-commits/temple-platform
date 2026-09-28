@@ -194,3 +194,57 @@ class GalleryResponse(GalleryCreate):
     event: Optional[GalleryEventSummary] = None   # joined from events when event_id is set
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# ===========================================================================
+# Leadership — founders and current leaders (History page)
+# ===========================================================================
+def _check_optional_url(v: Optional[str]) -> Optional[str]:
+    """Empty → None; otherwise must be an http(s) URL or a site-relative path."""
+    if v is None or not v.strip():
+        return None
+    return _check_image_url(v)
+
+
+class LeadershipCreate(BaseModel):
+    name_en: str = Field(..., min_length=2, max_length=200)
+    name_ne: Optional[str] = Field(None, max_length=200)
+    role_en: Optional[str] = Field(None, max_length=200)
+    role_ne: Optional[str] = Field(None, max_length=200)
+    bio_en: Optional[str] = Field(None, max_length=5000)
+    bio_ne: Optional[str] = Field(None, max_length=5000)
+    photo_url: Optional[str] = Field(None, max_length=1000)
+    video_url: Optional[str] = Field(None, max_length=1000)
+    years_active: Optional[str] = Field(None, max_length=100)
+    is_founder: bool = False
+    sort_order: int = 0
+    is_published: bool = True
+
+    _photo = field_validator("photo_url")(_check_optional_url)
+    _video = field_validator("video_url")(_check_optional_url)
+
+
+class LeadershipUpdate(BaseModel):
+    name_en: Optional[str] = Field(None, min_length=2, max_length=200)
+    name_ne: Optional[str] = Field(None, max_length=200)
+    role_en: Optional[str] = Field(None, max_length=200)
+    role_ne: Optional[str] = Field(None, max_length=200)
+    bio_en: Optional[str] = Field(None, max_length=5000)
+    bio_ne: Optional[str] = Field(None, max_length=5000)
+    photo_url: Optional[str] = Field(None, max_length=1000)
+    video_url: Optional[str] = Field(None, max_length=1000)
+    years_active: Optional[str] = Field(None, max_length=100)
+    is_founder: Optional[bool] = None
+    sort_order: Optional[int] = None
+    is_published: Optional[bool] = None
+
+    _photo = field_validator("photo_url")(_check_optional_url)
+    _video = field_validator("video_url")(_check_optional_url)
+
+
+class LeadershipResponse(LeadershipCreate):
+    id: UUID
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

@@ -29,6 +29,7 @@ app.include_router(content.archanas_router,    prefix="/api/v1")
 app.include_router(content.calendar_router,    prefix="/api/v1")
 app.include_router(content.temple_info_router, prefix="/api/v1")
 app.include_router(content.gallery_router,     prefix="/api/v1")
+app.include_router(content.leadership_router,  prefix="/api/v1")
 
 @app.get("/", tags=["Health"])
 def root():

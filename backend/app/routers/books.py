@@ -6,7 +6,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase import Client
 
-from app.auth import require_admin
+from typing import Any, Optional
+
+from app.auth import get_optional_user, is_admin_user, require_admin
 from app.database import get_supabase, fetch_one
 from app.schemas.books import (
     BookCreate, BookUpdate, BookResponse,
@@ -26,17 +28,22 @@ book_router = APIRouter(prefix="/books")
 def list_books(
     category: str = Query(None, description="Filter by category"),
     language: str = Query(None, description="Filter by language code"),
-    limit: int  = Query(20, ge=1, le=100),
+    limit: int  = Query(20, ge=1, le=500),
     offset: int = Query(0, ge=0),
+    all: bool   = Query(False, description="Admins: include unpublished"),
     db: Client  = Depends(get_supabase),
+    user: Optional[Any] = Depends(get_optional_user),
 ):
     query = (
         db.table("books")
         .select("*")
-        .eq("is_published", True)
         .order("sort_order")
         .range(offset, offset + limit - 1)
     )
+    if not all:
+        query = query.eq("is_published", True)
+    elif not is_admin_user(user, db):
+        raise HTTPException(403, "Admin access required for all=true")
     if category:
         query = query.eq("category", category)
     if language:
@@ -91,17 +98,22 @@ bhajan_router = APIRouter(prefix="/bhajans")
 def list_bhajans(
     deity: str    = Query(None, description="Filter by deity"),
     category: str = Query(None, description="Filter by category"),
-    limit: int  = Query(20, ge=1, le=100),
+    limit: int  = Query(20, ge=1, le=500),
     offset: int = Query(0, ge=0),
+    all: bool   = Query(False, description="Admins: include unpublished"),
     db: Client  = Depends(get_supabase),
+    user: Optional[Any] = Depends(get_optional_user),
 ):
     query = (
         db.table("bhajans")
         .select("*")
-        .eq("is_published", True)
         .order("sort_order")
         .range(offset, offset + limit - 1)
     )
+    if not all:
+        query = query.eq("is_published", True)
+    elif not is_admin_user(user, db):
+        raise HTTPException(403, "Admin access required for all=true")
     if deity:
         query = query.eq("deity", deity)
     if category:

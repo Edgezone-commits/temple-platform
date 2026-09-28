@@ -107,3 +107,13 @@ export interface GalleryPhoto {
   taken_on: string | null;
   event: { title_en: string; title_ne: string | null } | null;
 }
+
+export interface LeaderProfile {
+  id: string;
+  name_en: string; name_ne: string | null;
+  role_en: string | null; role_ne: string | null;
+  bio_en: string | null; bio_ne: string | null;
+  photo_url: string | null; video_url: string | null;
+  years_active: string | null;
+  is_founder: boolean;
+}

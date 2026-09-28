@@ -9,7 +9,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase import Client
 
-from app.auth import get_optional_user, require_admin
+from app.auth import get_optional_user, is_admin_user, require_admin
 from app.database import get_supabase, fetch_one
 from app.schemas.poojas import (
     PoojaCreate, PoojaUpdate, PoojaResponse,
@@ -27,12 +27,15 @@ pooja_router = APIRouter(prefix="/poojas")
 
 @pooja_router.get("/", response_model=list[PoojaResponse])
 def list_poojas(
-    available_only: bool = Query(True),
+    all: bool = Query(False, description="Admins: include unavailable poojas"),
     db: Client = Depends(get_supabase),
+    user: Optional[Any] = Depends(get_optional_user),
 ):
     query = db.table("poojas").select("*").order("sort_order")
-    if available_only:
+    if not all:
         query = query.eq("is_available", True)
+    elif not is_admin_user(user, db):
+        raise HTTPException(403, "Admin access required for all=true")
     return query.execute().data
 
 
