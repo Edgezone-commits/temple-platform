@@ -43,7 +43,7 @@ export default function Header({ locale }: HeaderProps) {
         </Link>
         <div style={{ display:'flex', justifyContent:'flex-end' }}>
           <Link href="/poojas/book" className="btn-primary" style={{ fontSize:'.7rem', padding:'8px 18px' }}>
-            🙏 {locale==='en'?'Book a Pooja':'पूजा बुक गर्नुहोस्'}
+            🙏 {t('bookCta')}
           </Link>
         </div>
       </div>

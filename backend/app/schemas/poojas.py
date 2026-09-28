@@ -3,7 +3,7 @@
 from datetime import date, time, datetime
 from typing import Optional, Literal
 from uuid import UUID
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 # ===========================================================================
 # Pooja Service
@@ -40,8 +40,13 @@ class PoojaResponse(PoojaBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PoojaSummary(BaseModel):
+    """The subset of pooja columns joined onto a booking."""
+    name_en: str
+    name_ne: Optional[str] = None
 
 # ===========================================================================
 # Pooja Booking
@@ -55,28 +60,30 @@ class BookingBase(BaseModel):
     devotee_phone: str = Field(..., min_length=7, max_length=20)
     booking_date: date
     booking_time: Optional[time] = None
-    gothram: Optional[str] = None
-    nakshatra: Optional[str] = None
-    rashi: Optional[str] = None
-    notes: Optional[str] = None
+    gothram: Optional[str] = Field(None, max_length=100)
+    nakshatra: Optional[str] = Field(None, max_length=50)
+    rashi: Optional[str] = Field(None, max_length=50)
+    notes: Optional[str] = Field(None, max_length=2000)
 
 class BookingCreate(BookingBase):
-    pass
+    @field_validator("booking_date")
+    @classmethod
+    def not_in_past(cls, v: date) -> date:
+        if v < date.today():
+            raise ValueError("booking_date cannot be in the past")
+        return v
 
 class BookingUpdate(BaseModel):
     status: Optional[BookingStatus] = None
     booking_date: Optional[date] = None
     booking_time: Optional[time] = None
-    notes: Optional[str] = None
+    notes: Optional[str] = Field(None, max_length=2000)
 
 class BookingResponse(BookingBase):
     id: UUID
     status: BookingStatus
     created_at: datetime
     updated_at: datetime
-    pooja: Optional[PoojaResponse] = None
+    pooja: Optional[PoojaSummary] = None
 
-    class Config:
-        from_attributes = True
-
-    
+    model_config = ConfigDict(from_attributes=True)

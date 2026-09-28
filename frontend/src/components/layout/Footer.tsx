@@ -5,6 +5,8 @@ import { Link } from '@/i18n/navigation';
 export default function Footer() {
   const t  = useTranslations('footer');
   const tn = useTranslations('nav');
+  const th = useTranslations('header');
+  const tt = useTranslations('timings');
 
   return (
     <footer className="site-footer">
@@ -16,12 +18,12 @@ export default function Footer() {
           <Image src="/images/logo.png" alt="Temple Logo" width={200} height={84}
             style={{ height:'52px', width:'auto', filter:'brightness(.8) sepia(.3)', marginBottom:'.9rem' }} />
           <span style={{ fontFamily:'var(--ff-display)', fontSize:'.88rem', color:'var(--gold-300)', display:'block', lineHeight:1.4, marginBottom:'.2rem' }}>
-            Shree Laxminarayan Mandir
+            {th('templeName')}
           </span>
           <span style={{ fontFamily:'var(--ff-deva)', fontSize:'.78rem', color:'rgba(232,201,122,.35)', display:'block', marginBottom:'.9rem' }}>
-            Shree Laxminarayan Mandir
+            {th('templeNameNe')}
           </span>
-          <p style={{ fontSize:'.88rem', color:'rgba(232,201,122,.38)', lineHeight:1.8 }}>
+          <p style={{ fontSize:'.88rem', color:'rgba(232,201,122,.38)', lineHeight:1.8, whiteSpace:'pre-line' }}>
             {t('address')}<br />
             {t('phone')}<br />
             {t('email')}
@@ -40,16 +42,16 @@ export default function Footer() {
 
         <div>
           <p className="footer-col-title">{t('services')}</p>
-          <Link href="/poojas"  className="footer-link">Archana</Link>
-          <Link href="/poojas"  className="footer-link">Abhishekam</Link>
-          <Link href="/poojas"  className="footer-link">Homam</Link>
-          <Link href="/contact" className="footer-link">Donate</Link>
-          <Link href="/contact" className="footer-link">AI Pandit (Coming Soon)</Link>
+          <Link href="/poojas"  className="footer-link">{t('archana')}</Link>
+          <Link href="/poojas"  className="footer-link">{t('abhishekam')}</Link>
+          <Link href="/poojas"  className="footer-link">{t('homam')}</Link>
+          <Link href="/contact" className="footer-link">{t('donate')}</Link>
+          <span className="footer-link" style={{ cursor:'default' }}>{t('aiPandit')}</span>
         </div>
 
         <div>
           <p className="footer-col-title">{t('timings')}</p>
-          {[['Morning','5:00 AM - 12:00 PM'],['Afternoon','Closed 12-4 PM'],['Evening','4:00 PM - 8:00 PM']].map(([l,v]) => (
+          {([['morning','morningTime'],['afternoon','afternoonTime'],['evening','eveningTime']] as const).map(([lk,vk]) => [tt(lk), tt(vk)]).map(([l,v]) => (
             <div key={l}>
               <span style={{ fontFamily:'var(--ff-heading)', fontSize:'.63rem', letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold-500)', display:'block', marginTop:'.7rem' }}>{l}</span>
               <p style={{ fontSize:'.88rem', color:'rgba(232,201,122,.4)' }}>{v}</p>

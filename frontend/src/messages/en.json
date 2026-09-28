@@ -18,7 +18,8 @@
     "location": "Hetauda, Makwanpur, Nepal",
     "templeName": "Shree Laxminarayan Mandir",
     "templeNameNe": "श्री लक्ष्मीनारायण मन्दिर",
-    "tradition": "Sri Vaishnava Totadri Tradition · Hetauda, Nepal"
+    "tradition": "Sri Vaishnava Totadri Tradition · Hetauda, Nepal",
+    "bookCta": "Book a Pooja"
   },
   "nav": {
     "home": "Home",
@@ -103,6 +104,241 @@
     "services": "Services",
     "timings": "Darshan Timings",
     "copyright": "© 2025 Shree Laxminarayan Mandir, Hetauda, Nepal. All rights reserved.",
-    "mantra": "ॐ नमो नारायणाय 🙏"
+    "mantra": "ॐ नमो नारायणाय 🙏",
+    "archana": "Archana",
+    "abhishekam": "Abhishekam",
+    "homam": "Homam",
+    "donate": "Donate",
+    "aiPandit": "Ask the Pandit (coming soon)"
+  },
+  "auth": {
+    "common": {
+      "email": "Email",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "password": "Password",
+      "passwordRequired": "Password is required",
+      "confirmPassword": "Confirm Password",
+      "loading": "Loading...",
+      "or": "or",
+      "errorGeneric": "An error occurred. Please try again.",
+      "noAccount": "Don't have an account?",
+      "hasAccount": "Already have an account?",
+      "signUp": "Sign Up",
+      "logIn": "Log In"
+    },
+    "login": {
+      "title": "Welcome Back",
+      "submitButton": "Sign In",
+      "forgotPassword": "Forgot password?",
+      "googleButton": "Continue with Google",
+      "facebookButton": "Continue with Facebook"
+    },
+    "signup": {
+      "title": "Create Your Account",
+      "submitButton": "Sign Up",
+      "name": "Full Name",
+      "namePlaceholder": "Your name",
+      "nameRequired": "Full name is required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordsMismatch": "Passwords do not match",
+      "googleButton": "Sign Up with Google",
+      "facebookButton": "Sign Up with Facebook"
+    },
+    "forgotPassword": {
+      "title": "Reset Your Password",
+      "subtitle": "Enter your email address and we'll send you a code to reset your password.",
+      "submitButton": "Send Reset Code",
+      "emailHint": "We'll send a 6-digit code to this email address.",
+      "checkEmail": "Check Your Email",
+      "checkEmailMessage": "We've sent a 6-digit reset code to your email address.",
+      "checkEmailCode": "Check your email and return to the next step to reset your password.",
+      "resetPasswordButton": "Reset Password",
+      "backToLogin": "Back to Sign In"
+    },
+    "resetPassword": {
+      "title": "Reset Your Password",
+      "subtitle": "Enter the 6-digit code from your email and create a new password.",
+      "submitButton": "Reset Password",
+      "code": "Reset Code",
+      "codeRequired": "Reset code is required",
+      "codeInvalid": "Code must be 6 digits",
+      "codeHint": "Enter the 6-digit code from your email",
+      "newPassword": "New Password",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordsMismatch": "Passwords do not match",
+      "successTitle": "Password Reset Successful",
+      "successMessage": "Your password has been reset successfully. You can now log in with your new password.",
+      "redirecting": "Redirecting to login",
+      "backToLogin": "Back to Sign In"
+    }
+  },
+  "pages": {
+    "events": {
+      "eyebrow": "Temple Calendar",
+      "title": "Events & Celebrations",
+      "titleNe": "आगामी कार्यक्रम तथा उत्सवहरू"
+    },
+    "poojas": {
+      "eyebrow": "Temple Services",
+      "title": "Pooja & Archana Services",
+      "titleNe": "पूजा र अर्चना सेवाहरू"
+    },
+    "book": {
+      "eyebrow": "Reserve a Seva",
+      "title": "Book a Pooja",
+      "titleNe": "पूजा बुक गर्नुहोस्"
+    },
+    "books": {
+      "eyebrow": "Sacred Library",
+      "title": "Books",
+      "titleNe": "पवित्र पुस्तकालय"
+    },
+    "bhajans": {
+      "eyebrow": "Devotional Music",
+      "title": "Bhajan Collection",
+      "titleNe": "भजन, अष्टपदी र स्तोत्रहरू"
+    },
+    "contact": {
+      "eyebrow": "Get in Touch",
+      "title": "Contact Us",
+      "titleNe": "हामीलाई सम्पर्क गर्नुहोस्"
+    }
+  },
+  "contact": {
+    "addressTitle": "Temple Address",
+    "address": "Shree Laxminarayan Mandir\nHetauda, Makwanpur District\nBagmati Province, Nepal",
+    "phoneTitle": "Phone",
+    "phone": "+977-XXXXXXXXX\nDuring temple hours",
+    "emailTitle": "Email",
+    "email": "info@laxminarayanmandir.org",
+    "hoursTitle": "Darshan Hours",
+    "hours": "Morning: 5:00 AM – 12:00 PM\nEvening: 4:00 PM – 8:00 PM\nOpen 365 days",
+    "form": {
+      "title": "Send a Message",
+      "name": "Your Name",
+      "namePh": "Full name",
+      "contact": "Email or Phone",
+      "contactPh": "Email or phone",
+      "subject": "Subject",
+      "select": "-- Select --",
+      "message": "Message",
+      "messagePh": "How can we help you?",
+      "submit": "Send Message →",
+      "subjects": [
+        "General Enquiry",
+        "Pooja Booking",
+        "Donation",
+        "Event Information",
+        "Volunteer",
+        "Other"
+      ],
+      "sentTitle": "Your email app has opened",
+      "sentBody": "Please press send in your email app to deliver the message. We usually reply within 24 hours.",
+      "again": "Write Another"
+    }
+  },
+  "booking": {
+    "formTitle": "Devotee & Pooja Details",
+    "pooja": "Select Pooja",
+    "name": "Name",
+    "namePh": "Full name",
+    "phone": "Phone",
+    "phonePh": "+977-98XXXXXXXX",
+    "email": "Email (optional)",
+    "emailPh": "your@email.com",
+    "date": "Date",
+    "time": "Time",
+    "gothram": "Gothram",
+    "gothramPh": "e.g. Bharadwaja",
+    "nakshatra": "Nakshatra",
+    "rashi": "Rashi",
+    "select": "-- Select --",
+    "notes": "Special Requests",
+    "notesPh": "Any notes for the priest...",
+    "submit": "🙏 Submit Booking",
+    "submitting": "Submitting...",
+    "successTitle": "Booking Received!",
+    "successBody": "Our pandit will contact you within 24 hours to confirm.",
+    "again": "Book Another Pooja",
+    "error": "We couldn't submit your booking. Please check your details and try again, or call the temple.",
+    "times": {
+      "05:00": "5:00 AM (Suprabhatam)",
+      "06:00": "6:00 AM",
+      "08:00": "8:00 AM",
+      "10:00": "10:00 AM",
+      "16:00": "4:00 PM (Evening)",
+      "18:00": "6:00 PM",
+      "19:00": "7:00 PM"
+    },
+    "nakshatras": [
+      "Ashwini",
+      "Bharani",
+      "Krittika",
+      "Rohini",
+      "Mrigashira",
+      "Ardra",
+      "Punarvasu",
+      "Pushya",
+      "Ashlesha",
+      "Magha",
+      "Purva Phalguni",
+      "Uttara Phalguni",
+      "Hasta",
+      "Chitra",
+      "Swati",
+      "Vishakha",
+      "Anuradha",
+      "Jyeshtha",
+      "Mula",
+      "Purva Ashadha",
+      "Uttara Ashadha",
+      "Shravana",
+      "Dhanishtha",
+      "Shatabhisha",
+      "Purva Bhadrapada",
+      "Uttara Bhadrapada",
+      "Revati"
+    ],
+    "rashis": [
+      "Mesha (Aries)",
+      "Vrishabha (Taurus)",
+      "Mithuna (Gemini)",
+      "Karka (Cancer)",
+      "Simha (Leo)",
+      "Kanya (Virgo)",
+      "Tula (Libra)",
+      "Vrishchika (Scorpio)",
+      "Dhanus (Sagittarius)",
+      "Makara (Capricorn)",
+      "Kumbha (Aquarius)",
+      "Meena (Pisces)"
+    ],
+    "poojaOptions": [
+      "Sahasranama Archana — NPR 500",
+      "Abhishekam — NPR 1,100",
+      "Sudarshana Homam — NPR 3,100",
+      "Sri Sooktam Puja — NPR 1,500",
+      "Nakshatra Shanti — NPR 2,100",
+      "Satyanarayan Puja — NPR 2,500",
+      "Lakshmi Puja — NPR 1,800",
+      "Vishnu Sahasranama — NPR 800",
+      "Ashtottara Archana — NPR 100",
+      "Pushpanjali — NPR 51"
+    ]
+  },
+  "bookingInfo": {
+    "locationTitle": "📍 Temple Location",
+    "location": "Shree Laxminarayan Mandir\nHetauda, Makwanpur District\nBagmati Province, Nepal",
+    "timingsTitle": "⏰ Pooja Timings",
+    "timings": "Morning: 5:00 AM – 12:00 PM\nEvening: 4:00 PM – 8:00 PM\n\nAdvance booking recommended.",
+    "contactTitle": "📞 Contact",
+    "contact": "Phone: +977-XXXXXXXXX\nEmail: info@laxminarayanmandir.org",
+    "bringTitle": "🌸 What to Bring",
+    "bring": "Flowers (lotus or marigold preferred), fruits for naivedyam, clean traditional attire. Footwear not allowed inside.",
+    "paymentTitle": "💳 Payment",
+    "payment": "Payment is made at the temple on the day. No advance payment required."
   }
 }

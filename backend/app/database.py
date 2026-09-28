@@ -1,6 +1,9 @@
 # backend/app/database.py
 # Supabase client initialisation for FastAPI
 # Uses the service-role key so it can bypass RLS for server-side operations.
+# Because RLS is bypassed, every write route MUST be guarded by app.auth.require_admin.
+
+from typing import Any, Optional
 
 from supabase import create_client, Client
 from app.config import settings
@@ -25,3 +28,14 @@ def get_supabase() -> Client:
             ...
     """
     return supabase
+
+
+def fetch_one(query) -> Optional[dict[str, Any]]:
+    """
+    Execute a select query and return the first row, or None.
+
+    Use this instead of `.single()`: supabase-py's `.single()` raises an
+    APIError when zero rows match, which surfaced as a 500 instead of a 404.
+    """
+    rows = query.limit(1).execute().data
+    return rows[0] if rows else None

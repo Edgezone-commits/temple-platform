@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🙏 Shree Laxminarayan Mandir — Temple Platform
 
 Official website and management platform for **Shree Laxminarayan Mandir**, Hetauda, Nepal.
@@ -8,7 +7,7 @@ Following the **Sri Vaishnava Totadri** tradition.
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Next.js + TypeScript + Tailwind CSS |
+| Frontend | Next.js 16 (App Router) + TypeScript + next-intl (EN/NE), plain CSS design tokens |
 | Backend | FastAPI + Python |
 | Database | PostgreSQL (Supabase) |
 | Auth | Supabase Auth |
@@ -32,7 +31,7 @@ uvicorn app.main:app --reload
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local    # Fill in values
+cp .env.example .env.local    # Fill in values (NEXT_PUBLIC_API_URL has no /api suffix)
 npm run dev
 ```
 
@@ -59,6 +58,3 @@ temple-platform/
 
 ## License
 Private — Shree Laxminarayan Mandir, Hetauda, Nepal
-=======
-# temple-platform
->>>>>>> 484a25e72bcb21b950c3268963faeff0ed0df2f4

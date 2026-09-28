@@ -1,16 +1,16 @@
 # backend/app/routers/events.py
 # Full CRUD for temple events.
 # Public:   GET /events, GET /events/{id}
-# Protected (admin): POST, PATCH, DELETE
+# Admin:    POST, PATCH, DELETE (require_admin)
 
 from uuid import UUID
-from typing import Optional
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from supabase import Client
 
-from app.database import get_supabase
+from app.auth import require_admin
+from app.database import get_supabase, fetch_one
 from app.schemas.events import EventCreate, EventUpdate, EventResponse
 
 router = APIRouter(prefix="/events", tags=["Events"])
@@ -39,8 +39,7 @@ def list_events(
     if featured:
         query = query.eq("is_featured", True)
 
-    result = query.execute()
-    return result.data
+    return query.execute().data
 
 
 # ---------------------------------------------------------------------------
@@ -48,23 +47,21 @@ def list_events(
 # ---------------------------------------------------------------------------
 @router.get("/{event_id}", response_model=EventResponse)
 def get_event(event_id: UUID, db: Client = Depends(get_supabase)):
-    result = db.table("events").select("*").eq("id", str(event_id)).single().execute()
-    if not result.data:
+    row = fetch_one(db.table("events").select("*").eq("id", str(event_id)))
+    if not row:
         raise HTTPException(status_code=404, detail="Event not found")
-    return result.data
+    return row
 
 
 # ---------------------------------------------------------------------------
-# POST /events  — create (admin only — protect with middleware in production)
+# POST /events  — create (admin only)
 # ---------------------------------------------------------------------------
-@router.post("/", response_model=EventResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=EventResponse, status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_admin)],
+)
 def create_event(payload: EventCreate, db: Client = Depends(get_supabase)):
-    data = payload.model_dump(exclude_none=True)
-    # Serialize date/time to strings for JSON transport
-    for field in ("event_date", "start_time", "end_time"):
-        if field in data and data[field] is not None:
-            data[field] = str(data[field])
-
+    data = payload.model_dump(mode="json", exclude_none=True)
     result = db.table("events").insert(data).execute()
     if not result.data:
         raise HTTPException(status_code=500, detail="Failed to create event")
@@ -74,23 +71,17 @@ def create_event(payload: EventCreate, db: Client = Depends(get_supabase)):
 # ---------------------------------------------------------------------------
 # PATCH /events/{id}  — partial update (admin only)
 # ---------------------------------------------------------------------------
-@router.patch("/{event_id}", response_model=EventResponse)
+@router.patch("/{event_id}", response_model=EventResponse, dependencies=[Depends(require_admin)])
 def update_event(
     event_id: UUID,
     payload: EventUpdate,
     db: Client = Depends(get_supabase),
 ):
-    data = payload.model_dump(exclude_none=True)
+    data = payload.model_dump(mode="json", exclude_unset=True)
     if not data:
         raise HTTPException(status_code=400, detail="No fields provided for update")
 
-    for field in ("event_date", "start_time", "end_time"):
-        if field in data and data[field] is not None:
-            data[field] = str(data[field])
-
-    result = (
-        db.table("events").update(data).eq("id", str(event_id)).execute()
-    )
+    result = db.table("events").update(data).eq("id", str(event_id)).execute()
     if not result.data:
         raise HTTPException(status_code=404, detail="Event not found")
     return result.data[0]
@@ -99,7 +90,10 @@ def update_event(
 # ---------------------------------------------------------------------------
 # DELETE /events/{id}  — soft-delete (admin only)
 # ---------------------------------------------------------------------------
-@router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{event_id}", status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_admin)],
+)
 def delete_event(event_id: UUID, db: Client = Depends(get_supabase)):
     # Soft-delete: set is_active = False
     result = (

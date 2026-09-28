@@ -1,10 +1,13 @@
-﻿import PageHero from '@/components/ui/PageHero';
+import { use } from 'react';
+import { setRequestLocale } from 'next-intl/server';
+import PageHero from '@/components/ui/PageHero';
 import BooksGrid from '@/components/books/BooksGrid';
 
-export default function BooksPage() {
+export default function BooksPage({ params }: { params: Promise<{ locale: string }> }) {
+  setRequestLocale(use(params).locale);
   return (
     <>
-      <PageHero eyebrow="Sacred Library" title="Books" titleNe="पवित्र पुस्तकालय" />
+      <PageHero page="books" />
       <BooksGrid />
     </>
   );

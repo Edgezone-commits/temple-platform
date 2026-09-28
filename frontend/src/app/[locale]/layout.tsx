@@ -1,6 +1,6 @@
 import '../globals.css';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import {
   Cinzel_Decorative, Cinzel, Crimson_Text,
@@ -31,12 +31,16 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   if (!locales.includes(locale)) notFound();
 
-  const messages = await getMessages();
+  // Tell next-intl the locale from the URL. Without this it relies on a header
+  // from the proxy that doesn't reach Server Components, and every page fell
+  // back to English (/ne rendered English text).
+  setRequestLocale(locale);
+  const messages = await getMessages({ locale });
 
   return (
     <html lang={locale} className={fontVars}>
       <body>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <MarqueeStrip />
           <Header locale={locale as 'en' | 'ne'} />
           <Navigation />

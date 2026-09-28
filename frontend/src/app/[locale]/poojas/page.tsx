@@ -1,11 +1,14 @@
+import { use } from 'react';
+import { setRequestLocale } from 'next-intl/server';
 import PageHero       from '@/components/ui/PageHero';
 import PoojaGrid      from '@/components/poojas/PoojaGrid';
 import ArchanaSection from '@/components/poojas/ArchanaSection';
 
-export default function PoojasPage() {
+export default function PoojasPage({ params }: { params: Promise<{ locale: string }> }) {
+  setRequestLocale(use(params).locale);
   return (
     <>
-      <PageHero eyebrow="Temple Services" title="Pooja & Archana Services" titleNe="पूजा र अर्चना सेवाहरू" />
+      <PageHero page="poojas" />
       <PoojaGrid />
       <ArchanaSection />
     </>

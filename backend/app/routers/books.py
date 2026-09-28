@@ -1,11 +1,13 @@
 # backend/app/routers/books.py
 # CRUD for temple books (PDFs) and bhajans (audio).
+# Public: GET list/detail. Admin: POST, PATCH, DELETE (require_admin).
 
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase import Client
 
-from app.database import get_supabase
+from app.auth import require_admin
+from app.database import get_supabase, fetch_one
 from app.schemas.books import (
     BookCreate, BookUpdate, BookResponse,
     BhajanCreate, BhajanUpdate, BhajanResponse,
@@ -44,26 +46,26 @@ def list_books(
 
 @book_router.get("/{book_id}", response_model=BookResponse)
 def get_book(book_id: UUID, db: Client = Depends(get_supabase)):
-    result = db.table("books").select("*").eq("id", str(book_id)).single().execute()
-    if not result.data:
+    row = fetch_one(db.table("books").select("*").eq("id", str(book_id)))
+    if not row:
         raise HTTPException(404, "Book not found")
-    return result.data
+    return row
 
 
-@book_router.post("/", response_model=BookResponse, status_code=201)
+@book_router.post("/", response_model=BookResponse, status_code=201, dependencies=[Depends(require_admin)])
 def create_book(payload: BookCreate, db: Client = Depends(get_supabase)):
-    data = payload.model_dump(exclude_none=True)
+    data = payload.model_dump(mode="json", exclude_none=True)
     result = db.table("books").insert(data).execute()
     if not result.data:
         raise HTTPException(500, "Failed to create book")
     return result.data[0]
 
 
-@book_router.patch("/{book_id}", response_model=BookResponse)
+@book_router.patch("/{book_id}", response_model=BookResponse, dependencies=[Depends(require_admin)])
 def update_book(
     book_id: UUID, payload: BookUpdate, db: Client = Depends(get_supabase)
 ):
-    data = payload.model_dump(exclude_none=True)
+    data = payload.model_dump(mode="json", exclude_unset=True)
     if not data:
         raise HTTPException(400, "No fields to update")
     result = db.table("books").update(data).eq("id", str(book_id)).execute()
@@ -72,9 +74,11 @@ def update_book(
     return result.data[0]
 
 
-@book_router.delete("/{book_id}", status_code=204)
+@book_router.delete("/{book_id}", status_code=204, dependencies=[Depends(require_admin)])
 def delete_book(book_id: UUID, db: Client = Depends(get_supabase)):
-    db.table("books").update({"is_published": False}).eq("id", str(book_id)).execute()
+    result = db.table("books").update({"is_published": False}).eq("id", str(book_id)).execute()
+    if not result.data:
+        raise HTTPException(404, "Book not found")
 
 
 # ===========================================================================
@@ -107,26 +111,26 @@ def list_bhajans(
 
 @bhajan_router.get("/{bhajan_id}", response_model=BhajanResponse)
 def get_bhajan(bhajan_id: UUID, db: Client = Depends(get_supabase)):
-    result = db.table("bhajans").select("*").eq("id", str(bhajan_id)).single().execute()
-    if not result.data:
+    row = fetch_one(db.table("bhajans").select("*").eq("id", str(bhajan_id)))
+    if not row:
         raise HTTPException(404, "Bhajan not found")
-    return result.data
+    return row
 
 
-@bhajan_router.post("/", response_model=BhajanResponse, status_code=201)
+@bhajan_router.post("/", response_model=BhajanResponse, status_code=201, dependencies=[Depends(require_admin)])
 def create_bhajan(payload: BhajanCreate, db: Client = Depends(get_supabase)):
-    data = payload.model_dump(exclude_none=True)
+    data = payload.model_dump(mode="json", exclude_none=True)
     result = db.table("bhajans").insert(data).execute()
     if not result.data:
         raise HTTPException(500, "Failed to create bhajan")
     return result.data[0]
 
 
-@bhajan_router.patch("/{bhajan_id}", response_model=BhajanResponse)
+@bhajan_router.patch("/{bhajan_id}", response_model=BhajanResponse, dependencies=[Depends(require_admin)])
 def update_bhajan(
     bhajan_id: UUID, payload: BhajanUpdate, db: Client = Depends(get_supabase)
 ):
-    data = payload.model_dump(exclude_none=True)
+    data = payload.model_dump(mode="json", exclude_unset=True)
     if not data:
         raise HTTPException(400, "No fields to update")
     result = db.table("bhajans").update(data).eq("id", str(bhajan_id)).execute()
@@ -135,9 +139,11 @@ def update_bhajan(
     return result.data[0]
 
 
-@bhajan_router.delete("/{bhajan_id}", status_code=204)
+@bhajan_router.delete("/{bhajan_id}", status_code=204, dependencies=[Depends(require_admin)])
 def delete_bhajan(bhajan_id: UUID, db: Client = Depends(get_supabase)):
-    db.table("bhajans").update({"is_published": False}).eq("id", str(bhajan_id)).execute()
+    result = db.table("bhajans").update({"is_published": False}).eq("id", str(bhajan_id)).execute()
+    if not result.data:
+        raise HTTPException(404, "Bhajan not found")
 
 
 # Merge both routers

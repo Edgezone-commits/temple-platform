@@ -1,11 +1,15 @@
-interface Props { eyebrow: string; title: string; titleNe?: string }
+import { useTranslations } from 'next-intl';
 
-export default function PageHero({ eyebrow, title, titleNe }: Props) {
+type Page = 'events' | 'poojas' | 'book' | 'books' | 'bhajans' | 'contact';
+
+/** Inner-page banner. Text comes from messages → pages.<page>.{eyebrow,title,titleNe}. */
+export default function PageHero({ page }: { page: Page }) {
+  const t = useTranslations(`pages.${page}`);
   return (
     <div className="page-hero">
-      <span className="section-eyebrow">{eyebrow}</span>
-      <h1 className="section-title light">{title}</h1>
-      {titleNe && <span className="section-title-ne light">{titleNe}</span>}
+      <span className="section-eyebrow">{t('eyebrow')}</span>
+      <h1 className="section-title light">{t('title')}</h1>
+      <span className="section-title-ne light">{t('titleNe')}</span>
     </div>
   );
 }
