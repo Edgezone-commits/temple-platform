@@ -8,10 +8,11 @@
  * - Navigation is plain links (?cal=bs&y=2083&m=7), so it works without JS and
  *   every month has a shareable URL.
  */
-import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import StateMessage from '@/components/ui/StateMessage';
-import { DATE_FMT, parseDate, pick, pickAlt } from '@/lib/localize';
+import { formatterFor } from '@/lib/format';
+import { pick, pickAlt } from '@/lib/localize';
 import {
   LAST_CONFIRMED_BS_YEAR, adToBs, parseYmd, weekday,
   type CalendarSystem, type MonthView,
@@ -30,16 +31,16 @@ interface Props {
 }
 
 export default async function MonthCalendar({ view, today, entries, error }: Props) {
-  const [t, tc, ts, format, locale] = await Promise.all([
-    getTranslations('calendar'), getTranslations('categories.calendar'), getTranslations('state'),
-    getFormatter(), getLocale(),
+  const [t, tc, ts, locale] = await Promise.all([
+    getTranslations('calendar'), getTranslations('categories.calendar'), getTranslations('state'), getLocale(),
   ]);
+  const format = formatterFor(locale);
   const ne = locale === 'ne';
   const bsMonths = t.raw('bsMonths') as string[];
   const weekdays = t.raw('weekdays') as string[];
-  const num = (n: number) => format.number(n, { useGrouping: false });
-  const adMonthYear = (ad: string) => format.dateTime(parseDate(ad), { month: 'long', year: 'numeric', timeZone: 'UTC' });
-  const adMonthShort = (ad: string) => format.dateTime(parseDate(ad), { month: 'short', timeZone: 'UTC' });
+  const num = (n: number) => format.number(n, { grouping: false });
+  const adMonthYear = (ad: string) => format.date(ad, 'monthYear');
+  const adMonthShort = (ad: string) => format.date(ad, 'month');
   const bsMonthYear = (ad: string) => { const b = adToBs(ad); return `${bsMonths[b.m - 1]} ${num(b.y)}`; };
 
   const first = view.days[0];
@@ -120,7 +121,7 @@ export default async function MonthCalendar({ view, today, entries, error }: Pro
             const isToday = ad === today;
             const cls = ['cal-cell', weekday(ad) === 6 && 'sat', isToday && 'today', list.some(e => e.is_major) && 'major'].filter(Boolean).join(' ');
             const bs = adToBs(ad);
-            const label = `${format.dateTime(parseDate(ad), { ...DATE_FMT.long, weekday: 'long' })} · ${bsMonths[bs.m - 1]} ${num(bs.d)}, ${num(bs.y)}`
+            const label = `${format.date(ad, 'full')} · ${bsMonths[bs.m - 1]} ${num(bs.d)}, ${num(bs.y)}`
               + (list.length ? ` — ${list.map(e => pick(e, 'title', locale)).join(', ')}` : '');
             return (
               <div key={ad} className={cls} aria-label={label} aria-current={isToday ? 'date' : undefined}>
@@ -175,7 +176,7 @@ export default async function MonthCalendar({ view, today, entries, error }: Pro
                       {startMonth && <small>{startMonth}</small>}
                       {weekdays[weekday(e.event_date)]}
                       <small>{view.system === 'bs'
-                        ? format.dateTime(parseDate(e.event_date), DATE_FMT.dayMonth)
+                        ? format.date(e.event_date, 'dayMonth')
                         : `${bsMonths[bs.m - 1]} ${num(bs.d)}`}</small>
                     </div>
                     <div style={{ minWidth:0 }}>
@@ -185,7 +186,7 @@ export default async function MonthCalendar({ view, today, entries, error }: Pro
                       <h4>{pick(e, 'title', locale)}{e.is_major ? ' ✦' : ''}</h4>
                       {alt && <span className="ag-alt">{alt}</span>}
                       {e.end_date && e.end_date !== e.event_date && (
-                        <p>{t('multiDay', { date: format.dateTime(parseDate(e.end_date), DATE_FMT.long) })}</p>
+                        <p>{t('multiDay', { date: format.date(e.end_date, 'long') })}</p>
                       )}
                       {desc && <p>{desc}</p>}
                     </div>

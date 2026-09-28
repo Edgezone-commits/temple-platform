@@ -2,9 +2,10 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import NamamDivider from '@/components/ui/NamamDivider';
 
+// Figure (nk) and label (lk) both come from messages so NE shows ३६५ / बिहान ५.
 const FACTS = [
-  { n:'365', lk:'daysOpen' }, { n:'12+', lk:'festivals' },
-  { n:'5AM', lk:'suprabhatam' }, { n:'∞', lk:'blessings' },
+  { nk:'daysOpenN', lk:'daysOpen' }, { nk:'festivalsN', lk:'festivals' },
+  { nk:'suprabhatamN', lk:'suprabhatam' }, { nk:'blessingsN', lk:'blessings' },
 ] as const;
 
 export default function AboutSection() {
@@ -21,9 +22,9 @@ export default function AboutSection() {
           <p style={{ fontSize:'1.08rem', color:'var(--text-mid)', marginBottom:'1.1rem', lineHeight:1.8 }}>{t('p2')}</p>
           <p style={{ fontSize:'1.08rem', color:'var(--text-mid)', marginBottom:'1.1rem', lineHeight:1.8 }}>{t('p3')}</p>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'.9rem', marginTop:'2rem' }}>
-            {FACTS.map(({ n, lk }) => (
+            {FACTS.map(({ nk, lk }) => (
               <div key={lk} className="fact-card">
-                <span className="fact-number">{n}</span>
+                <span className="fact-number">{t(nk)}</span>
                 <span className="fact-label">{t(lk)}</span>
               </div>
             ))}

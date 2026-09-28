@@ -3,7 +3,8 @@
  * Hidden entirely on API error — the pooja grid above already shows the
  * error message, and one alert per page is enough.
  */
-import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { formatterFor } from '@/lib/format';
 import { Link } from '@/i18n/navigation';
 import StateMessage from '@/components/ui/StateMessage';
 import { pick, pickAlt } from '@/lib/localize';
@@ -11,9 +12,10 @@ import type { Archana } from '@/lib/types';
 
 export default async function ArchanaSection({ archanas }: { archanas: Archana[] | null }) {
   if (archanas === null) return null;
-  const [t, tp, ts, format, locale] = await Promise.all([
-    getTranslations('archanas'), getTranslations('poojaGrid'), getTranslations('state'), getFormatter(), getLocale(),
+  const [t, tp, ts, locale] = await Promise.all([
+    getTranslations('archanas'), getTranslations('poojaGrid'), getTranslations('state'), getLocale(),
   ]);
+  const format = formatterFor(locale);
 
   return (
     <div style={{ padding:'3.5rem 2rem', background:'var(--maroon-950)', position:'relative', overflow:'hidden' }}>

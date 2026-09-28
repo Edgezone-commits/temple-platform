@@ -6,23 +6,13 @@
  * without audio are shown but can't be played ("Audio coming soon").
  */
 import { useEffect, useRef, useState } from 'react';
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import StateMessage from '@/components/ui/StateMessage';
+import { formatClock, formatNumber } from '@/lib/format';
 import { pick, pickAlt } from '@/lib/localize';
 import type { Bhajan } from '@/lib/types';
 
 const CATS = ['suprabhatam', 'stotra', 'bhajan', 'vedic', 'ashtapadi', 'mangalashtak'] as const;
-
-function useClock() {
-  const format = useFormatter();
-  return (secs: number | null | undefined) => {
-    if (secs == null || !isFinite(secs)) return '';
-    const s = Math.floor(secs);
-    const mm = format.number(Math.floor(s / 60));
-    const ss = format.number(s % 60, { minimumIntegerDigits: 2 });
-    return `${mm}:${ss}`;
-  };
-}
 
 const roundBtn = (on: boolean, disabled = false): React.CSSProperties => ({
   width:'36px', height:'36px', borderRadius:'50%', border:'none', flexShrink:0,
@@ -36,7 +26,7 @@ export default function BhajanPlayer({ bhajans }: { bhajans: Bhajan[] }) {
   const tc = useTranslations('categories');
   const ts = useTranslations('state');
   const locale = useLocale();
-  const clock = useClock();
+  const clock = (secs: number | null | undefined) => formatClock(secs, locale);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [filter, setFilter] = useState<string>('all');
@@ -140,7 +130,7 @@ export default function BhajanPlayer({ bhajans }: { bhajans: Bhajan[] }) {
               <li key={b.id} className={`bhajan-row${on ? ' on' : ''}`}>
                 <div style={{ padding:'1rem 1.4rem', display:'grid', gridTemplateColumns:'3rem 1fr auto', alignItems:'center', gap:'1.2rem' }}>
                   <div style={{ fontFamily:'var(--ff-display)', fontSize:'.9rem', color: on ? 'var(--maroon-600)' : 'var(--gold-700)', textAlign:'center' }}>
-                    {on && playing ? '♪' : String(i + 1).padStart(2, '0')}
+                    {on && playing ? '♪' : formatNumber(i + 1, locale, { grouping: false, minDigits: 2 })}
                   </div>
                   <div style={{ minWidth:0 }}>
                     <h3 style={{ fontFamily:'var(--ff-heading)', fontSize:'.85rem', fontWeight:700, color:'var(--maroon-800)', marginBottom:'1px' }}>{pick(b, 'title', locale)}</h3>

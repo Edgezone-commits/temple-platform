@@ -69,7 +69,11 @@
     "festivals": "वार्षिक उत्सवहरू",
     "suprabhatam": "दैनिक सुप्रभातम्",
     "blessings": "सबैका लागि आशीर्वाद",
-    "deityCaption": "श्री लक्ष्मीनारायण · Sri Laxminarayan"
+    "deityCaption": "श्री लक्ष्मीनारायण · Sri Laxminarayan",
+    "daysOpenN": "३६५",
+    "festivalsN": "१२+",
+    "suprabhatamN": "बिहान ५",
+    "blessingsN": "∞"
   },
   "altar": {
     "title": "पवित्र गर्भगृह — The Sacred Sanctum",

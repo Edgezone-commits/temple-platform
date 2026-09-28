@@ -4,12 +4,13 @@
  * EventsPreviewSkeleton so the rest of the page isn't blocked by the API.
  */
 import Image from 'next/image';
-import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { formatterFor } from '@/lib/format';
 import { Link } from '@/i18n/navigation';
 import StateMessage from '@/components/ui/StateMessage';
 import { getEvents } from '@/lib/api';
 import { EVENT_ICON } from '@/lib/icons';
-import { DATE_FMT, parseDate, pick, pickAlt } from '@/lib/localize';
+import { pick, pickAlt } from '@/lib/localize';
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
@@ -36,14 +37,15 @@ async function Header() {
 }
 
 export default async function EventsPreview() {
-  const [result, t, tc, ts, format, locale] = await Promise.all([
+  const [result, t, tc, ts, locale] = await Promise.all([
     getEvents({ upcoming: true, limit: 3 }),
     getTranslations('eventsPreview'),
     getTranslations('categories.event'),
     getTranslations('state'),
-    getFormatter(),
     getLocale(),
   ]);
+
+  const format = formatterFor(locale);
 
   let body: React.ReactNode;
   if (result.error) body = <StateMessage kind="error" message={ts('error')} dark />;
@@ -63,7 +65,7 @@ export default async function EventsPreview() {
                   : <span aria-hidden="true">{EVENT_ICON[e.category] ?? '🙏'}</span>}
               </div>
               <span className="event-badge">
-                {format.dateTime(parseDate(e.event_date), DATE_FMT.dayMonth)}
+                {format.date(e.event_date, 'dayMonth')}
                 {e.is_featured ? ` · ${t('featured')}` : ` · ${tc(e.category)}`}
               </span>
               <div style={{ padding:'.6rem 1.2rem 1.3rem' }}>

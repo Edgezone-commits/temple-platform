@@ -10,8 +10,9 @@
  * booking is sent with a real pooja_id.
  */
 import { useState } from 'react';
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import en from '@/messages/en.json';
+import { formatterFor } from '@/lib/format';
 import { pick } from '@/lib/localize';
 import type { Pooja } from '@/lib/types';
 
@@ -33,7 +34,7 @@ export default function BookingForm({ poojas, initialPoojaId }: Props) {
   const t = useTranslations('booking');
   const tp = useTranslations('poojaGrid');
   const locale = useLocale();
-  const format = useFormatter();
+  const format = formatterFor(locale);
   const nakshatras = t.raw('nakshatras') as string[];
   const rashis     = t.raw('rashis') as string[];
   const times      = t.raw('times') as Record<string, string>;

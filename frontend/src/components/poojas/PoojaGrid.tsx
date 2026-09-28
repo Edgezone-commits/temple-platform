@@ -3,7 +3,8 @@
  * Server Component. "Book →" deep-links to the form with the pooja preselected.
  */
 import Image from 'next/image';
-import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { formatterFor } from '@/lib/format';
 import { Link } from '@/i18n/navigation';
 import StateMessage from '@/components/ui/StateMessage';
 import { POOJA_ICONS } from '@/lib/icons';
@@ -11,9 +12,10 @@ import { pick, pickAlt } from '@/lib/localize';
 import type { Pooja } from '@/lib/types';
 
 export default async function PoojaGrid({ poojas }: { poojas: Pooja[] | null }) {
-  const [t, ts, format, locale] = await Promise.all([
-    getTranslations('poojaGrid'), getTranslations('state'), getFormatter(), getLocale(),
+  const [t, ts, locale] = await Promise.all([
+    getTranslations('poojaGrid'), getTranslations('state'), getLocale(),
   ]);
+  const format = formatterFor(locale);
 
   return (
     <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>

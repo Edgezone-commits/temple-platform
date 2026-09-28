@@ -69,7 +69,11 @@
     "festivals": "Annual Festivals",
     "suprabhatam": "Suprabhatam Daily",
     "blessings": "Blessings for All",
-    "deityCaption": "Sri Laxminarayan · श्री लक्ष्मीनारायण"
+    "deityCaption": "Sri Laxminarayan · श्री लक्ष्मीनारायण",
+    "daysOpenN": "365",
+    "festivalsN": "12+",
+    "suprabhatamN": "5 AM",
+    "blessingsN": "∞"
   },
   "altar": {
     "title": "The Sacred Sanctum — Garbhagriha",

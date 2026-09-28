@@ -6,9 +6,10 @@
  */
 import { useState } from 'react';
 import Image from 'next/image';
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import StateMessage from '@/components/ui/StateMessage';
-import { DATE_FMT, parseDate, pick, pickAlt } from '@/lib/localize';
+import { formatterFor } from '@/lib/format';
+import { pick, pickAlt } from '@/lib/localize';
 import { EVENT_ICON } from '@/lib/icons';
 import type { EventCategory, TempleEvent } from '@/lib/types';
 
@@ -18,7 +19,7 @@ export default function EventsGrid({ events }: { events: TempleEvent[] }) {
   const t = useTranslations('categories');
   const ts = useTranslations('state');
   const locale = useLocale();
-  const format = useFormatter();
+  const format = formatterFor(locale);
   const [active, setActive] = useState<EventCategory | 'all'>('all');
 
   if (events.length === 0) return <StateMessage kind="empty" message={ts('emptyEvents')} />;
@@ -53,7 +54,7 @@ export default function EventsGrid({ events }: { events: TempleEvent[] }) {
                 </div>
                 <div style={{ padding:'1.1rem 1.3rem 1.4rem' }}>
                   <time dateTime={e.event_date} style={{ fontFamily:'var(--ff-heading)', fontSize:'.62rem', letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold-700)', display:'block', marginBottom:'.3rem' }}>
-                    {format.dateTime(parseDate(e.event_date), DATE_FMT.long)} · {t(`event.${e.category}`)}
+                    {format.date(e.event_date, 'long')} · {t(`event.${e.category}`)}
                   </time>
                   <h3 style={{ fontFamily:'var(--ff-heading)', fontSize:'.92rem', fontWeight:700, color:'var(--maroon-800)', marginBottom:'2px' }}>{title}</h3>
                   {alt && <span style={{ fontFamily:'var(--ff-deva)', fontSize:'.8rem', color:'var(--text-light)', display:'block', marginBottom:'.5rem' }}>{alt}</span>}

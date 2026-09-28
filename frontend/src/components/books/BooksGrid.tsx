@@ -7,8 +7,9 @@
  */
 import { useState } from 'react';
 import Image from 'next/image';
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import StateMessage from '@/components/ui/StateMessage';
+import { formatterFor } from '@/lib/format';
 import { BOOK_ICON } from '@/lib/icons';
 import { pick, pickAlt } from '@/lib/localize';
 import type { Book } from '@/lib/types';
@@ -27,7 +28,7 @@ export default function BooksGrid({ books }: { books: Book[] }) {
   const tc = useTranslations('categories');
   const ts = useTranslations('state');
   const locale = useLocale();
-  const format = useFormatter();
+  const format = formatterFor(locale);
   const [cat, setCat] = useState<string>('all');
 
   if (books.length === 0) return <StateMessage kind="empty" message={ts('emptyBooks')} />;
