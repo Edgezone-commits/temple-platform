@@ -13,8 +13,8 @@ export default async function BhajansPage({ params }: { params: Promise<{ locale
   return (
     <>
       <PageHero page="bhajans" />
-      <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
-        <div style={{ maxWidth:'1280px', margin:'0 auto' }}>
+      <div className="page-section">
+        <div className="page-inner">
           {bhajans.error
             ? <StateMessage kind="error" message={t('error')} hint={t('errorHint')} />
             : <BhajanPlayer bhajans={bhajans.data} />}

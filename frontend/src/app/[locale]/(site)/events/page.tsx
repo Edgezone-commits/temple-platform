@@ -21,8 +21,8 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
     <>
       <PageHero page="events" />
       <CalendarStrip entries={calendar.data ?? []} />
-      <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
-        <div style={{ maxWidth:'1280px', margin:'0 auto' }}>
+      <div className="page-section">
+        <div className="page-inner">
           {events.error
             ? <StateMessage kind="error" message={t('error')} hint={t('errorHint')} />
             : <EventsGrid events={events.data} />}

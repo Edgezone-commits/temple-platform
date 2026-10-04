@@ -120,7 +120,7 @@ export default function BookingForm({ poojas, initialPoojaId }: Props) {
         </select>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem', marginBottom:'1rem' }}>
+      <div className="form-row-2">
         <div><label style={lbl} htmlFor="b-name">{t('name')}</label>
           <input id="b-name" name="name" type="text" value={form.name} onChange={ch} placeholder={t('namePh')} style={inp} required minLength={2} maxLength={200} /></div>
         <div><label style={lbl} htmlFor="b-phone">{t('phone')}</label>
@@ -132,7 +132,7 @@ export default function BookingForm({ poojas, initialPoojaId }: Props) {
         <input id="b-email" name="email" type="email" value={form.email} onChange={ch} placeholder={t('emailPh')} style={inp} />
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem', marginBottom:'1rem' }}>
+      <div className="form-row-2">
         <div><label style={lbl} htmlFor="b-date">{t('date')}</label>
           <input id="b-date" name="date" type="date" min={today()} value={form.date} onChange={ch} style={inp} required /></div>
         <div><label style={lbl} htmlFor="b-time">{t('time')}</label>
@@ -141,7 +141,7 @@ export default function BookingForm({ poojas, initialPoojaId }: Props) {
           </select></div>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem', marginBottom:'1rem' }}>
+      <div className="form-row-2">
         <div><label style={lbl} htmlFor="b-gothram">{t('gothram')}</label>
           <input id="b-gothram" name="gothram" type="text" value={form.gothram} onChange={ch} placeholder={t('gothramPh')} style={inp} maxLength={100} /></div>
         <div><label style={lbl} htmlFor="b-nakshatra">{t('nakshatra')}</label>

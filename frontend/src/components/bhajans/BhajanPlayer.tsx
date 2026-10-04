@@ -128,7 +128,7 @@ export default function BhajanPlayer({ bhajans }: { bhajans: Bhajan[] }) {
             const canPlay = !!b.audio_url;
             return (
               <li key={b.id} className={`bhajan-row${on ? ' on' : ''}`}>
-                <div style={{ padding:'1rem 1.4rem', display:'grid', gridTemplateColumns:'3rem 1fr auto', alignItems:'center', gap:'1.2rem' }}>
+                <div className="bhajan-grid">
                   <div style={{ fontFamily:'var(--ff-display)', fontSize:'.9rem', color: on ? 'var(--maroon-600)' : 'var(--gold-700)', textAlign:'center' }}>
                     {on && playing ? '♪' : formatNumber(i + 1, locale, { grouping: false, minDigits: 2 })}
                   </div>
@@ -143,7 +143,7 @@ export default function BhajanPlayer({ bhajans }: { bhajans: Bhajan[] }) {
                     )}
                   </div>
                   <div style={{ display:'flex', alignItems:'center', gap:'1.2rem' }}>
-                    <div style={{ textAlign:'right' }}>
+                    <div style={{ textAlign:'right' }} className="bhajan-artist">
                       {pick(b, 'artist', locale) && <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.78rem', color:'var(--text-light)', display:'block' }}>{pick(b, 'artist', locale)}</span>}
                       <span style={{ fontFamily:'var(--ff-heading)', fontSize:'.65rem', color:'var(--text-light)', letterSpacing:'.08em' }}>
                         {canPlay ? clock(b.duration_seconds) : t('audioSoon')}

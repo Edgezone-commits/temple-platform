@@ -85,8 +85,10 @@ a{text-decoration:none}
 .header-contact{display:flex;gap:1.5rem;min-width:0}
 .header-cta{display:flex;justify-content:flex-end}
 .header-logo{height:68px}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:center}
 /* Phones: slimmer header, horizontally scrollable nav (no page-wide overflow).
-   Phase 8 revisits the header/nav design as a whole. */
+   The base .nav-inner rule must stay ABOVE this block, or its justify-content:center
+   wins and pushes the first tabs off-screen to the left where they can't be scrolled to. */
 @media (max-width:760px){
   .header-top{padding:4px .75rem;gap:.6rem}
   .header-contact{gap:.8rem;overflow:hidden;white-space:nowrap}
@@ -96,9 +98,10 @@ a{text-decoration:none}
   .header-logo{height:48px}
   .nav-inner{justify-content:flex-start;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .nav-inner::-webkit-scrollbar{display:none}
+  /* soft fade on the right edge hints that the nav scrolls */
+  .nav-inner{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
   .nav-link{padding:.7rem .85rem;flex-shrink:0}
 }
-.nav-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:center}
 .nav-link{font-family:var(--ff-heading);font-size:.72rem;font-weight:600;
   letter-spacing:.16em;text-transform:uppercase;color:var(--gold-300);
   padding:.8rem 1.2rem;cursor:pointer;position:relative;transition:color .2s;
@@ -613,7 +616,10 @@ textarea.adm-input{resize:vertical;min-height:5rem}
 .adm-booking-actions form{display:contents}
 @media (max-width:1000px){.adm-stats{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:860px){
-  .adm{grid-template-columns:1fr;background:var(--adm-bg)}
+  /* rows pinned: otherwise a short page stretches the (closed) sidebar row to fill the screen */
+  .adm{grid-template-columns:1fr;grid-template-rows:auto 1fr;background:var(--adm-bg)}
+  .adm-tabs{scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}
+  .adm-tabs a{flex-shrink:0}
   .adm-side{position:sticky;height:auto;z-index:10}
   .adm-burger{display:inline-flex}
   .adm-nav{display:none}
@@ -699,7 +705,7 @@ textarea.adm-input{resize:vertical;min-height:5rem}
 .pc-send:hover:not(:disabled){background:var(--gold-300);transform:scale(1.05)}
 .pc-send:disabled{opacity:.45;cursor:not-allowed}
 .pc-disclaimer{font-size:.7rem;color:var(--text-light);text-align:center;padding:0 .8rem .6rem;background:var(--ivory-50);line-height:1.35}
-.footer-link.as-button{background:none;border:none;padding:0;font:inherit;text-align:left}
+.footer-link.as-button{background:none;border:none;padding:0;font-family:inherit;font-size:.9rem;line-height:inherit;text-align:left}
 @media (max-width:560px){
   .pc-launcher{right:.9rem;bottom:.9rem;padding:.55rem}
   .pc-launcher-label{display:none}
@@ -709,3 +715,114 @@ textarea.adm-input{resize:vertical;min-height:5rem}
   .pc-panel,.pc-launcher,.pc-msg,.pc-typing i{transition:none;animation:none}
 }
 @media print{.pc-launcher,.pc-panel{display:none}}
+
+/* ══════════════════ Phase 8 polish ══════════════════ */
+
+/* ── Layout primitives (replace the old fixed inline grids) ── */
+.page-section{padding:3.5rem 2rem;background:var(--ivory-100)}
+.page-section.dark{background:var(--maroon-950);position:relative;overflow:hidden}
+.page-inner{max-width:1280px;margin:0 auto;min-width:0}
+.page-inner.narrow{max-width:1100px}
+.g-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem}
+.g-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.4rem}
+.g-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.4rem}
+.g-split{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:2.5rem}
+.form-row-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-bottom:1rem}
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:5rem;align-items:center}
+.timings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.bhajan-grid{padding:1rem 1.4rem;display:grid;grid-template-columns:3rem minmax(0,1fr) auto;align-items:center;gap:1.2rem}
+
+@media (max-width:1100px){
+  .g-4{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .about-grid{gap:3rem;grid-template-columns:minmax(0,1fr) 320px}
+}
+@media (max-width:900px){
+  .g-3,.g-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g-split,.about-grid{grid-template-columns:1fr}
+  .about-grid > :last-child{order:-1;max-width:360px;margin:0 auto;width:100%}
+  .g-2{grid-template-columns:1fr}
+  .timings-grid{grid-template-columns:1fr}
+  .timing-item{border-right:none;border-bottom:1px solid rgba(201,148,58,.2);justify-content:center}
+  .timing-item:last-child{border-bottom:none}
+  .about-section,.services-section,.events-section{padding:3.5rem 1.25rem}
+  .hero-section{min-height:78vh}
+}
+@media (max-width:640px){
+  .page-section{padding:2.25rem 1rem}
+  .page-hero{padding:2.5rem 1.25rem}
+  .g-3{grid-template-columns:1fr}
+  .form-row-2{grid-template-columns:1fr}
+  .bhajan-grid{grid-template-columns:2.2rem minmax(0,1fr) auto;gap:.7rem;padding:.8rem .9rem}
+  .bhajan-grid .bhajan-artist{display:none}
+  .about-section,.services-section,.events-section{padding:2.75rem 1rem}
+  .header-main{gap:.5rem}
+}
+@media (max-width:480px){
+  .g-4{grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+  .services-section .g-4{grid-template-columns:1fr}
+  .btn-primary,.btn-outline{padding:12px 22px}
+}
+
+/* ── Nepali typography: Devanagari must not be letter-spaced or "uppercased",
+      and must wrap instead of overflowing its container. ── */
+html[lang="ne"] :is(.section-eyebrow,.hero-eyebrow,.nav-link,.filter-btn,.btn-primary,.btn-outline,.timing-label,
+  .service-name,.service-link,.event-badge,.fact-label,.footer-col-title,.deity-caption,.cal-wd,.cal-seg a,
+  .lightbox-cat,.person-role,.header-acct-link,.gallery-tile-cat,.state-message,.auth-field label,.page-hero .section-eyebrow,
+  .cal-agenda .ag-cat,.lightbox-counter){letter-spacing:.01em;text-transform:none}
+html[lang="ne"] :is(.btn-primary,.btn-outline,.filter-btn,.nav-link){font-family:var(--ff-deva);font-weight:600}
+html[lang="ne"] :is(.section-title,.hero-title,.temple-name-en,.cal-title h2,.person-body h3,.auth-head h1){
+  font-family:var(--ff-deva);font-weight:600;letter-spacing:0}
+html[lang="ne"] .hero-title{font-size:clamp(1.9rem,5vw,3.4rem);line-height:1.3}
+html[lang="ne"] .section-title{line-height:1.45}
+html[lang="ne"] body{line-height:1.8}
+h1,h2,h3,h4,p,li,dd,.section-title,.hero-title{overflow-wrap:break-word}
+.nav-link,.filter-btn,.btn-primary,.btn-outline{max-width:100%}
+
+/* ── Focus: one consistent, visible ring for keyboard users ── */
+:focus-visible{outline:2px solid var(--gold-500);outline-offset:2px}
+.nav-link:focus-visible,.filter-btn:focus-visible{outline-offset:-2px}
+.btn-primary:focus-visible,.btn-outline:focus-visible{outline:3px solid var(--gold-300);outline-offset:4px}
+
+/* ── Micro-interactions ── */
+.btn-outline:active,.btn-primary:active,.filter-btn:active{transform:translateY(0) scale(.98)}
+.filter-btn{transition:background .2s,color .2s,border-color .2s,transform .1s}
+.nav-link::after{transition:width .25s ease}
+.nav-link:not([data-active='true'])::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:0;height:2px;background:var(--gold-500)}
+.nav-link:not([data-active='true']):hover::after{width:22px}
+.card-media img,.event-card img{transition:transform .5s ease}
+.card-lift:hover .card-media img,.event-card:hover img{transform:scale(1.04)}
+.footer-link{transition:color .2s,transform .2s}
+.footer-link:hover{transform:translateX(3px)}
+.lang-btn{transition:background .2s,color .2s}
+.lang-btn:not(.active):hover{background:rgba(201,148,58,.15)}
+
+/* ── Page transition (every navigation, incl. the EN ⇄ नेपाली switch) ── */
+.page-fade{animation:page-in .35s ease-out}
+@keyframes page-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .page-fade,.marquee-track{animation:none}
+  .card-lift,.card-lift:hover,.service-card:hover,.event-card:hover,.archana-card:hover,.footer-link:hover,
+  .card-lift:hover .card-media img,.event-card:hover img{transform:none}
+}
+
+/* ── Phones: calendar month bar keeps ‹ title › on one row ── */
+@media (max-width:640px){
+  .cal-wrap{padding:2rem .75rem 2.5rem}
+  .cal-toolbar{flex-wrap:nowrap;gap:.5rem}
+  .cal-title{flex:1 1 auto}
+  .cal-nav{width:38px;height:38px}
+}
+
+/* ── Nepali buttons: Devanagari needs a larger size than the .76rem small-caps Latin ── */
+html[lang="ne"] :is(.btn-primary,.btn-outline){font-size:1rem;letter-spacing:.02em}
+html[lang="ne"] .cal-seg a{font-size:.8rem}
+html[lang="ne"] .cal-wd{font-size:.78rem}
+
+/* ── Phones: footer keeps Quick Links + Services side by side (halves its height) ── */
+@media (max-width:520px){
+  .footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.8rem 1.2rem}
+  .footer-grid > :first-child,.footer-grid > :last-child{grid-column:1 / -1}
+}

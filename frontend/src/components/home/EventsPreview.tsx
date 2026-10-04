@@ -51,7 +51,7 @@ export default async function EventsPreview() {
   if (result.error) body = <StateMessage kind="error" message={ts('error')} dark />;
   else if (result.data.length === 0) body = <StateMessage kind="empty" message={ts('emptyEvents')} dark />;
   else body = (
-    <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'1.4rem' }}>
+    <div className="g-3">
       {result.data.map(e => {
         const title = pick(e, 'title', locale);
         const alt = pickAlt(e, 'title', locale);
@@ -88,7 +88,7 @@ export async function EventsPreviewSkeleton() {
   return (
     <Shell>
       <Header />
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'1.4rem' }} aria-hidden="true">
+      <div className="g-3" aria-hidden="true">
         {[0, 1, 2].map(i => (
           <div key={i} style={{ border:'1px solid rgba(201,148,58,.18)', background:'rgba(30,6,6,.65)' }}>
             <div className="skeleton dark" style={{ height:'145px', borderRadius:0 }} />

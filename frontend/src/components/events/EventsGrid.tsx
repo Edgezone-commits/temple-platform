@@ -40,7 +40,7 @@ export default function EventsGrid({ events }: { events: TempleEvent[] }) {
       {filtered.length === 0 ? (
         <StateMessage kind="empty" message={ts('emptyCategory')} />
       ) : (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'1.4rem' }}>
+        <div className="g-3">
           {filtered.map(e => {
             const title = pick(e, 'title', locale);
             const alt = pickAlt(e, 'title', locale);

@@ -18,8 +18,8 @@ export default async function PoojaGrid({ poojas }: { poojas: Pooja[] | null }) 
   const format = formatterFor(locale);
 
   return (
-    <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
-      <div style={{ maxWidth:'1280px', margin:'0 auto' }}>
+    <div className="page-section">
+      <div className="page-inner">
         <div style={{ background:'var(--ivory-50)', border:'1px solid var(--ivory-300)', borderLeft:'4px solid var(--gold-500)', padding:'1rem 1.5rem', marginBottom:'2.5rem', display:'flex', gap:'1rem', alignItems:'flex-start' }}>
           <span style={{ fontSize:'1.4rem' }} aria-hidden="true">🙏</span>
           <div>
@@ -33,7 +33,7 @@ export default async function PoojaGrid({ poojas }: { poojas: Pooja[] | null }) 
         ) : poojas.length === 0 ? (
           <StateMessage kind="empty" message={ts('emptyPoojas')} />
         ) : (
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'1.4rem' }}>
+          <div className="g-3">
             {poojas.map((p, i) => {
               const name = pick(p, 'name', locale);
               const alt = pickAlt(p, 'name', locale);

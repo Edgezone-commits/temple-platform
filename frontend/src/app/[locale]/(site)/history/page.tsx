@@ -53,8 +53,8 @@ export default async function HistoryPage({ params }: { params: Promise<{ locale
   return (
     <>
       <PageHero page="history" />
-      <div style={{ padding: '3.5rem 2rem', background: 'var(--ivory-100)' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      <div className="page-section">
+        <div className="page-inner narrow">
           {result.error ? <StateMessage kind="error" message={ts('error')} hint={ts('errorHint')} />
             : founders.length + leaders.length === 0 ? <StateMessage kind="empty" message={t('empty')} />
             : <>

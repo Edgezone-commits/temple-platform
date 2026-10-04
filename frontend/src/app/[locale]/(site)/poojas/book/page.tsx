@@ -18,8 +18,8 @@ export default async function BookPoojaPage({ params, searchParams }: Props) {
   return (
     <>
       <PageHero page="book" />
-      <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
-        <div style={{ maxWidth:'1280px', margin:'0 auto', display:'grid', gridTemplateColumns:'minmax(0,2fr) minmax(0,1fr)', gap:'2.5rem', alignItems:'start' }}>
+      <div className="page-section">
+        <div className="page-inner g-split" style={{ alignItems:'start' }}>
           <BookingForm poojas={poojas.data} initialPoojaId={typeof pooja === 'string' ? pooja : undefined} />
           <BookingInfoPanel />
         </div>

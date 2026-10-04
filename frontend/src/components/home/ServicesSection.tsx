@@ -18,7 +18,7 @@ export default function ServicesSection() {
           <h2 className="section-title">{t('title')}</h2>
           <span className="section-title-ne">{t('titleNe')}</span>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1.4rem' }}>
+        <div className="g-4">
           {SVCS.map(({ icon, nk, dk, ck, ne, href }) => (
             <Link key={nk} href={href} style={{ textDecoration:'none' }}>
               <div className="service-card">

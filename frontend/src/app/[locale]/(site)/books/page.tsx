@@ -13,8 +13,8 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
   return (
     <>
       <PageHero page="books" />
-      <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
-        <div style={{ maxWidth:'1280px', margin:'0 auto' }}>
+      <div className="page-section">
+        <div className="page-inner">
           {books.error
             ? <StateMessage kind="error" message={t('error')} hint={t('errorHint')} />
             : <BooksGrid books={books.data} />}

@@ -18,7 +18,7 @@ export default async function ArchanaSection({ archanas }: { archanas: Archana[]
   const format = formatterFor(locale);
 
   return (
-    <div style={{ padding:'3.5rem 2rem', background:'var(--maroon-950)', position:'relative', overflow:'hidden' }}>
+    <div className="page-section dark">
       <div style={{ position:'absolute', inset:0, opacity:.04, backgroundImage:'repeating-linear-gradient(0deg,var(--gold-500) 0,var(--gold-500) 1px,transparent 0,transparent 38px),repeating-linear-gradient(90deg,var(--gold-500) 0,var(--gold-500) 1px,transparent 0,transparent 38px)', pointerEvents:'none' }} />
       <div style={{ maxWidth:'1280px', margin:'0 auto', position:'relative', zIndex:1 }}>
         <div style={{ textAlign:'center', marginBottom:'2.5rem' }}>
@@ -29,7 +29,7 @@ export default async function ArchanaSection({ archanas }: { archanas: Archana[]
         {archanas.length === 0 ? (
           <StateMessage kind="empty" message={ts('emptyArchanas')} dark />
         ) : (
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1.2rem' }}>
+          <div className="g-4" style={{ gap:'1.2rem' }}>
             {archanas.map(a => {
               const deity = pick(a, 'deity', locale);
               return (

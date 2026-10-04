@@ -45,7 +45,7 @@ export default function BooksGrid({ books }: { books: Book[] }) {
       </div>
 
       {list.length === 0 ? <StateMessage kind="empty" message={ts('emptyBooksCategory')} /> : (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1.4rem' }}>
+        <div className="g-4">
           {list.map(b => {
             const title = pick(b, 'title', locale);
             const alt = pickAlt(b, 'title', locale);

@@ -10,7 +10,7 @@ export default function TimingsBar() {
   const t = useTranslations('timings');
   return (
     <div className="timings-bar">
-      <div style={{ maxWidth:'1280px', margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(3,1fr)' }}>
+      <div className="page-inner timings-grid">
         {ITEMS.map(({ icon, lk, tk, nk }) => (
           <div key={lk} className="timing-item">
             <div style={{ fontSize:'1.6rem', flexShrink:0 }}>{icon}</div>

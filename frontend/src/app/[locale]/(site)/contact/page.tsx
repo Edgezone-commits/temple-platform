@@ -17,8 +17,8 @@ export default function ContactPage({ params }: { params: Promise<{ locale: stri
   return (
     <>
       <PageHero page="contact" />
-      <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
-        <div style={{ maxWidth:'1280px', margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'3rem' }}>
+      <div className="page-section">
+        <div className="page-inner g-2" style={{ gap:'3rem' }}>
           <ContactForm />
           <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
             {CARDS.map(({ icon, tk, bk }) => (

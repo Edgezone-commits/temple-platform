@@ -13,8 +13,8 @@ export default async function GalleryPage({ params }: { params: Promise<{ locale
   return (
     <>
       <PageHero page="gallery" />
-      <div style={{ padding:'3.5rem 2rem', background:'var(--ivory-100)' }}>
-        <div style={{ maxWidth:'1280px', margin:'0 auto' }}>
+      <div className="page-section">
+        <div className="page-inner">
           {photos.error
             ? <StateMessage kind="error" message={t('error')} hint={t('errorHint')} />
             : <GalleryGrid photos={photos.data} />}

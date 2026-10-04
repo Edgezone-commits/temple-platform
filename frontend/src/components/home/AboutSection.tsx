@@ -12,7 +12,7 @@ export default function AboutSection() {
   const t = useTranslations('about');
   return (
     <section className="about-section">
-      <div style={{ maxWidth:'1280px', margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 400px', gap:'5rem', alignItems:'center' }}>
+      <div className="page-inner about-grid">
         <div>
           <span className="section-eyebrow">{t('eyebrow')}</span>
           <h2 className="section-title">{t('title')}</h2>
