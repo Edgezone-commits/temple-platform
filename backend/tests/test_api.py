@@ -237,7 +237,7 @@ class _FakeAnswer:
     def __init__(self, text, language="en"):
         self.text, self.language = text, language
         self.sources = [{"n": 1, "title": "Temple info – timings.morning", "type": "temple_info", "url": ""}]
-        self.model, self.input_tokens, self.output_tokens = "claude-sonnet-5", 900, 40
+        self.model, self.input_tokens, self.output_tokens = "claude-sonnet-5-5", 900, 40
 
 
 class _FakeAssistant:
@@ -272,7 +272,7 @@ def test_chat_answers_and_stores_history(client, fake, chat_env):
     rows = fake.tables["chat_history"]
     assert [x["role"] for x in rows] == ["user", "assistant"]
     assert all(x["user_id"] == uid and x["session_id"] == SID for x in rows)
-    assert rows[1]["input_tokens"] == 900 and rows[1]["model"] == "claude-sonnet-5"
+    assert rows[1]["input_tokens"] == 900 and rows[1]["model"] == "claude-sonnet-5-5"
     # second turn: history comes from the DB, oldest first
     client.post("/api/v1/chat/", json={"message": "And in the evening?", "session_id": SID, "locale": "ne"})
     assert fa.calls[1]["history"] == [{"role": "user", "content": "When does the temple open?"},

@@ -3,22 +3,23 @@ temple_rag configuration — everything comes from environment variables
 (backend/.env when imported by the FastAPI app, ai-services/.env when the
 ingest script runs on its own).
 
-Model choice (CLAUDE_MODEL, default "claude-sonnet-5")
--------------------------------------------------------
+Model choice (CLAUDE_MODEL, default "claude-sonnet-5-5")
+---------------------------------------------------------
 "Ask the Pandit" is a retrieval-grounded Q&A chat: the facts come from the
 retrieved temple context, the model's job is to read a few short passages,
 answer briefly and accurately in English or Nepali, and say "I don't know"
 when the context doesn't cover the question.
 
-  • claude-sonnet-5   $2 / $10 per 1M input/output tokens  ← DEFAULT
-      Best quality-per-cost for a production chat with moderate traffic;
-      strong multilingual (incl. Nepali/Devanagari) reading and writing.
-      A typical turn here is ~2–3k input tokens + ~300 output tokens,
-      i.e. roughly $0.007 per answer (≈ NPR 1).
-  • claude-opus-5     $5 / $25 — noticeably pricier (~2.5×); worth it only
-      if you see answers missing nuance in long scripture passages.
-  • claude-haiku-4-5  $1 / $5  — cheapest/fastest, but weaker at careful
+  • claude-sonnet-5-5  $2 / $10 per 1M input/output tokens  ← DEFAULT
+      The current Sonnet. Best quality-per-cost for a production chat with
+      moderate traffic; strong multilingual (incl. Nepali/Devanagari)
+      reading and writing. A typical turn here is ~2–3k input tokens +
+      ~300 output tokens, i.e. roughly $0.007 per answer (≈ NPR 1).
+  • claude-opus-5-5    $4 / $20 — about 2× the price; worth it only if you
+      see answers missing nuance in long scripture passages.
+  • claude-haiku-4-5   $1 / $5  — cheapest/fastest, but weaker at careful
       "only answer from the context" behaviour and at Nepali prose.
+  (claude-sonnet-5, the previous Sonnet, also works at the same price.)
 
 Switching is one env var (CLAUDE_MODEL); the code works with all three.
 """
@@ -37,7 +38,7 @@ def _env(name: str, default: str = "") -> str:
 class RagConfig:
     # --- Claude (server-side only; never sent to the browser) ------------------
     anthropic_api_key: str = field(default_factory=lambda: _env("ANTHROPIC_API_KEY"))
-    claude_model: str = field(default_factory=lambda: _env("CLAUDE_MODEL", "claude-sonnet-5"))
+    claude_model: str = field(default_factory=lambda: _env("CLAUDE_MODEL", "claude-sonnet-5-5"))
     # Short grounded answers don't benefit from deep deliberation; "low" keeps
     # latency and cost down. Raise to "medium" if answers feel thin.
     claude_effort: str = field(default_factory=lambda: _env("CLAUDE_EFFORT", "low"))

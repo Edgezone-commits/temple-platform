@@ -27,7 +27,7 @@ from temple_rag.store import KnowledgeStore
 # ------------------------------------------------------------------ fixtures
 @pytest.fixture()
 def cfg(tmp_path):
-    return RagConfig(anthropic_api_key="test-key", claude_model="claude-sonnet-5", claude_effort="low",
+    return RagConfig(anthropic_api_key="test-key", claude_model="claude-sonnet-5-5", claude_effort="low",
                      embedding_model="hash", chroma_dir=tmp_path / "chroma", knowledge_dir=tmp_path / "kb",
                      min_similarity=0.05, supabase_url="", supabase_service_key="")
 
@@ -138,7 +138,7 @@ class MockClaude:
         self.url = f"http://127.0.0.1:{self.server.server_port}"
 
     def set_reply(self, text, stop_reason="end_turn"):
-        self.reply = {"id": "msg_test", "type": "message", "role": "assistant", "model": "claude-sonnet-5",
+        self.reply = {"id": "msg_test", "type": "message", "role": "assistant", "model": "claude-sonnet-5-5",
                       "content": [{"type": "thinking", "thinking": "", "signature": "sig"},
                                   {"type": "text", "text": text}] if text else [],
                       "stop_reason": stop_reason, "stop_sequence": None,
@@ -168,7 +168,7 @@ def test_answer_request_shape_and_sources(cfg, store, mock_claude):
     req = mock_claude.requests[-1]
     body = req["body"]
     assert req["path"] == "/v1/messages" and req["headers"]["x-api-key"] == "test-key"
-    assert body["model"] == "claude-sonnet-5"
+    assert body["model"] == "claude-sonnet-5-5"
     assert body["system"] == [{"type": "text", "text": SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}]
     assert body["thinking"] == {"type": "adaptive"} and body["output_config"] == {"effort": "low"}
     assert "temperature" not in body and "top_p" not in body

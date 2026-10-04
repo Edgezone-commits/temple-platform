@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { formatNumber } from '@/lib/format';
 import { Link } from '@/i18n/navigation';
 import AskPanditLink from '@/components/chat/AskPanditLink';
 
@@ -8,6 +9,9 @@ export default function Footer() {
   const tn = useTranslations('nav');
   const th = useTranslations('header');
   const tt = useTranslations('timings');
+  const locale = useLocale();
+  // Server Component: the year is computed at render time, so it never goes stale.
+  const year = formatNumber(new Date().getFullYear(), locale, { grouping: false });
 
   return (
     <footer className="site-footer">
@@ -64,7 +68,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.78rem', color:'rgba(201,148,58,.28)' }}>{t('copyright')}</span>
+        <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.78rem', color:'rgba(201,148,58,.28)' }}>{t('copyright', { year })}</span>
         <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.78rem', color:'rgba(201,148,58,.28)' }}>{t('mantra')}</span>
       </div>
     </footer>
