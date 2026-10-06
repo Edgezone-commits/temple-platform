@@ -23,7 +23,7 @@ The code is finished. These steps connect it to the real world.
 |---|---|---|
 | [A](#part-a--clean-up-old-draft-files) | Delete 3 old draft files | 2 min |
 | [B](#part-b--set-up-supabase-database--logins) | Set up Supabase (database, logins, emails) | 30 min |
-| [C](#part-c--get-an-anthropic-api-key-for-ask-the-pandit) | Get an Anthropic (Claude) key for "Ask the Pandit" | 10 min |
+| [C](#part-c--get-a-google-gemini-api-key-for-ask-the-pandit) | Get a Google Gemini key for "Ask the Pandit" | 10 min |
 | [D](#part-d--fill-in-the-environment-files) | Paste all keys into the two settings files | 10 min |
 | [E](#part-e--run-the-website-on-your-computer) | Run the website on your computer | 20 min |
 | [F](#part-f--make-yourself-the-admin) | Make your own account the admin | 5 min |
@@ -129,17 +129,18 @@ You can skip B5 while testing on your own computer, but finish it before Part K.
 
 ---
 
-## Part C: Get an Anthropic API key for "Ask the Pandit"
+## Part C: Get a Google Gemini API key for "Ask the Pandit"
 
-⏱ 10 min. "Ask the Pandit" is the AI chat button at the bottom-right of every page. It uses Anthropic's Claude.
+⏱ 10 min. "Ask the Pandit" is the AI chat button at the bottom-right of every page. It uses **Google Gemini**.
 
-**Cost:** about **NPR 1 per answer** (≈ $0.007). A $10 credit covers roughly 1,400 questions. The backend also limits how many questions one person can ask per minute, so nobody can run up a bill.
+**Cost:** Gemini has a **free tier** that is generous enough for a temple website — see the [pricing page](https://ai.google.dev/pricing) for the current per-minute and per-day limits, which Google changes from time to time. The backend also limits how many questions one visitor can ask per minute, so the free allowance isn't burned by one person. If you outgrow the free tier you can enable billing on the same key.
 
-- [ ] **C1.** Go to [console.anthropic.com](https://console.anthropic.com) and sign up. Use the temple's email if it has one.
-- [ ] **C2.** **Settings → Billing**: add a payment card and buy a small amount of credit (e.g. **$10**). This is prepaid, so it can never charge more than you load.
-- [ ] **C3.** *(Recommended)* **Settings → Limits**: set a **monthly spend limit** (e.g. $10) as an extra safety net.
-- [ ] **C4.** **Settings → API Keys → Create Key**. Name it `temple-website`. Copy the key (starts with `sk-ant-…`).
-  🔒 **SECRET.** It's shown only once. Write it in your notepad as `ANTHROPIC_KEY`.
+- [ ] **C1.** Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and sign in with a Google account. Use the temple's account if it has one.
+- [ ] **C2.** Click **Create API key**.
+- [ ] **C3.** If asked, choose a Google Cloud project (or let it create one). The free tier needs no card.
+- [ ] **C4.** Copy the key (it starts with `AIza…`).
+  🔒 **SECRET.** Write it in your notepad as `GOOGLE_KEY`.
+- [ ] **C5.** *(Optional, recommended if you later enable billing)* In [Google Cloud Console](https://console.cloud.google.com) → **Billing → Budgets & alerts**, set a small monthly budget alert.
 
 > The key goes **only** in `backend/.env` (next part). The website never sends it to visitors' browsers.
 
@@ -168,8 +169,8 @@ This file already exists from earlier work. It still contains an old `GEMINI_API
   SUPABASE_ANON_KEY=<ANON_KEY from B1.3>
   SUPABASE_SERVICE_KEY=<SERVICE_KEY from B1.3>
 
-  ANTHROPIC_API_KEY=<ANTHROPIC_KEY from C4>
-  CLAUDE_MODEL=claude-sonnet-5-5
+  GOOGLE_API_KEY=<GOOGLE_KEY from C4>
+  GEMINI_MODEL=gemini-2.5-flash
   ```
 
 - [ ] **D1.3** **Delete** the `GEMINI_API_KEY=…` line, then save.
@@ -182,8 +183,8 @@ What each line means:
 | `ALLOWED_ORIGINS` | Which website addresses may talk to the backend. Add the real domain in Part K. |
 | `SUPABASE_URL` / `SUPABASE_ANON_KEY` | Where the database is. |
 | `SUPABASE_SERVICE_KEY` 🔒 | Full database access, used **only** by the backend. |
-| `ANTHROPIC_API_KEY` 🔒 | Pays for "Ask the Pandit" answers. |
-| `CLAUDE_MODEL` | Which Claude model answers. `claude-sonnet-5-5` gives the best quality for the price. The reasoning is in `ai-services/temple_rag/config.py`. |
+| `GOOGLE_API_KEY` 🔒 | Lets "Ask the Pandit" answer. |
+| `GEMINI_MODEL` | Which Gemini model answers. `gemini-2.5-flash` is fast, cheap and has a free tier; `gemini-2.5-pro` is better at long passages but costs more. The reasoning is in `ai-services/temple_rag/config.py`. |
 
 ### D2. Frontend settings: `frontend/.env.local`
 
@@ -203,7 +204,7 @@ What each line means:
 | `NEXT_PUBLIC_API_URL` | Where the backend runs. **No** `/api` at the end. |
 | `NEXT_PUBLIC_SITE_URL` | This website's own address, used in email links. |
 
-> ⚠️ **Never** put `SUPABASE_SERVICE_KEY` or `ANTHROPIC_API_KEY` in this file. Anything starting with `NEXT_PUBLIC_` can be seen by every visitor.
+> ⚠️ **Never** put `SUPABASE_SERVICE_KEY` or `GOOGLE_API_KEY` in this file. Anything starting with `NEXT_PUBLIC_` can be seen by every visitor.
 
 ✅ **Part D done.**
 
@@ -536,7 +537,7 @@ Most "it works on my computer but not online" problems come from skipping this p
 
 - [ ] Supabase free projects **pause after a week with no activity**. A live temple website gets daily visits, so this is unlikely to matter, but keep an eye on it.
 - [ ] Back up the database now and then: Supabase → **Database → Backups** (paid plans), or export important tables as CSV from the Table Editor.
-- [ ] Check the Anthropic spend now and then: [console.anthropic.com](https://console.anthropic.com) → **Usage**.
+- [ ] Check the Gemini usage now and then: [aistudio.google.com](https://aistudio.google.com) → your key → **Usage**.
 - [ ] Each year, add the next year's calendar dates (Admin → Calendar), then re-run the knowledge-base step.
 
 🎉 **Done. Jai Shree Laxminarayan!**
@@ -549,7 +550,7 @@ Most "it works on my computer but not online" problems come from skipping this p
 |---|---|
 | Pages show "Could not load …" | The backend isn't running. Start Terminal 1 (Part E1). Online: check that the Render service is up and `NEXT_PUBLIC_API_URL` is correct. |
 | `/en/admin` sends me to the home page | Your account isn't an admin yet. Do Part F, then **log out and back in**. |
-| "Ask the Pandit" says it's unavailable (HTTP 503) | Three different causes — the backend log says which. ① *"not configured"*: `ANTHROPIC_API_KEY` is missing from `backend/.env`. Add it and **restart the backend** (the key is read once at startup). ② *"not installed on this server"*: the RAG package isn't in the virtualenv. Fix with `cd backend` then `pip install -r requirements.txt` (it installs `-e ../ai-services`); confirm with `python -c "import temple_rag"`, which must print nothing. ③ *"busy" / "couldn't reach"*: a network or quota problem at the model provider — check your credit. |
+| "Ask the Pandit" says it's unavailable (HTTP 503) | Three different causes — the backend log says which. ① *"not configured"*: `GOOGLE_API_KEY` is missing from `backend/.env`. Add it and **restart the backend** (the key is read once at startup). ② *"not installed on this server"*: the RAG package isn't in the virtualenv. Fix with `cd backend` then `pip install -r requirements.txt` (it installs `-e ../ai-services`); confirm with `python -c "import temple_rag"`, which must print nothing. ③ *"busy" / "couldn't reach"*: you have hit the Gemini free-tier rate limit, or the network is down. Wait a minute and retry; see the [pricing page](https://ai.google.dev/pricing) for the limits. |
 | The Pandit says "I don't know" to basic questions | The knowledge base is empty or old. Run Part E3 (online: K3.6). |
 | Sign-up / reset emails never arrive | Check spam. Set up custom SMTP (Part B5). Supabase's test sender is very limited. |
 | The reset email has a link instead of a code | The **Reset Password** template wasn't changed. Redo Part B4. |

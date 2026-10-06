@@ -1,4 +1,4 @@
 # AI service dependencies — same list as pyproject.toml.
 # Normally installed via backend/requirements.txt (`-e ../ai-services`).
-# The Anthropic SDK was replaced by Gemini via LangGraph; see docs/AGENT.md.
+# The model and agent framework are listed there too; see docs/AGENT.md.
 -e .

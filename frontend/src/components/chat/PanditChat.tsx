@@ -2,7 +2,7 @@
 /**
  * "Ask the Pandit" floating chat widget (on every public page, via (site)/layout).
  *
- * Talks ONLY to our FastAPI backend (POST /api/v1/chat) — the Anthropic API
+ * Talks ONLY to our FastAPI backend (POST /api/v1/chat) — the Gemini API
  * key never reaches the browser. The backend keeps the real conversation
  * history (chat_history) keyed by the random session id stored here; the
  * copy in localStorage is just so the panel survives page loads.

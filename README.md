@@ -16,7 +16,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.13-009688?logo=fastapi&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres_·_Auth_·_Storage-3ECF8E?logo=supabase&logoColor=white)
-![Claude](https://img.shields.io/badge/AI-Claude_+_ChromaDB-D97757)
+![Gemini](https://img.shields.io/badge/AI-Gemini_+_LangGraph_+_ChromaDB-4285F4)
 ![Languages](https://img.shields.io/badge/Languages-English_·_नेपाली-8B1A1A)
 
 </div>
@@ -86,15 +86,16 @@ flowchart LR
     FE -- "pages & bookings" --> BE["⚙️ FastAPI backend"]
     FE -- "login" --> AUTH["🔐 Supabase Auth<br/>email · Google · Facebook"]
     BE --> DB[("🗄 Supabase Postgres<br/>+ Storage")]
-    BE -- "Ask the Pandit" --> RAG["📚 RAG engine<br/>ChromaDB + multilingual embeddings"]
-    RAG --> CL["🤖 Claude API"]
-    DB -. "temple content" .-> RAG
+    BE -- "Ask the Pandit" --> RAG["🧠 LangGraph agent<br/>guard · tools · grounding check"]
+    RAG --> CL["🤖 Gemini API"]
+    RAG --> KB[("📚 ChromaDB<br/>multilingual embeddings")]
+    DB -. "read-only tools" .-> RAG
 ```
 
 - **Website** (`frontend/`): Next.js App Router with server-side rendering, so pages load fast even on slow mobile connections. A hand-built maroon & gold design system (no UI kit), using the Cinzel, Crimson Text and Noto Sans Devanagari fonts.
 - **Backend** (`backend/`): a FastAPI REST API. All writes require a verified admin token; bookings are validated server-side.
 - **Database** (`database/`): one idempotent schema file with Row Level Security on every table.
-- **AI** (`ai-services/`): temple content and PDFs are chunked and embedded with the multilingual `intfloat/multilingual-e5-small` model, then stored in ChromaDB. For each question, the best passages go to Claude with a strict "answer only from this, cite it, or say you don't know" instruction. The API key stays on the server; conversations are saved to `chat_history`.
+- **AI** (`ai-services/`): temple content and PDFs are chunked and embedded with the multilingual `intfloat/multilingual-e5-small` model, then stored in ChromaDB. Each question goes to a **tool-calling LangGraph agent**: Gemini chooses among five read-only tools (knowledge-base search, calendar, pooja prices, temple info, booking help), then answers *only* from what they returned, citing each passage — and a grounding check sends it back if it answered from its own memory instead. The API key stays on the server; conversations are saved to `chat_history`. See [`docs/AGENT.md`](docs/AGENT.md).
 
 ## 🧰 Tech stack
 
@@ -105,7 +106,7 @@ flowchart LR
 | Database | PostgreSQL on Supabase · Row Level Security |
 | Auth | Supabase Auth: email + password, 6-digit OTP reset, Google & Facebook OAuth (PKCE) |
 | Storage | Supabase Storage: `gallery`, `book-pdfs`, `bhajan-audio`, `site-media` |
-| AI | Anthropic Claude (`claude-sonnet-5-5`) · ChromaDB · sentence-transformers |
+| AI | Google Gemini (`gemini-2.5-flash`) · LangGraph agent · ChromaDB · sentence-transformers |
 | Hosting (recommended) | Vercel (website) · Render (API) · Supabase (data) |
 
 ## 🚀 Getting started
@@ -169,7 +170,8 @@ temple-platform/
 │   ├── src/messages/         en.json + ne.json (every visible string)
 │   └── src/lib/              API client, auth actions, Nepali number/date formatting
 ├── backend/                  FastAPI app (routers, schemas, admin auth) + tests
-├── ai-services/              temple_rag package: ingestion, retrieval, Claude assistant
+├── ai-services/              temple_rag package: ingestion, retrieval, LangGraph agent
+│   ├── evals/                40-case eval harness for the agent
 │   └── knowledge_base/       drop extra temple PDFs / notes here
 ├── database/                 schema_v2.sql, seed.sql, seed_calendar.sql (+ calendar generator)
 ├── docs/screenshots/         images used in this README
