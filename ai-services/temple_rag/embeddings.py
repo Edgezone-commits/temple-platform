@@ -4,10 +4,12 @@ Text → vector embeddings.
 Why a local multilingual model instead of ChromaDB's default?
   ChromaDB's built-in embedder (all-MiniLM-L6-v2) is English-only, so a
   question typed in Nepali (Devanagari) would not match the temple's Nepali
-  or English passages. Anthropic doesn't offer a first-party embeddings
-  endpoint, so we use `intfloat/multilingual-e5-small` via
+  or English passages. We use `intfloat/multilingual-e5-small` via
   sentence-transformers: free, runs on the server's CPU (~470 MB RAM), no
   second API key, and handles Nepali ⇄ English cross-lingual retrieval.
+  (Google does offer a hosted embeddings endpoint, but switching would mean
+  re-embedding the whole index for no measured gain — the e5 scores on this
+  data are already well separated. See docs/AGENT.md.)
   (A hosted alternative such as Voyage AI's multilingual model would avoid
   the torch dependency — swap it in by adding a class with the same API.)
 

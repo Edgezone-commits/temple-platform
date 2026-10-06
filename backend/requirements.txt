@@ -18,10 +18,13 @@ pydantic-settings>=2.9.0
 # Form parsing
 python-multipart>=0.0.20
 
-# AI — "Ask the Pandit" (Phase 7)
-# Gemini packages (google-genai, langchain-google-genai) and the unused
-# LangChain layer were removed; Claude is called through the official SDK.
-anthropic>=1.8,<2
+# AI — "Ask the Pandit": a tool-calling Gemini agent (see docs/AGENT.md).
+# Listed here as well as in ai-services/pyproject.toml because this router
+# imports google.genai.errors and langgraph.errors directly to map failures
+# onto its 503 responses.
+langchain-google-genai>=4.2
+langchain-core>=1.4
+langgraph>=1.2
 # The RAG package in ../ai-services (ChromaDB + multilingual embeddings).
 # Heavy (installs torch, ~1 GB); the rest of the API works without it —
 # /api/v1/chat then answers 503 until it's installed.

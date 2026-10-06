@@ -10,7 +10,11 @@ version = "1.0.0"
 description = "Retrieval-augmented 'Ask the Pandit' assistant for Shree Laxminarayan Mandir"
 requires-python = ">=3.11"
 dependencies = [
-  "anthropic>=1.8,<2",            # Claude API (official SDK)
+  # Gemini + the agent framework. langchain-google-genai pulls in google-genai,
+  # whose google.genai.errors classes the backend maps to its 503 responses.
+  "langchain-google-genai>=4.2",   # ChatGoogleGenerativeAI
+  "langchain-core>=1.4",           # @tool, message types
+  "langgraph>=1.2",                # StateGraph, ToolNode
   "chromadb>=1.0",                # vector store
   "sentence-transformers>=5",     # multilingual e5 embeddings (pulls in torch)
   "pypdf>=5",                     # PDF text extraction for books

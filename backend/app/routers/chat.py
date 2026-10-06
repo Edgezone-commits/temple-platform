@@ -1,11 +1,12 @@
 """
-POST /api/v1/chat — "Ask the Pandit" (retrieval-augmented Claude assistant).
+POST /api/v1/chat — "Ask the Pandit" (tool-calling Gemini agent over the
+temple's own data; see ai-services/temple_rag and docs/AGENT.md).
 
 Request:  { "message": "...", "session_id": "<uuid from the browser>", "locale": "en"|"ne" }
 Response: { "answer": "...", "language": "en"|"ne", "sources": [{n, title, type, url}] }
 
 Security / cost controls
-  • The Anthropic API key stays in backend/.env; the browser never calls Claude.
+  • The Gemini API key stays in backend/.env; the browser never calls Gemini.
   • Conversation history is loaded from chat_history on the server (by
     session_id), never taken from the request, so a client can't forge
     earlier assistant turns.
@@ -109,8 +110,8 @@ def get_assistant():
     with _assistant_lock:
         if _assistant is not None:
             return _assistant
-        if not settings.ANTHROPIC_API_KEY:
-            raise HTTPException(503, "The assistant is not configured (ANTHROPIC_API_KEY missing).")
+        if not settings.GOOGLE_API_KEY:
+            raise HTTPException(503, "The assistant is not configured (GOOGLE_API_KEY missing).")
         try:
             from dataclasses import replace
             from temple_rag.assistant import PanditAssistant
@@ -122,7 +123,7 @@ def get_assistant():
             log.error("temple_rag is not importable (%s). Run: cd backend && "
                       "pip install -r requirements.txt", e)
             raise HTTPException(503, "The assistant is not installed on this server.")
-        cfg = replace(load_config(), anthropic_api_key=settings.ANTHROPIC_API_KEY, claude_model=settings.CLAUDE_MODEL,
+        cfg = replace(load_config(), google_api_key=settings.GOOGLE_API_KEY, gemini_model=settings.GEMINI_MODEL,
                       supabase_url=settings.SUPABASE_URL, supabase_service_key=settings.SUPABASE_SERVICE_KEY)
         _assistant = PanditAssistant(cfg, KnowledgeStore(cfg))
         return _assistant
@@ -153,18 +154,36 @@ def chat(
     except Exception:
         history = []                                  # history is a nicety, not a requirement
 
-    import anthropic
+    # Imported here, not at module scope, so this module still imports (and the
+    # rest of the API still works) when the AI stack isn't installed.
+    import httpx
+    from google.genai import errors as genai_errors
+    from langgraph.errors import GraphRecursionError
+
     try:
         ans = assistant.answer(body.message, history=history, locale_hint=body.locale)
-    except anthropic.RateLimitError:
-        raise HTTPException(503, "The assistant is busy right now. Please try again shortly.")
-    except (anthropic.APIConnectionError, anthropic.APITimeoutError):
+    except genai_errors.APIError as e:
+        # google-genai raises one class for every HTTP failure; .code is the status.
+        code = getattr(e, "code", None) or 0
+        if code == 429:
+            # Free-tier quota is per minute AND per day; both land here.
+            log.warning("Gemini rate limit / quota: %s", getattr(e, "message", e))
+            raise HTTPException(503, "The assistant is busy right now. Please try again shortly.")
+        if code in (401, 403):
+            log.error("Gemini rejected the API key (%s): %s", code, getattr(e, "message", e))
+            raise HTTPException(503, "The assistant is not configured correctly.")
+        if code >= 500:
+            log.error("Gemini server error %s: %s", code, getattr(e, "message", e))
+            raise HTTPException(503, "Couldn't reach the AI service. Please try again shortly.")
+        log.error("Gemini API error %s (%s): %s", code, getattr(e, "status", ""), getattr(e, "message", e))
+        raise HTTPException(503, "The assistant had a problem answering. Please try again.")
+    except (httpx.TimeoutException, httpx.ConnectError, httpx.ReadError) as e:
+        log.error("Could not reach Gemini: %s", e)
         raise HTTPException(503, "Couldn't reach the AI service. Please try again shortly.")
-    except anthropic.AuthenticationError:
-        log.error("Anthropic rejected the API key")
-        raise HTTPException(503, "The assistant is not configured correctly.")
-    except anthropic.APIStatusError as e:
-        log.error("Claude API error %s: %s", e.status_code, getattr(e, "message", e))
+    except GraphRecursionError:
+        # The agent's own round cap should prevent this; if it fires, the graph
+        # is misconfigured rather than the devotee's question being at fault.
+        log.error("Agent hit the LangGraph recursion limit")
         raise HTTPException(503, "The assistant had a problem answering. Please try again.")
 
     user_id = str(user.id) if user is not None else None

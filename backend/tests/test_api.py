@@ -237,7 +237,8 @@ class _FakeAnswer:
     def __init__(self, text, language="en"):
         self.text, self.language = text, language
         self.sources = [{"n": 1, "title": "Temple info – timings.morning", "type": "temple_info", "url": ""}]
-        self.model, self.input_tokens, self.output_tokens = "claude-sonnet-5-5", 900, 40
+        self.model, self.input_tokens, self.output_tokens = "gemini-2.5-flash", 900, 40
+        self.stop_reason, self.tool_trace, self.tool_rounds = "", [], 1
 
 
 class _FakeAssistant:
@@ -272,7 +273,7 @@ def test_chat_answers_and_stores_history(client, fake, chat_env):
     rows = fake.tables["chat_history"]
     assert [x["role"] for x in rows] == ["user", "assistant"]
     assert all(x["user_id"] == uid and x["session_id"] == SID for x in rows)
-    assert rows[1]["input_tokens"] == 900 and rows[1]["model"] == "claude-sonnet-5-5"
+    assert rows[1]["input_tokens"] == 900 and rows[1]["model"] == "gemini-2.5-flash"
     # second turn: history comes from the DB, oldest first
     client.post("/api/v1/chat/", json={"message": "And in the evening?", "session_id": SID, "locale": "ne"})
     assert fa.calls[1]["history"] == [{"role": "user", "content": "When does the temple open?"},
@@ -293,20 +294,49 @@ def test_chat_validation_and_rate_limit(client, chat_env):
 def test_chat_503_when_not_configured(client, fake, monkeypatch):
     from app.routers import chat as chat_mod
     monkeypatch.setattr(chat_mod, "_assistant", None)
-    monkeypatch.setattr(chat_mod.settings, "ANTHROPIC_API_KEY", "")
+    monkeypatch.setattr(chat_mod.settings, "GOOGLE_API_KEY", "")
     monkeypatch.setattr(chat_mod, "limiter", chat_mod.RateLimiter())
     r = client.post("/api/v1/chat/", json={"message": "hi", "session_id": SID})
     assert r.status_code == 503 and "not configured" in r.json()["detail"]
 
 
-def test_chat_claude_errors_become_503(client, fake, chat_env, monkeypatch):
-    import anthropic
-    import httpx2
+def _raises(exc):
+    def boom(*a, **k):
+        raise exc
+    return boom
+
+
+@pytest.mark.parametrize("code, expected", [
+    (429, "busy right now"),              # free-tier quota, per minute or per day
+    (401, "not configured correctly"),    # bad or revoked key
+    (403, "not configured correctly"),    # key valid but API not enabled
+    (500, "reach the AI service"),
+    (503, "reach the AI service"),
+    (400, "problem answering"),           # e.g. a malformed tool schema
+])
+def test_chat_gemini_api_errors_become_503(client, fake, chat_env, monkeypatch, code, expected):
+    """Every Gemini failure is one APIError class; .code decides the message."""
+    from google.genai import errors as genai_errors
+    fa, _ = chat_env
+    err = genai_errors.APIError(code, {"error": {"code": code, "message": "boom"}})
+    monkeypatch.setattr(fa, "answer", _raises(err))
+    r = client.post("/api/v1/chat/", json={"message": "hi", "session_id": SID})
+    assert r.status_code == 503, r.text
+    assert expected in r.json()["detail"]
+    # a failed answer is never written to chat_history
+    assert "chat_history" not in fake.tables or fake.tables["chat_history"] == []
+
+
+def test_chat_network_and_recursion_errors_become_503(client, fake, chat_env, monkeypatch):
+    import httpx
+    from langgraph.errors import GraphRecursionError
     fa, _ = chat_env
 
-    def boom(*a, **k):
-        raise anthropic.APIConnectionError(request=httpx2.Request("POST", "https://api.anthropic.com/v1/messages"))
-    monkeypatch.setattr(fa, "answer", boom)
+    monkeypatch.setattr(fa, "answer", _raises(httpx.ConnectError("no route to host")))
     r = client.post("/api/v1/chat/", json={"message": "hi", "session_id": SID})
     assert r.status_code == 503 and "reach the AI service" in r.json()["detail"]
+
+    monkeypatch.setattr(fa, "answer", _raises(GraphRecursionError("limit")))
+    r = client.post("/api/v1/chat/", json={"message": "hi2", "session_id": SID})
+    assert r.status_code == 503 and "problem answering" in r.json()["detail"]
     assert "chat_history" not in fake.tables or fake.tables["chat_history"] == []

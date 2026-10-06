@@ -3,25 +3,27 @@ temple_rag configuration — everything comes from environment variables
 (backend/.env when imported by the FastAPI app, ai-services/.env when the
 ingest script runs on its own).
 
-Model choice (CLAUDE_MODEL, default "claude-sonnet-5-5")
----------------------------------------------------------
-"Ask the Pandit" is a retrieval-grounded Q&A chat: the facts come from the
-retrieved temple context, the model's job is to read a few short passages,
-answer briefly and accurately in English or Nepali, and say "I don't know"
-when the context doesn't cover the question.
+Model choice (GEMINI_MODEL, default "gemini-2.5-flash")
+-------------------------------------------------------
+"Ask the Pandit" is a retrieval-grounded Q&A chat with tool calling: the facts
+come from the temple's own database and knowledge base, the model's job is to
+pick the right tool, read a few short passages, answer briefly and accurately
+in English or Nepali, and say "I don't know" when the tools return nothing.
 
-  • claude-sonnet-5-5  $2 / $10 per 1M input/output tokens  ← DEFAULT
-      The current Sonnet. Best quality-per-cost for a production chat with
-      moderate traffic; strong multilingual (incl. Nepali/Devanagari)
-      reading and writing. A typical turn here is ~2–3k input tokens +
-      ~300 output tokens, i.e. roughly $0.007 per answer (≈ NPR 1).
-  • claude-opus-5-5    $4 / $20 — about 2× the price; worth it only if you
-      see answers missing nuance in long scripture passages.
-  • claude-haiku-4-5   $1 / $5  — cheapest/fastest, but weaker at careful
-      "only answer from the context" behaviour and at Nepali prose.
-  (claude-sonnet-5, the previous Sonnet, also works at the same price.)
+  • gemini-2.5-flash  ← DEFAULT
+      Fast, cheap, and has a generous free tier (see the pricing page below),
+      which matters for a temple running on donations. Strong multilingual
+      reading and writing, Nepali/Devanagari included, and reliable function
+      calling — which is what this agent depends on.
+  • gemini-2.5-pro
+      Better at long scripture passages and multi-step reasoning, several
+      times the price and noticeably slower. Switch only if you see answers
+      missing nuance.
 
-Switching is one env var (CLAUDE_MODEL); the code works with all three.
+Switching is one env var (GEMINI_MODEL); the code works with both.
+
+  Get a key:  https://aistudio.google.com/apikey
+  Pricing:    https://ai.google.dev/pricing
 """
 import os
 from dataclasses import dataclass, field
@@ -36,13 +38,15 @@ def _env(name: str, default: str = "") -> str:
 
 @dataclass(frozen=True)
 class RagConfig:
-    # --- Claude (server-side only; never sent to the browser) ------------------
-    anthropic_api_key: str = field(default_factory=lambda: _env("ANTHROPIC_API_KEY"))
-    claude_model: str = field(default_factory=lambda: _env("CLAUDE_MODEL", "claude-sonnet-5-5"))
-    # Short grounded answers don't benefit from deep deliberation; "low" keeps
-    # latency and cost down. Raise to "medium" if answers feel thin.
-    claude_effort: str = field(default_factory=lambda: _env("CLAUDE_EFFORT", "low"))
-    max_answer_tokens: int = field(default_factory=lambda: int(_env("CLAUDE_MAX_TOKENS", "2000")))
+    # --- Gemini (server-side only; never sent to the browser) ------------------
+    google_api_key: str = field(default_factory=lambda: _env("GOOGLE_API_KEY"))
+    gemini_model: str = field(default_factory=lambda: _env("GEMINI_MODEL", "gemini-2.5-flash"))
+    max_answer_tokens: int = field(default_factory=lambda: int(_env("GEMINI_MAX_TOKENS", "2000")))
+    # Low temperature: this is grounded Q&A, not creative writing. The answer
+    # should be the same every time the same passages come back.
+    temperature: float = field(default_factory=lambda: float(_env("GEMINI_TEMPERATURE", "0.2")))
+    # Hard cap on agent <-> tools loops for one question. See docs/AGENT.md.
+    max_tool_rounds: int = field(default_factory=lambda: int(_env("AGENT_MAX_TOOL_ROUNDS", "4")))
 
     # --- Embeddings / vector store -------------------------------------------
     # multilingual-e5-small: 118M params, 384-dim, ~100 languages incl. Nepali,
@@ -62,7 +66,8 @@ class RagConfig:
     chunk_chars: int = 900
     chunk_overlap: int = 150
 
-    # --- Supabase (for ingestion + chat history; service key, server-side) ----
+    # --- Supabase (for ingestion, the agent's tools, and chat history) --------
+    # Service key, server-side only. The tools read with it but never write.
     supabase_url: str = field(default_factory=lambda: _env("SUPABASE_URL"))
     supabase_service_key: str = field(default_factory=lambda: _env("SUPABASE_SERVICE_KEY"))
 
