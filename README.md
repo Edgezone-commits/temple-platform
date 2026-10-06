@@ -107,12 +107,16 @@ flowchart LR
 | Auth | Supabase Auth: email + password, 6-digit OTP reset, Google & Facebook OAuth (PKCE) |
 | Storage | Supabase Storage: `gallery`, `book-pdfs`, `bhajan-audio`, `site-media` |
 | AI | Google Gemini (`gemini-2.5-flash`) · LangGraph agent · ChromaDB · sentence-transformers |
-| Hosting (recommended) | Vercel (website) · Render (API) · Supabase (data) |
+| Hosting (recommended) | Vercel (website) · a small VPS running Docker Compose (API + AI) · Supabase (data) |
 
 ## 🚀 Getting started
 
-> **👉 Setting this up for the first time? Follow [`MANUAL_STEPS.md`](MANUAL_STEPS.md).**
-> It's a step-by-step checklist covering Supabase, API keys, Google/Facebook login, making yourself admin, and going live.
+> **👉 Setting this up for the first time? Follow [`MANUAL_STEPS_V2.md`](MANUAL_STEPS_V2.md).**
+> A step-by-step checklist, written for someone who has never used a terminal: Supabase,
+> API keys, Google/Facebook login, making yourself admin, and going live.
+>
+> **⚡ Already have your Supabase, Google Cloud and AI Studio accounts?**
+> [`QUICKSTART.md`](QUICKSTART.md) gets you running with Docker in about 5 minutes.
 
 Once your keys are in place (`backend/.env`, `frontend/.env.local`; see the `.env.example` files), run it locally in three terminals.
 
@@ -176,7 +180,9 @@ temple-platform/
 ├── database/                 schema_v2.sql, seed.sql, seed_calendar.sql (+ calendar generator)
 ├── docs/screenshots/         images used in this README
 ├── AUDIT.md                  code audit and every fix made since
-└── MANUAL_STEPS.md           setup & deployment guide
+├── MANUAL_STEPS_V2.md        setup & deployment guide (start here)
+├── QUICKSTART.md             the 5-minute Docker path
+└── docs/AGENT.md             how the AI assistant works, and why
 ```
 
 ## 🧪 Testing

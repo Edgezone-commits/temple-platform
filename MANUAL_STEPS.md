@@ -1,5 +1,13 @@
 # 🙏 Manual Steps: Your Setup Guide
 
+> ### ⚠️ This guide has been superseded
+>
+> **Use [`MANUAL_STEPS_V2.md`](MANUAL_STEPS_V2.md) instead.** It covers the same
+> ground plus the Docker setup, gives every command for both PowerShell and bash,
+> and is written for someone who has never used a terminal.
+>
+> This file is kept only for reference. Where the two disagree, V2 is right.
+
 This guide covers **everything only you can do**: clicking through websites, creating accounts, and pasting keys.
 The code is finished. These steps connect it to the real world.
 
