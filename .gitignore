@@ -39,3 +39,6 @@ supabase/.temp/
 
 # Python packaging (pip install -e ../ai-services)
 *.egg-info/
+
+# Eval harness scratch (offline Chroma index; results are committed deliberately)
+ai-services/evals/results/offline_chroma/

@@ -97,20 +97,24 @@ class ToolContext:
     store: KnowledgeStore | None = None
     sources: list[dict] = field(default_factory=list)
     trace: list[ToolCallRecord] = field(default_factory=list)
-    _sb: object | None = None
-    _sb_tried: bool = False
+    # Pass a client in to reuse one, or to substitute a stand-in (the eval
+    # harness does this so its offline mode can still exercise these tools).
+    # Left None, one is built lazily from cfg on first use.
+    supabase_client: object | None = None
+    _tried: bool = False
 
     def supabase(self):
-        """Lazy service-role client; None when Supabase isn't configured."""
-        if not self._sb_tried:
-            self._sb_tried = True
+        """Service-role client; None when Supabase isn't configured."""
+        if self.supabase_client is None and not self._tried:
+            self._tried = True
             if self.cfg.supabase_url and self.cfg.supabase_service_key:
                 try:
                     from supabase import create_client
-                    self._sb = create_client(self.cfg.supabase_url, self.cfg.supabase_service_key)
+                    self.supabase_client = create_client(
+                        self.cfg.supabase_url, self.cfg.supabase_service_key)
                 except Exception as e:
                     log.warning("tools: Supabase client unavailable: %s", e)
-        return self._sb
+        return self.supabase_client
 
     def record(self, name: str, args: dict, ok: bool, started: float) -> None:
         ms = int((time.perf_counter() - started) * 1000)
@@ -169,14 +173,19 @@ def _run(name: str, args: dict, body) -> str:
 def search_temple_knowledge(query: str) -> str:
     """Search the temple's own written knowledge base and return matching passages.
 
-    This is the main tool and the right default for most questions. Use it for
-    the temple's history and tradition, scriptures and stotras in the library,
-    the meaning of rituals, temple etiquette, and anything that reads like a
-    question about belief or practice at this temple.
+    Use it for the temple's history and tradition, the scriptures and stotras in
+    the library, the meaning and significance of a ritual, and anything that
+    reads like a question about belief or philosophy at this temple.
 
-    Prefer the more specific tools when one fits: get_temple_info for opening
-    hours/address/phone, get_calendar_events for dates, get_pooja_info for
-    prices. You may call this as well as those.
+    This is the fallback, NOT the first choice. One of the others is almost
+    always better, and they return the authoritative version of the same fact:
+      • opening hours, address, phone, email, what to wear, what to bring,
+        footwear, dress code, temple rules and etiquette → get_temple_info
+      • anything tied to a date → get_calendar_events
+      • prices and durations → get_pooja_info
+      • how to book → get_booking_help
+    Reach for this one when none of those covers the question, or to add
+    background to an answer you have already grounded with one of them.
 
     Each result is numbered. Cite the number in your answer as [1], [2] and so
     on. Returns a note saying nothing was found when no passage is relevant — in
@@ -335,16 +344,23 @@ def get_pooja_info(name_or_keyword: str = "") -> str:
 
 @tool
 def get_temple_info(topic: str = "") -> str:
-    """Look up the temple's practical facts: opening hours, address, phone, rules.
+    """Look up the temple's practical facts: opening hours, address, contact, rules.
 
-    Use this for darshan timings ("what time is morning aarti?", "मन्दिर कति बजे
-    खुल्छ?"), where the temple is, how to contact it, and what to bring or wear.
-    These facts are authoritative — quote them exactly, especially times and
-    phone numbers.
+    This is the authoritative source for all of the following — quote it exactly,
+    especially times, addresses and phone numbers:
+      • darshan and aarti timings, when the temple opens, closes, or breaks
+        ("what time is morning aarti?", "मन्दिर कति बजे खुल्छ?")
+      • where the temple is, and its phone and email
+      • temple etiquette: what to wear, the dress code, what to bring, and
+        whether footwear is allowed inside
+      • the booking policy, such as how far in advance a pooja must be booked
+
+    Prefer this over search_temple_knowledge for any of the above.
 
     Args:
         topic: Which group of facts to return, one of: timings, contact, history,
-            rituals. Anything else, or empty, returns all of them.
+            rituals. Dress code, footwear and what to bring are under 'rituals'.
+            Anything else, or empty, returns all of them.
     """
     args = {"topic": _clip(topic, 20)}
 

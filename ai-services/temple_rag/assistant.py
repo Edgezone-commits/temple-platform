@@ -353,9 +353,13 @@ class PanditAssistant:
     first use) rather than per question.
     """
 
-    def __init__(self, cfg: RagConfig, store: KnowledgeStore, model=None):
+    def __init__(self, cfg: RagConfig, store: KnowledgeStore, model=None, supabase=None):
         self.cfg = cfg
         self.store = store
+        # `supabase` is an injection seam: production leaves it None and each
+        # ToolContext builds its own client from cfg; the eval harness passes a
+        # stand-in so its offline mode can still exercise the database tools.
+        self.supabase = supabase
         self.llm = model if model is not None else self._build_model(cfg)
         self.graph = build_graph(self.llm.bind_tools(TOOLS))
         self.max_rounds = max(1, cfg.max_tool_rounds)
@@ -377,7 +381,7 @@ class PanditAssistant:
         lang = (detect_language(question) if _DEVANAGARI.search(question)
                 else ("en" if question.isascii() else locale_hint))
 
-        ctx = ToolContext(cfg=self.cfg, store=self.store)
+        ctx = ToolContext(cfg=self.cfg, store=self.store, supabase_client=self.supabase)
         messages: list = [SystemMessage(content=SYSTEM_PROMPT)]
         for m in (history or [])[-8:]:
             role = m.get("role")

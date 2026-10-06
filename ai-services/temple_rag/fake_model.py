@@ -9,7 +9,8 @@ online; see docs/AGENT.md.
 """
 from __future__ import annotations
 
-from typing import Any, Iterator, Optional, Sequence
+import re
+from typing import Any, Optional, Sequence
 
 from langchain_core.callbacks import CallbackManagerForLLMRun
 from langchain_core.language_models import BaseChatModel
@@ -72,6 +73,54 @@ class ScriptedChatModel(BaseChatModel):
         return ChatResult(generations=[ChatGeneration(message=_fresh(self.replies[i]))])
 
 
+def _hit(keyword: str, question: str) -> bool:
+    """
+    Match a keyword, respecting word boundaries for Latin script.
+
+    Plain `in` matching meant "Sudarshana Homam" contained "darshan" and so was
+    treated as a timings question. Devanagari has no \\b word boundaries that
+    Python's re recognises, so those keywords stay substring matches — which is
+    what we want for an agglutinative script anyway.
+    """
+    if keyword.isascii():
+        return re.search(rf"\b{re.escape(keyword)}", question) is not None
+    return keyword in question
+
+
+_MONTHS = {m: i for i, m in enumerate(
+    ["january", "february", "march", "april", "may", "june", "july", "august",
+     "september", "october", "november", "december"], 1)}
+
+
+def _date_range(question: str) -> dict:
+    """
+    Pull a crude date range out of the question.
+
+    The real model works this out from "Today is <date>" plus the question. This
+    stand-in handles the two shapes the eval cases use — an explicit month+year,
+    or a day+month+year — and otherwise falls back to the next 60 days. It is a
+    stub, not a date parser.
+    """
+    from datetime import date, timedelta
+
+    q = question.lower()
+    year = None
+    if y := re.search(r"\b(20\d\d)\b", q):
+        year = int(y.group(1))
+    # also accept a Devanagari year, e.g. २०२६
+    if year is None and (y := re.search(r"[०-९]{4}", question)):
+        year = int(y.group(0).translate(str.maketrans("०१२३४५६७८९", "0123456789")))
+
+    month = next((n for name, n in _MONTHS.items() if name in q), None)
+    if year and month:
+        start = date(year, month, 1)
+        end = date(year + (month == 12), (month % 12) + 1, 1) - timedelta(days=1)
+        return {"date_from": start.isoformat(), "date_to": end.isoformat()}
+
+    today = date.today()
+    return {"date_from": today.isoformat(), "date_to": (today + timedelta(days=60)).isoformat()}
+
+
 class KeywordChatModel(ScriptedChatModel):
     """
     Picks a tool from keywords in the question, then answers with a citation.
@@ -81,35 +130,46 @@ class KeywordChatModel(ScriptedChatModel):
     tool-selection numbers say nothing about how well Gemini chooses.
     """
 
+    # Order matters: the first rule that matches wins. Note how crude this is —
+    # that is the point. It exists to drive the graph, not to imitate judgement.
+    # Bare "कति" ("how much" / "how many") is deliberately NOT a price keyword,
+    # because it appears in timing and booking questions just as often.
     RULES: list[tuple[tuple[str, ...], str]] = [
-        (("time", "timing", "open", "close", "aarti", "darshan", "address", "phone",
-          "contact", "समय", "खुल्", "बन्द", "ठेगाना", "फोन", "सम्पर्क"), "get_temple_info"),
-        (("festival", "ekadashi", "purnima", "tomorrow", "today", "calendar", "when is",
-          "पर्व", "एकादशी", "पूर्णिमा", "भोलि", "आज", "पात्रो", "कहिले"), "get_calendar_events"),
-        (("price", "cost", "how much", "rs", "npr", "duration", "pooja list", "archana",
-          "शुल्क", "मूल्य", "कति", "अर्चना"), "get_pooja_info"),
-        (("book", "booking", "reserve", "बुक", "आरक्षण"), "get_booking_help"),
+        (("festival", "ekadashi", "purnima", "tomorrow", "calendar", "falls on",
+          "observance", "पर्व", "एकादशी", "पूर्णिमा", "भोलि", "पात्रो", "तारेख"),
+         "get_calendar_events"),
+        (("time", "timing", "open", "close", "aarti", "darshan", "address", "located",
+          "where is", "phone", "contact", "email", "dress", "wear", "attire", "bring",
+          "footwear", "shoes", "every day", "year",
+          "समय", "खुल्", "बन्द", "दर्शन", "बजे", "ठेगाना", "फोन", "सम्पर्क", "इमेल",
+          "ल्याउनु", "जुत्ता", "पोशाक", "वर्षभरि", "अवस्थित"), "get_temple_info"),
+        (("book", "booking", "reserve", "advance", "payment", "pay",
+          "बुक", "आरक्षण", "अगाडि", "भुक्तानी"), "get_booking_help"),
+        (("price", "cost", "how much", "how long", "npr", "duration", "take",
+          "pooja list", "archana", "शुल्क", "मूल्य", "अर्चना"), "get_pooja_info"),
     ]
 
     def _generate(self, messages, stop=None, run_manager=None, **kw) -> ChatResult:
         self.calls.append(list(messages))
         # Second visit in the same question: answer rather than call again.
         already_called = any(getattr(m, "tool_calls", None) for m in messages)
+        # Match on the question ALONE. The surrounding message also carries
+        # "Today is <date> (Nepal time)", and matching that made the word "time"
+        # appear in every question, so rule 1 won every case.
         question = ""
         for m in messages:
-            if m.type == "human" and "<devotee_question>" in str(m.content):
-                question = str(m.content)
+            found = re.search(r"<devotee_question>\s*(.*?)\s*</devotee_question>",
+                              str(m.content), re.DOTALL)
+            if m.type == "human" and found:
+                question = found.group(1)
         q = question.lower()
 
         if not already_called:
             for keywords, name in self.RULES:
-                if any(k in q for k in keywords):
+                if any(_hit(k, q) for k in keywords):
                     args: dict = {}
                     if name == "get_calendar_events":
-                        from datetime import date, timedelta
-                        today = date.today()
-                        args = {"date_from": today.isoformat(),
-                                "date_to": (today + timedelta(days=30)).isoformat()}
+                        args = _date_range(q)
                     elif name == "search_temple_knowledge":
                         args = {"query": q[:80]}
                     elif name == "get_pooja_info":
@@ -129,5 +189,7 @@ class KeywordChatModel(ScriptedChatModel):
                 tool_text = str(m.content)
                 break
         cite = " [1]" if "[1]" in tool_text else ""
+        # Echo the whole tool result. A shorter cap silently dropped the last
+        # temple_info rows (footwear, dress code), which the real model reads.
         return ChatResult(generations=[ChatGeneration(
-            message=ai(text=f"{tool_text[:1500]}{cite}"))])
+            message=ai(text=f"{tool_text[:8000]}{cite}"))])
