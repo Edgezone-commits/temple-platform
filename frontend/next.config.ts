@@ -9,6 +9,11 @@ const supabaseHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  // Emits .next/standalone with a minimal server.js and only the node_modules
+  // it actually needs, so the Docker image doesn't carry the whole dev tree.
+  // Note server.js does NOT serve public/ or .next/static — the Dockerfile
+  // copies those in beside it. Harmless for `npm run dev`.
+  output: 'standalone',
   images: {
     formats: ['image/avif', 'image/webp'],
     // Next refuses to optimise images from private/local IPs (SSRF protection).

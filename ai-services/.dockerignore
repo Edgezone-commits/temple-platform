@@ -1,0 +1,32 @@
+# Context for the ingest image (built from ai-services/).
+
+# Secrets — supplied at runtime via env_file instead.
+.env
+.env.*
+!.env.example
+
+# The vector index is a mounted volume, never baked in: an image carrying a
+# stale index would silently serve old answers.
+chroma_db/
+
+# Eval scratch output
+evals/results/
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/venv/
+**/.venv/
+
+# Not needed to run an ingest
+tests/
+Dockerfile
+.dockerignore
+
+# NOTE: knowledge_base/ is deliberately NOT ignored — the temple's own PDFs and
+# notes live there and the indexer has to read them. It is also bind-mounted in
+# compose so new files are picked up without a rebuild.

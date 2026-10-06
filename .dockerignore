@@ -1,0 +1,68 @@
+# Root .dockerignore — this is the one that applies to the BACKEND image,
+# because backend/Dockerfile is built with the repo root as its context
+# (it needs ai-services/ as a sibling for `-e ../ai-services`).
+
+# ---- secrets: never copied into an image -----------------------------------
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+ai-services/.env
+ai-services/.env.*
+!ai-services/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# ---- the vector index: each container builds/mounts its own ----------------
+# Baking it in would ship a stale index and bloat the image.
+ai-services/chroma_db/
+ai-services/evals/results/offline_chroma/
+
+# ---- git / CI --------------------------------------------------------------
+.git/
+.github/
+.gitignore
+
+# ---- Python ----------------------------------------------------------------
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/venv/
+**/.venv/
+backend/venv/
+
+# ---- Node / Next -----------------------------------------------------------
+**/node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# ---- docs and images the services never read -------------------------------
+docs/screenshots/
+*.md
+!README.md
+
+# ---- editor / OS -----------------------------------------------------------
+.vscode/
+.idea/
+**/*.swp
+.DS_Store
+Thumbs.db
+
+# ---- docker's own files ----------------------------------------------------
+Dockerfile
+*/Dockerfile
+.dockerignore
+*/.dockerignore
+docker-compose*.yml
+Makefile
+deploy/

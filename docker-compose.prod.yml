@@ -1,0 +1,73 @@
+# Production overlay. Apply it on top of the base file:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f
+#
+# The Makefile wraps these as `make prod-up` / `make prod-logs`.
+#
+# What it changes:
+#   • no published ports — nothing is reachable except through the reverse
+#     proxy, which terminates TLS (see deploy/caddy/Caddyfile)
+#   • restart: unless-stopped on everything
+#   • ALLOWED_ORIGINS taken from the host environment, so the real domain is
+#     set in one place instead of being edited into a file
+#   • the chroma volume mounted READ-ONLY on the backend: only the ingest job
+#     has any business writing to the index
+#   • modest memory limits, so one runaway container can't take down the VPS
+
+services:
+  backend:
+    # Replaces (not extends) the base file's published ports. Only containers
+    # on the `temple` network — i.e. the proxy — can reach port 8000.
+    ports: !override []
+    expose:
+      - "8000"
+    environment:
+      DEBUG: "False"
+      # The real domain comes from ONE place: the SITE_ORIGINS host variable.
+      #
+      #   export SITE_ORIGINS='["https://laxminarayanmandir.org","https://www.laxminarayanmandir.org"]'
+      #
+      # `:?` makes compose refuse to start, naming the variable, if it is unset.
+      # That is deliberate. A default would be worse either way: an empty list
+      # blocks every browser call with a CORS error that looks like a code bug,
+      # and a localhost default would quietly weaken production.
+      #
+      # Note this key OVERRIDES any ALLOWED_ORIGINS in backend/.env — an
+      # `environment:` entry always beats `env_file:`. So set it here, not there.
+      ALLOWED_ORIGINS: ${SITE_ORIGINS:?set SITE_ORIGINS to a JSON list of your production origins, e.g. ["https://example.org"]}
+      CHROMA_PERSIST_DIR: /app/ai-services/chroma_db
+    volumes:
+      # :ro — the API only ever reads the index.
+      - chroma_data:/app/ai-services/chroma_db:ro
+      - hf_cache:/app/.cache/huggingface
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          # PyTorch plus the embedding model needs roughly a gigabyte.
+          memory: 1600M
+
+  frontend:
+    ports: !override []
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  ingest:
+    # Writable here — this is the one service that updates the index.
+    volumes:
+      - chroma_data:/app/ai-services/chroma_db
+      - hf_cache:/app/.cache/huggingface
+      - ./ai-services/knowledge_base:/app/ai-services/knowledge_base:ro
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          memory: 2G

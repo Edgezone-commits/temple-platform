@@ -1,0 +1,108 @@
+# Development / single-host setup for the temple platform.
+#
+#   docker compose up --build        start the website + API
+#   docker compose run --rm ingest   (re)build the AI knowledge base
+#   docker compose down              stop everything
+#
+# Production adds docker-compose.prod.yml on top:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Settings come from the same .env files used without Docker, so there is one
+# place to edit:  backend/.env, frontend/.env.local, ai-services/.env.
+
+name: temple-platform
+
+services:
+  # --------------------------------------------------------------- API + AI
+  backend:
+    build:
+      # Context is the repo root, not ./backend: backend/requirements.txt
+      # installs its sibling with `-e ../ai-services`, which needs both folders.
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file:
+      - ./backend/.env
+    environment:
+      # Point the assistant at the shared index volume rather than the copy
+      # baked into the image (there isn't one — .dockerignore excludes it).
+      CHROMA_PERSIST_DIR: /app/ai-services/chroma_db
+    volumes:
+      # Retrieval survives restarts and rebuilds.
+      - chroma_data:/app/ai-services/chroma_db
+      # The ~470 MB embedding model, downloaded once and shared with ingest.
+      - hf_cache:/app/.cache/huggingface
+    ports:
+      - "8000:8000"
+    networks:
+      - temple
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------- website
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      # Runtime copy. The NEXT_PUBLIC_* values were already compiled in at
+      # build time (next build reads .env.local from the build context), so
+      # changing one needs `up --build`, not just a restart.
+      - ./frontend/.env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - temple
+    restart: unless-stopped
+
+  # ------------------------------------------------------------ the indexer
+  # Runs once and exits — it is a job, not a server.
+  #
+  #   docker compose run --rm ingest                 incremental
+  #   docker compose run --rm ingest --force          re-embed everything
+  #   docker compose run --rm ingest --files-only     only knowledge_base/
+  #
+  # Run it whenever temple content changes: poojas, timings, events, calendar
+  # dates, books, or new files in knowledge_base/.
+  #
+  # Why `backend` does NOT declare depends_on: ingest — even though it needs
+  # the index to give useful answers: as a hard dependency it would re-run a
+  # multi-minute embedding job on every `up`, and a brief Supabase outage would
+  # then stop the whole site from starting. An empty index is not a crash: the
+  # assistant honestly says it doesn't have the information, which is the
+  # behaviour it is designed for. So this is a documented manual step
+  # (MANUAL_STEPS_V2.md § H) rather than an enforced one.
+  #
+  # The profile keeps it out of `docker compose up`; `run` enables it anyway.
+  ingest:
+    build:
+      context: ./ai-services
+      dockerfile: Dockerfile
+    profiles:
+      - tools
+    env_file:
+      - ./ai-services/.env
+    environment:
+      CHROMA_PERSIST_DIR: /app/ai-services/chroma_db
+      KNOWLEDGE_BASE_DIR: /app/ai-services/knowledge_base
+    volumes:
+      - chroma_data:/app/ai-services/chroma_db
+      - hf_cache:/app/.cache/huggingface
+      # Bind mount, not a volume: drop a PDF into the folder on your computer
+      # and the next ingest picks it up with no rebuild.
+      - ./ai-services/knowledge_base:/app/ai-services/knowledge_base
+    networks:
+      - temple
+    restart: "no"
+
+volumes:
+  # The ChromaDB index. Written by ingest, read by backend.
+  chroma_data:
+  # Hugging Face cache for the sentence-transformers model. Shared so the
+  # download happens once rather than in each container.
+  hf_cache:
+
+networks:
+  temple:
+    driver: bridge

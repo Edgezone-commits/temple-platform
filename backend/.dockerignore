@@ -1,0 +1,27 @@
+# NOTE: the backend image is built from the REPO ROOT (see backend/Dockerfile),
+# so Docker reads the root .dockerignore, not this file. This copy is kept so
+# `docker build ./backend` by hand still excludes the same things.
+
+# Secrets — never bake these into an image. The backend reads them at runtime
+# from env_file / the host environment instead.
+.env
+.env.*
+!.env.example
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/venv/
+**/.venv/
+
+# Leftovers from an older layout
+**/node_modules/
+
+# Not needed at runtime
+tests/
+Dockerfile
+.dockerignore

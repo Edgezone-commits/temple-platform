@@ -1128,7 +1128,6 @@ to load.
 
   ```ini
   DEBUG=False
-  ALLOWED_ORIGINS=["https://<your-domain>","https://www.<your-domain>"]
 
   SUPABASE_URL=<SUPABASE_URL>
   SUPABASE_ANON_KEY=<ANON_KEY>
@@ -1138,9 +1137,22 @@ to load.
   GEMINI_MODEL=gemini-2.5-flash
   ```
 
-  ⚠️ `DEBUG=False` and a real-domain-only `ALLOWED_ORIGINS` are the two settings
-  people forget. Leaving `localhost` in the list isn't a disaster, but tighten it
-  anyway — it costs nothing.
+  ⚠️ **Note there is no `ALLOWED_ORIGINS` line here.** In production that comes
+  from the `SITE_ORIGINS` shell variable instead, because
+  `docker-compose.prod.yml` sets it explicitly and a compose `environment:` entry
+  always overrides `env_file:` — so a value in this file would be silently
+  ignored. Set it in the shell before starting:
+
+  ```bash
+  export SITE_ORIGINS='["https://<your-domain>","https://www.<your-domain>"]'
+  ```
+
+  To make that survive a reboot, add the same line to the end of
+  `/root/.bashrc` (or `/etc/environment`, without the `export`).
+
+  Compose **refuses to start** and names the variable if you forget it. That's
+  deliberate: a default would either block every browser with a CORS error that
+  looks like a code bug, or quietly leave localhost allowed in production.
 
 - [ ] **P3.6** Create `ai-services/.env` with `SUPABASE_URL` and
   `SUPABASE_SERVICE_KEY`.
@@ -1148,9 +1160,13 @@ to load.
 - [ ] **P3.7** Build the index, then start the API:
 
   ```bash
+  export SITE_ORIGINS='["https://<your-domain>","https://www.<your-domain>"]'
   docker compose run --rm ingest
   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d backend
   ```
+
+  Only `backend` is started here: the website itself is served by Vercel
+  (§ P4), so the `frontend` service stays unused on this machine.
 
   The second file is the production overlay: it restarts containers
   automatically, stops exposing ports directly to the internet, and mounts the

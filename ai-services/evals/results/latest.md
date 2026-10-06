@@ -1,6 +1,6 @@
 # Eval results — offline
 
-_Generated 2026-10-06T13:28:03+00:00._
+_Generated 2026-10-06T14:02:26+00:00._
 
 > OFFLINE: Gemini replaced by a keyword-matching stand-in and Supabase by an in-memory fixture. Tool-selection numbers reflect a hand-written rule, not the model.
 
@@ -13,7 +13,7 @@ _Generated 2026-10-06T13:28:03+00:00._
 | Refused when it should | 100.0% |
 | Wrongful refusals | 0 |
 | Citation rate | 8.6% |
-| Avg latency | 11 ms |
+| Avg latency | 10 ms |
 | Avg tokens | 175 in / 35 out |
 | Avg tool rounds | 0.88 |
 | Errored | 0 |

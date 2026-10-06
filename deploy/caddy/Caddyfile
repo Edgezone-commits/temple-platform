@@ -1,0 +1,154 @@
+# Reverse proxy for the temple platform.
+#
+# Puts the website and the API behind ONE domain with automatic HTTPS: Caddy
+# gets and renews Let's Encrypt certificates on its own, with nothing to
+# remember and no cron job to forget.
+#
+#   https://example.org/           -> the Next.js website
+#   https://example.org/api/*      -> the FastAPI backend
+#   https://example.org/docs       -> the API's interactive docs
+#
+# ---------------------------------------------------------------------------
+# SETUP
+#
+# 1. Replace every `laxminarayanmandir.org` below with the temple's domain,
+#    and the email with a real one (Let's Encrypt uses it for expiry warnings).
+#
+# 2. Point the domain's DNS A record at this server's IP, and wait for it to
+#    take effect. Caddy cannot issue a certificate until the domain resolves
+#    here — this is the usual reason a first run fails.
+#
+# 3. Add this to docker-compose.prod.yml, or run it as its own compose file:
+#
+#      caddy:
+#        image: caddy:2-alpine
+#        restart: unless-stopped
+#        ports:
+#          - "80:80"
+#          - "443:443"
+#        volumes:
+#          - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+#          - caddy_data:/data        # certificates — MUST persist, or you will
+#          - caddy_config:/config    # hit Let's Encrypt rate limits on restart
+#        networks:
+#          - temple
+#
+#    and add `caddy_data:` and `caddy_config:` under `volumes:`.
+#
+# 4. Start it:
+#      docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Ports 80 and 443 must be open on the server's firewall. Port 80 is required
+# even though the site is HTTPS-only — the certificate challenge uses it.
+#
+# ---------------------------------------------------------------------------
+# PREFER NGINX? The equivalent server block is at the bottom of this file,
+# commented out. You lose automatic certificates and will need certbot.
+# ---------------------------------------------------------------------------
+
+{
+	# Replace with a real address you read.
+	email admin@laxminarayanmandir.org
+}
+
+laxminarayanmandir.org, www.laxminarayanmandir.org {
+	encode zstd gzip
+
+	# --- the API ------------------------------------------------------------
+	# The backend's routes already start with /api/v1, so the path is passed
+	# through unchanged — no strip_prefix. Rewriting it here would produce the
+	# /api/api/v1 double prefix this project has been bitten by before.
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+
+	# The API's own docs and health check, handy for debugging in production.
+	handle /docs* {
+		reverse_proxy backend:8000
+	}
+	handle /openapi.json {
+		reverse_proxy backend:8000
+	}
+	handle /health {
+		reverse_proxy backend:8000
+	}
+
+	# --- the website --------------------------------------------------------
+	# Everything else. Next.js handles its own locale routing (/ -> /en).
+	handle {
+		reverse_proxy frontend:3000
+	}
+
+	# --- headers ------------------------------------------------------------
+	header {
+		# Tell browsers to stick to HTTPS for a year.
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# Don't advertise the server software.
+		-Server
+	}
+
+	log {
+		output file /data/access.log {
+			roll_size 10MB
+			roll_keep 5
+		}
+	}
+}
+
+# ===========================================================================
+# nginx equivalent, if you would rather use it.
+#
+# Certificates are NOT automatic: get them first with
+#   certbot certonly --standalone -d laxminarayanmandir.org -d www.laxminarayanmandir.org
+# and set up `certbot renew` on a timer.
+#
+# server {
+#     listen 80;
+#     server_name laxminarayanmandir.org www.laxminarayanmandir.org;
+#     return 301 https://$host$request_uri;
+# }
+#
+# server {
+#     listen 443 ssl http2;
+#     server_name laxminarayanmandir.org www.laxminarayanmandir.org;
+#
+#     ssl_certificate     /etc/letsencrypt/live/laxminarayanmandir.org/fullchain.pem;
+#     ssl_certificate_key /etc/letsencrypt/live/laxminarayanmandir.org/privkey.pem;
+#
+#     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+#     add_header X-Content-Type-Options "nosniff" always;
+#     add_header X-Frame-Options "SAMEORIGIN" always;
+#
+#     gzip on;
+#     gzip_types text/css application/javascript application/json image/svg+xml;
+#
+#     # Note the trailing slashes match, so /api/v1/x stays /api/v1/x.
+#     location /api/ {
+#         proxy_pass http://backend:8000/api/;
+#         proxy_set_header Host              $host;
+#         proxy_set_header X-Real-IP         $remote_addr;
+#         proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+#         proxy_set_header X-Forwarded-Proto $scheme;
+#         proxy_set_header X-Forwarded-Host  $host;
+#     }
+#
+#     location /health { proxy_pass http://backend:8000/health; }
+#     location /docs   { proxy_pass http://backend:8000/docs; }
+#
+#     location / {
+#         proxy_pass http://frontend:3000;
+#         proxy_set_header Host              $host;
+#         proxy_set_header X-Real-IP         $remote_addr;
+#         proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+#         proxy_set_header X-Forwarded-Proto $scheme;
+#         proxy_set_header X-Forwarded-Host  $host;
+#     }
+# }
+#
+# The X-Forwarded-Proto and X-Forwarded-Host headers matter: the site's auth
+# code uses them to work out its own public address when NEXT_PUBLIC_SITE_URL
+# is unset. Without them, password-reset emails can contain http:// links.
+# ===========================================================================

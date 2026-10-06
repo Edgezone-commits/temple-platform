@@ -1,0 +1,35 @@
+# Context for the website image (built from frontend/).
+
+# Installed fresh by `npm ci` in the deps stage — copying the host's copy would
+# both bloat the context and risk platform-specific binaries.
+**/node_modules/
+.next/
+out/
+build/
+.vercel/
+
+# ---- env files -------------------------------------------------------------
+# .env.local is deliberately NOT ignored. `next build` has to read the
+# NEXT_PUBLIC_* values to compile them into the browser bundle, and those are
+# public by definition — the finished bundle contains them either way. Real
+# secrets are never in this file; see the note in frontend/Dockerfile.
+.env
+.env.development
+.env.production
+.env.test
+
+# Build scratch
+*.tsbuildinfo
+next-env.d.ts
+
+# Editor / OS
+.vscode/
+.idea/
+**/*.swp
+.DS_Store
+Thumbs.db
+
+# Docs and docker's own files
+*.md
+Dockerfile
+.dockerignore
