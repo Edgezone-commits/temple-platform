@@ -11,11 +11,9 @@
  * to refresh the public pages immediately.
  */
 import 'server-only';
+import { SERVER_API_BASE as BASE } from './apiUrl';
 import type { Archana, Bhajan, Book, CalendarEntry, GalleryPhoto, LeaderProfile, Pooja, TempleEvent } from './types';
 
-// API_URL lets a deployed frontend reach the backend on a private address;
-// locally both point at http://localhost:8000.
-const BASE = (process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 const REVALIDATE = 60;
 
 export type ApiResult<T> = { data: T; error: false } | { data: null; error: true };

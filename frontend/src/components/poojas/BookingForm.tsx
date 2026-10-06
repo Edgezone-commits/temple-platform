@@ -16,9 +16,8 @@ import { formatterFor } from '@/lib/format';
 import { getBrowserClient } from '@/lib/supabase/client';
 import { supabaseConfigured } from '@/lib/supabase/env';
 import { pick } from '@/lib/localize';
+import { API_BASE } from '@/lib/apiUrl';
 import type { Pooja } from '@/lib/types';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const inp: React.CSSProperties = { fontFamily:'var(--ff-body)', fontSize:'.95rem', color:'var(--text-dark)', background:'var(--ivory-100)', border:'1px solid var(--ivory-300)', padding:'9px 12px', width:'100%', outline:'none', transition:'border-color .2s' };
 const lbl: React.CSSProperties = { fontFamily:'var(--ff-heading)', fontSize:'.67rem', letterSpacing:'.15em', textTransform:'uppercase', color:'var(--text-mid)', display:'block', marginBottom:'.3rem' };
@@ -60,7 +59,7 @@ export default function BookingForm({ poojas, initialPoojaId }: Props) {
         const { data } = await getBrowserClient().auth.getSession();
         if (data.session) headers.Authorization = `Bearer ${data.session.access_token}`;
       }
-      const res = await fetch(`${API}/api/v1/bookings/`, {
+      const res = await fetch(`${API_BASE}/api/v1/bookings/`, {
         method:'POST', headers,
         body: JSON.stringify({
           pooja_id: form.pooja,

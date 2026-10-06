@@ -3,6 +3,7 @@
 
 from functools import lru_cache
 
+from pydantic import ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,7 +14,10 @@ class Settings(BaseSettings):
     APP_NAME: str = "Shree Laxminarayan Mandir API"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000"]
+    # Browsers treat localhost and 127.0.0.1 as different origins, and Next.js
+    # dev prints whichever one you opened — so both are allowed by default.
+    # In production, set ALLOWED_ORIGINS to the real domain only.
+    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     # --- Supabase ----------------------------------------------------------
     SUPABASE_URL: str
@@ -30,9 +34,28 @@ class Settings(BaseSettings):
     CHAT_PER_DAY: int = 150
 
 
+# The three Supabase settings have no default on purpose: starting the API
+# against no database would fail later in a far more confusing way. Pydantic's
+# own ValidationError doesn't say where the values belong, so translate it.
+REQUIRED_HINT = r"""
+Missing required settings: {missing}
+
+Create backend/.env (copy backend/.env.example) and fill in the values from
+your Supabase project: Project Settings -> API.
+  bash:        cp backend/.env.example backend/.env
+  PowerShell:  Copy-Item backend\.env.example backend\.env
+"""
+
+
 @lru_cache()
 def get_settings() -> Settings:
-    return Settings()
+    try:
+        return Settings()
+    except ValidationError as e:
+        missing = [str(err["loc"][0]) for err in e.errors() if err["type"] == "missing"]
+        if not missing:
+            raise
+        raise RuntimeError(REQUIRED_HINT.format(missing=", ".join(missing))) from e
 
 
 settings: Settings = get_settings()

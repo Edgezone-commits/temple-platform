@@ -117,7 +117,10 @@ def get_assistant():
             from temple_rag.config import load_config
             from temple_rag.store import KnowledgeStore
         except ImportError as e:
-            log.error("temple_rag not installed: %s", e)
+            # Clearing this: `cd backend && pip install -r requirements.txt`,
+            # which installs the sibling package via `-e ../ai-services`.
+            log.error("temple_rag is not importable (%s). Run: cd backend && "
+                      "pip install -r requirements.txt", e)
             raise HTTPException(503, "The assistant is not installed on this server.")
         cfg = replace(load_config(), anthropic_api_key=settings.ANTHROPIC_API_KEY, claude_model=settings.CLAUDE_MODEL,
                       supabase_url=settings.SUPABASE_URL, supabase_service_key=settings.SUPABASE_SERVICE_KEY)

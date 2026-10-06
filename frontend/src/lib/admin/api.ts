@@ -9,8 +9,7 @@
 import 'server-only';
 import { redirect } from 'next/navigation';
 import { getAccessToken, getAccount, type Account } from '@/lib/supabase/server';
-
-const BASE = (process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { SERVER_API_BASE as BASE } from '@/lib/apiUrl';
 
 export type AdminResult<T> =
   | { ok: true; data: T }

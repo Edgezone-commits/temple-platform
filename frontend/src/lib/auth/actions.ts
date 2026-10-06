@@ -48,12 +48,23 @@ export async function safeNext(next: string | null | undefined, locale: string):
   return `/${locale}`;
 }
 
-/** Public origin for email/OAuth redirect links. */
+/** Hosts that are always plain HTTP in development. */
+const LOCAL_HOST = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
+
+/**
+ * Public origin for email/OAuth redirect links.
+ *
+ * Set NEXT_PUBLIC_SITE_URL in production. Without it we fall back to the
+ * request's own host, which is right in dev but only works behind a proxy that
+ * sets x-forwarded-* — so a deployment that forgets the var sends devotees an
+ * http:// link to an https:// site, and OAuth bounces back to the login page.
+ */
 async function siteOrigin(): Promise<string> {
-  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '');
   const h = await headers();
   const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3000';
-  const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
+  // 127.0.0.1 and ::1 are as local as localhost; only those get http.
+  const proto = h.get('x-forwarded-proto') ?? (LOCAL_HOST.test(host) ? 'http' : 'https');
   return `${proto}://${host}`;
 }
 

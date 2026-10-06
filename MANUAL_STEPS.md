@@ -218,9 +218,15 @@ What each line means:
 > **PowerShell tip:** if activating the virtual environment shows *"running scripts is disabled"*, run this once, then try again:
 > `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
 
+> **On Linux or macOS?** Every command below is given twice. Use the **bash**
+> block and ignore the PowerShell one. The only differences are how you activate
+> the virtual environment and the direction of the slashes.
+
 ### Terminal 1: the backend (API)
 
 - [ ] **E1.** Run these one at a time:
+
+  **Windows (PowerShell):**
 
   ```powershell
   cd backend
@@ -229,6 +235,19 @@ What each line means:
   pip install -r requirements.txt      # first time only, takes a few minutes
   uvicorn app.main:app --reload
   ```
+
+  **Linux / macOS (bash):**
+
+  ```bash
+  cd backend
+  python3 -m venv venv                 # first time only
+  source venv/bin/activate             # you'll see (venv) at the start of the line
+  pip install -r requirements.txt      # first time only, takes a few minutes
+  uvicorn app.main:app --reload
+  ```
+
+  > Stay in the `backend` folder for `pip install`: the file refers to the AI
+  > package as `-e ../ai-services`, which only resolves from there.
 
 - [ ] **E2.** Check: open [http://localhost:8000/health](http://localhost:8000/health). It should show `{"status":"healthy"}`.
   [http://localhost:8000/docs](http://localhost:8000/docs) lists every API endpoint.
@@ -241,9 +260,19 @@ Leave this terminal running.
 
 - [ ] **E3.** Run:
 
+  **Windows (PowerShell):**
+
   ```powershell
   cd backend
   venv\Scripts\Activate.ps1
+  python ../ai-services/scripts/ingest.py
+  ```
+
+  **Linux / macOS (bash):**
+
+  ```bash
+  cd backend
+  source venv/bin/activate
   python ../ai-services/scripts/ingest.py
   ```
 
@@ -254,17 +283,21 @@ Leave this terminal running.
 
 ### Terminal 3: the website
 
-- [ ] **E5.** Run:
+- [ ] **E5.** Run (the same on every operating system):
 
-  ```powershell
+  ```bash
   cd frontend
   npm install          # first time only
   npm run dev
   ```
 
 - [ ] **E6.** Open [http://localhost:3000](http://localhost:3000) 🎉. Click **नेपाली** at the top to check the Nepali version.
+  `http://127.0.0.1:3000` works too — the backend accepts both addresses.
 
-**Next time** you only need: Terminal 1 → `cd backend`, `venv\Scripts\Activate.ps1`, `uvicorn app.main:app --reload`; Terminal 3 → `cd frontend`, `npm run dev`.
+**Next time** you only need:
+
+- Terminal 1 → `cd backend`, then `venv\Scripts\Activate.ps1` (PowerShell) or `source venv/bin/activate` (bash), then `uvicorn app.main:app --reload`
+- Terminal 3 → `cd frontend`, `npm run dev`
 
 ✅ **Part E done.**
 
@@ -516,7 +549,7 @@ Most "it works on my computer but not online" problems come from skipping this p
 |---|---|
 | Pages show "Could not load …" | The backend isn't running. Start Terminal 1 (Part E1). Online: check that the Render service is up and `NEXT_PUBLIC_API_URL` is correct. |
 | `/en/admin` sends me to the home page | Your account isn't an admin yet. Do Part F, then **log out and back in**. |
-| "Ask the Pandit" says it's unavailable | `ANTHROPIC_API_KEY` is missing or wrong in `backend/.env`, or your Anthropic credit has run out. Restart the backend after editing `.env`. |
+| "Ask the Pandit" says it's unavailable (HTTP 503) | Three different causes — the backend log says which. ① *"not configured"*: `ANTHROPIC_API_KEY` is missing from `backend/.env`. Add it and **restart the backend** (the key is read once at startup). ② *"not installed on this server"*: the RAG package isn't in the virtualenv. Fix with `cd backend` then `pip install -r requirements.txt` (it installs `-e ../ai-services`); confirm with `python -c "import temple_rag"`, which must print nothing. ③ *"busy" / "couldn't reach"*: a network or quota problem at the model provider — check your credit. |
 | The Pandit says "I don't know" to basic questions | The knowledge base is empty or old. Run Part E3 (online: K3.6). |
 | Sign-up / reset emails never arrive | Check spam. Set up custom SMTP (Part B5). Supabase's test sender is very limited. |
 | The reset email has a link instead of a code | The **Reset Password** template wasn't changed. Redo Part B4. |

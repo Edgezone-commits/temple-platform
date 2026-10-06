@@ -113,7 +113,9 @@ flowchart LR
 > **👉 Setting this up for the first time? Follow [`MANUAL_STEPS.md`](MANUAL_STEPS.md).**
 > It's a step-by-step checklist covering Supabase, API keys, Google/Facebook login, making yourself admin, and going live.
 
-Once your keys are in place (`backend/.env`, `frontend/.env.local`; see the `.env.example` files), run it locally in three terminals:
+Once your keys are in place (`backend/.env`, `frontend/.env.local`; see the `.env.example` files), run it locally in three terminals.
+
+**Windows (PowerShell):**
 
 ```powershell
 # 1 · Backend API  →  http://localhost:8000/docs
@@ -131,6 +133,28 @@ cd frontend
 npm install
 npm run dev
 ```
+
+**Linux / macOS (bash):**
+
+```bash
+# 1 · Backend API  →  http://localhost:8000/docs
+cd backend
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+
+# 2 · Build the AI knowledge base (re-run whenever content changes)
+cd backend && source venv/bin/activate
+python ../ai-services/scripts/ingest.py
+
+# 3 · Website  →  http://localhost:3000
+cd frontend
+npm install
+npm run dev
+```
+
+> The `pip install -r requirements.txt` must be run **from `backend/`** — the file
+> installs the sibling RAG package with the relative path `-e ../ai-services`.
 
 ## 📁 Project structure
 
@@ -155,12 +179,27 @@ temple-platform/
 
 ## 🧪 Testing
 
+**Windows (PowerShell):**
+
 ```powershell
 cd backend; venv\Scripts\Activate.ps1
 python -m pytest                      # API tests
-python -m pytest ../ai-services/tests # RAG pipeline tests (offline; mock Claude API)
+python -m pytest ../ai-services/tests # RAG pipeline tests (offline; mocked model API)
 cd ..\frontend; npx tsc --noEmit; npx eslint src
 ```
+
+**Linux / macOS (bash):**
+
+```bash
+cd backend && source venv/bin/activate
+python -m pytest                      # API tests
+python -m pytest ../ai-services/tests # RAG pipeline tests (offline; mocked model API)
+cd ../frontend && npx tsc --noEmit && npx eslint src
+```
+
+> Run the two test suites as two separate commands, not as one `pytest` over the
+> whole repo: `backend/tests/` is an importable package named `tests`, so
+> collecting both directories at once would clash on that name.
 
 Each phase was also checked end-to-end in Chrome, in both languages, at phone and desktop sizes: page loads with zero console errors, the auth flows, the admin flows, the chat widget, and horizontal overflow at 390 px.
 

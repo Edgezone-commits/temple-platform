@@ -13,8 +13,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { getBrowserClient } from '@/lib/supabase/client';
 import { supabaseConfigured } from '@/lib/supabase/env';
+import { API_BASE } from '@/lib/apiUrl';
 
-const API = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 const STORE_KEY = 'pandit-chat-v1';
 const MAX_KEEP = 40;
 const MAX_LEN = 1000;
@@ -88,7 +88,7 @@ export default function PanditChat() {
         const { data } = await getBrowserClient().auth.getSession();
         if (data.session) headers.Authorization = `Bearer ${data.session.access_token}`;
       }
-      const res = await fetch(`${API}/api/v1/chat/`, {
+      const res = await fetch(`${API_BASE}/api/v1/chat/`, {
         method: 'POST', headers,
         body: JSON.stringify({ message: q, session_id: sessionId, locale }),
       });
