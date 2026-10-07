@@ -29,17 +29,17 @@ The code is finished. These steps connect it to the real world.
 
 | Part | What you'll do | ⏱ |
 |---|---|---|
-| [A](#part-a--clean-up-old-draft-files) | Delete 3 old draft files | 2 min |
-| [B](#part-b--set-up-supabase-database--logins) | Set up Supabase (database, logins, emails) | 30 min |
-| [C](#part-c--get-a-google-gemini-api-key-for-ask-the-pandit) | Get a Google Gemini key for "Ask the Pandit" | 10 min |
-| [D](#part-d--fill-in-the-environment-files) | Paste all keys into the two settings files | 10 min |
-| [E](#part-e--run-the-website-on-your-computer) | Run the website on your computer | 20 min |
-| [F](#part-f--make-yourself-the-admin) | Make your own account the admin | 5 min |
-| [G](#part-g--google-login) | Turn on "Continue with Google" | 20 min |
-| [H](#part-h--facebook-login) | Turn on "Continue with Facebook" | 25 min |
-| [I](#part-i--replace-placeholder-content-with-the-temples-real-details) | Replace placeholder details with the temple's real ones | 1–2 hrs |
-| [J](#part-j--final-test-checklist) | Final test checklist | 20 min |
-| [K](#part-k--put-the-website-online-deployment) | Put the website online (deployment) | 1–2 hrs |
+| [A](#part-a-clean-up-old-draft-files) | Delete 3 old draft files | 2 min |
+| [B](#part-b-set-up-supabase-database--logins) | Set up Supabase (database, logins, emails) | 30 min |
+| [C](#part-c-get-a-google-gemini-api-key-for-ask-the-pandit) | Get a Google Gemini key for "Ask the Pandit" | 10 min |
+| [D](#part-d-fill-in-the-environment-files) | Paste all keys into the two settings files | 10 min |
+| [E](#part-e-run-the-website-on-your-computer) | Run the website on your computer | 20 min |
+| [F](#part-f-make-yourself-the-admin) | Make your own account the admin | 5 min |
+| [G](#part-g-google-login) | Turn on "Continue with Google" | 20 min |
+| [H](#part-h-facebook-login) | Turn on "Continue with Facebook" | 25 min |
+| [I](#part-i-replace-placeholder-content-with-the-temples-real-details) | Replace placeholder details with the temple's real ones | 1–2 hrs |
+| [J](#part-j-final-test-checklist) | Final test checklist | 20 min |
+| [K](#part-k-put-the-website-online-deployment) | Put the website online (deployment) | 1–2 hrs |
 | [—](#-troubleshooting) | Troubleshooting | — |
 
 ---
