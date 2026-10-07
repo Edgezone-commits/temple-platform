@@ -732,6 +732,33 @@ textarea.adm-input{resize:vertical;min-height:5rem}
 .timings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 .bhajan-grid{padding:1rem 1.4rem;display:grid;grid-template-columns:3rem minmax(0,1fr) auto;align-items:center;gap:1.2rem}
 
+/* -- Legal pages (privacy, terms) -- */
+.legal-doc{max-width:760px}
+.legal-updated{font-family:var(--ff-heading);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold-700);display:block;margin-bottom:1.2rem}
+.legal-intro{font-size:1rem;color:var(--text-mid);line-height:1.85;
+  border-left:3px solid var(--gold-500);padding-left:1.2rem;margin-bottom:2.6rem}
+.legal-section{margin-bottom:2.2rem}
+.legal-section h2{font-family:var(--ff-display);font-size:1.08rem;color:var(--maroon-800);
+  margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--ivory-300)}
+.legal-section p{font-size:.95rem;color:var(--text-mid);line-height:1.8}
+.legal-section ul{margin:.85rem 0 0;padding-left:1.1rem;list-style:none}
+.legal-section ul + p{margin-top:1rem}
+.legal-section li{font-size:.95rem;color:var(--text-mid);line-height:1.8;
+  margin-bottom:.6rem;position:relative}
+.legal-section li::before{content:'•';color:var(--gold-500);position:absolute;left:-1.1rem}
+.legal-contact{background:var(--ivory-50);border:1px solid var(--ivory-300);
+  border-left:3px solid var(--gold-500);padding:1.7rem;margin-top:3rem}
+.legal-contact h2{border-bottom:none;padding-bottom:0}
+.legal-links{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.3rem}
+.legal-links a{color:var(--maroon-800);border-color:var(--gold-500);padding:11px 24px;font-size:.7rem}
+.legal-links a:hover{color:var(--maroon-950);background:var(--gold-300)}
+.footer-legal{display:flex;gap:1.4rem;flex-wrap:wrap;align-items:center}
+.footer-legal a{font-family:var(--ff-meta);font-size:.78rem;color:rgba(201,148,58,.42);
+  text-decoration:none;transition:color .2s}
+.footer-legal a:hover{color:var(--gold-300)}
+@media (max-width:520px){.legal-links a{width:100%;text-align:center}}
+
 @media (max-width:1100px){
   .g-4{grid-template-columns:repeat(3,minmax(0,1fr))}
   .about-grid{gap:3rem;grid-template-columns:minmax(0,1fr) 320px}

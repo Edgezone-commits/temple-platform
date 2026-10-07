@@ -69,6 +69,10 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.78rem', color:'rgba(201,148,58,.28)' }}>{t('copyright', { year })}</span>
+        <span className="footer-legal">
+          <Link href="/privacy">{t('privacy')}</Link>
+          <Link href="/terms">{t('terms')}</Link>
+        </span>
         <span style={{ fontFamily:'var(--ff-meta)', fontStyle:'italic', fontSize:'.78rem', color:'rgba(201,148,58,.28)' }}>{t('mantra')}</span>
       </div>
     </footer>

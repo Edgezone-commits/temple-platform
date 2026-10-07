@@ -859,10 +859,17 @@ on this **character for character**, including `https://` and no trailing slash.
 ⏱ 25 min, and also optional.
 
 > 📝 **Facebook requires a published Privacy Policy page** before this login can
-> go public. The website doesn't have one yet. For now you can publish a short
-> policy as a public Google Doc or Google Site — it should say what the temple
-> collects (name, email, booking details), why, and how to ask for deletion. Ask
-> a developer if you'd like a proper bilingual `/privacy` page added to the site.
+> go public. The site now has one, in both languages, at `/en/privacy` and
+> `/ne/privacy` (with Terms of Use at `/en/terms`), linked from the footer of
+> every page. Two things before you paste its address into Facebook:
+>
+> 1. **Read it once and correct it.** It was written from what the code actually
+>    collects, but it names the temple, the address and
+>    `info@laxminarayanmandir.org` as the contact — check those are right, and
+>    see § N for the placeholder phone number.
+> 2. **Facebook needs a public URL, not `localhost`.** So § M can only be
+>    finished after § P has put the site on your real domain. The address to
+>    paste is then `https://<your-domain>/en/privacy`.
 
 You need the same **callback URL** as § L.
 
@@ -887,10 +894,14 @@ You need the same **callback URL** as § L.
 - [ ] **M6.** Left menu → **App settings** → **Basic**:
   - **App ID**: copy it
   - **App secret**: click **Show**, copy it 🔒
-  - **Privacy Policy URL**: the address of your policy page
+  - **Privacy Policy URL**: `https://<your-domain>/en/privacy`
   - **User data deletion**: choose **Data deletion instructions URL** and paste
-    the same policy page (it must explain how to ask the temple to delete an
-    account)
+    the same address. Section 7 of that page, *"What you can ask us to do"*, is
+    what satisfies this requirement — it tells people to email the temple to
+    have their account and information deleted. If you change the email address
+    there, this requirement still has to be met.
+  - **Terms of Service URL** (if the form offers it):
+    `https://<your-domain>/en/terms`
   - **Category**: choose something reasonable, e.g. **Lifestyle**
   - → **Save changes**
 
@@ -977,6 +988,36 @@ These can't come from code — they need real photos and recordings.
 > 🖼 Pooja and service cards deliberately use icons (🪔 💧 🔥) rather than
 > photos. That's a design choice, not a missing file.
 
+### N4 · Read the two legal pages once
+
+The site has a **Privacy Policy** at `/en/privacy` and `/ne/privacy`, and
+**Terms of Use** at `/en/terms` and `/ne/terms`, linked from the footer of every
+page. Facebook login (§ M) cannot go public without the privacy policy, and both
+pages make promises on the temple's behalf, so someone from the temple should
+read them before the site is announced.
+
+- [ ] **N4.1** Open <http://localhost:3000/en/privacy> and read it. It was
+  written from what the code actually stores, so the lists of data are accurate
+  — but check the temple's name, address and contact email are the ones you want
+  published. (N1.2 and N1.3 already corrected the phone and email throughout.)
+- [ ] **N4.2** Open <http://localhost:3000/en/terms> and read it. Check in
+  particular:
+  - **§ 2** says the site never takes payment online and that the price shown is
+    customary dakshina paid at the temple. If the temple ever adds online
+    payment, this section has to change first.
+  - **§ 10** names the courts of Hetauda, Makwanpur.
+- [ ] **N4.3** Check both Nepali versions read naturally to a Nepali speaker:
+  <http://localhost:3000/ne/privacy> and <http://localhost:3000/ne/terms>. They
+  are translations, not a separate text — if you change one language, change the
+  other to match.
+- [ ] **N4.4** Both pages carry a **"Last updated"** date at the top, held in
+  `frontend/src/messages/en.json` and `ne.json` under `privacy.updated` and
+  `terms.updated`. If you edit the text, change that date too.
+
+> 📝 These pages are a plain-language statement of what this software does, not
+> legal advice. If the temple registers as a formal body, or starts accepting
+> donations online, have them looked over by someone qualified.
+
 ✅ **§ N done.**
 
 ---
@@ -989,6 +1030,7 @@ address. Tick every box.
 ### Both languages
 
 - [ ] Every menu page opens: Home, Events, Calendar, Poojas, Book Pooja, Books, Bhajans, Gallery, History, Contact
+- [ ] The two footer links at the very bottom open as well: **Privacy Policy** and **Terms of Use**
 - [ ] The **EN ⇄ नेपाली** switch works on every one of those pages
 - [ ] On Nepali pages, numbers appear as Devanagari digits (`०१२३`), not `0123`
 - [ ] No page shows a stray English sentence on the Nepali side

@@ -124,7 +124,9 @@
     "abhishekam": "Abhishekam",
     "homam": "Homam",
     "donate": "Donate",
-    "aiPandit": "Ask the Pandit (AI)"
+    "aiPandit": "Ask the Pandit (AI)",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
   },
   "pages": {
     "events": {
@@ -171,6 +173,16 @@
       "eyebrow": "Our Lineage",
       "title": "Founders & Leadership",
       "titleNe": "संस्थापक तथा नेतृत्व"
+    },
+    "privacy": {
+      "eyebrow": "How We Handle Your Information",
+      "title": "Privacy Policy",
+      "titleNe": "गोपनीयता नीति"
+    },
+    "terms": {
+      "eyebrow": "Using This Website",
+      "title": "Terms of Use",
+      "titleNe": "उपयोगका सर्तहरू"
     }
   },
   "contact": {
@@ -766,5 +778,149 @@
     "you": "You",
     "pandit": "Pandit (AI)",
     "tooLong": "Please keep your question under 1000 characters."
+  },
+  "privacy": {
+    "updated": "Last updated: 7 October 2026",
+    "intro": "This page explains what personal information Shree Laxminarayan Mandir collects through this website, why we collect it, who else handles it, and what you can ask us to do about it. We have kept it plain rather than legalistic. If anything here is unclear, please ask us.",
+    "sections": [
+      {
+        "h": "1. Who is responsible",
+        "p": "Shree Laxminarayan Mandir, Hetauda, Makwanpur District, Bagmati Province, Nepal, is responsible for the personal information collected through this website. You can reach us at info@laxminarayanmandir.org or on the number on our Contact page."
+      },
+      {
+        "h": "2. What we collect, and when",
+        "p": "We only collect information when you choose to give it. Nothing on this list is gathered from visitors who simply read the site.",
+        "items": [
+          "If you create an account: your email address, the display name you choose, a profile picture address if your sign-in provider supplies one, and your preferred language. If you sign in with Google or Facebook, we receive those same details from them — never your password.",
+          "If you request a pooja booking: your name, your phone number, your email address if you give one, the pooja, date and time you ask for, and — only if you choose to fill them in — your gothram, nakshatra and rashi, plus any notes you add. The astrological fields are optional and are used only so the ritual can be performed correctly.",
+          "If you use Ask a Pandit: the questions you type, the answers given, the language used, and a randomly generated session number so the conversation holds together. Please do not type anything into the chat that you would not want kept.",
+          "If you use the contact form: nothing is stored on this website. The form opens your own email program with the message filled in, and it travels to the temple's inbox as an ordinary email from you.",
+          "Routine server records: the usual web-server entries such as the requesting network address, the browser used and the pages requested. These are kept for security and troubleshooting."
+        ]
+      },
+      {
+        "h": "3. Why we use it",
+        "items": [
+          "To answer a booking request, confirm it, reschedule it, or contact you about it.",
+          "To keep you signed in and to show you your own bookings.",
+          "To answer the questions you ask Ask a Pandit.",
+          "To keep the site working, and to investigate abuse or attacks."
+        ],
+        "p": "We do not sell or rent personal information, we do not use it for advertising, and we do not build profiles of visitors."
+      },
+      {
+        "h": "4. Who else handles it",
+        "p": "Running a website means relying on a few service providers. Each one only receives what it needs:",
+        "items": [
+          "Supabase — stores the database, the accounts and uploaded files. The database is hosted in the Mumbai region.",
+          "Google (Gemini) — when you ask Ask a Pandit a question, the question and the relevant temple information are sent to Google's model so an answer can be generated.",
+          "An email delivery service — sends sign-up confirmation and password-reset emails.",
+          "Google and Meta (Facebook) — only if you choose to sign in with them. That sign-in is governed by their own privacy policies.",
+          "Our website and API hosting providers."
+        ]
+      },
+      {
+        "h": "5. Cookies and browser storage",
+        "items": [
+          "Sign-in cookies, set when you log in so that you stay logged in. These are essential; no such cookie exists before you sign in.",
+          "Your browser's local storage keeps your Ask a Pandit conversation so the panel survives moving between pages. It stays on your device, and clearing your browser's site data removes it.",
+          "There are no analytics, advertising or tracking cookies on this site, from us or from anyone else."
+        ]
+      },
+      {
+        "h": "6. How long we keep it",
+        "items": [
+          "Booking details are kept as a record of the temple's services. Ask us if you want yours removed.",
+          "Account details are kept until you ask us to delete the account.",
+          "Ask a Pandit conversations are kept so we can see where the answers need improving.",
+          "Server records are kept only for a short period."
+        ]
+      },
+      {
+        "h": "7. What you can ask us to do",
+        "p": "Write to info@laxminarayanmandir.org and we will act on it as soon as we reasonably can. You can ask us to:",
+        "items": [
+          "tell you what information we hold about you;",
+          "correct anything that is wrong;",
+          "delete your account and the information attached to it;",
+          "stop contacting you."
+        ]
+      },
+      {
+        "h": "8. Children",
+        "p": "This website is not aimed at children, and an account should not be created for a child without a parent or guardian involved. If you believe a child's information has reached us, tell us and we will remove it."
+      },
+      {
+        "h": "9. How we protect it",
+        "p": "The site is served over an encrypted connection, the database restricts each account to its own rows, and account passwords are handled by our sign-in provider — we never see or store them. No system is perfectly secure, so please tell us at once if you think an account has been misused."
+      },
+      {
+        "h": "10. Changes to this policy",
+        "p": "If this policy changes, the date at the top of the page changes with it, and anything significant will be announced on the site."
+      }
+    ]
+  },
+  "terms": {
+    "updated": "Last updated: 7 October 2026",
+    "intro": "These terms cover the use of this website — reading it, requesting a pooja, creating an account and asking the Ask a Pandit assistant. Using the site means accepting them. They do not change anything about how the temple itself welcomes visitors.",
+    "sections": [
+      {
+        "h": "1. A booking request is a request, not a confirmation",
+        "p": "Submitting the booking form tells the temple what you would like. It is not a confirmed appointment. A member of the temple will contact you by phone or email to confirm, suggest another time, or explain if it cannot be done — festival days and the priests' availability both limit what is possible. Until someone has confirmed it with you, treat the booking as pending."
+      },
+      {
+        "h": "2. No payment is taken on this website",
+        "p": "This site does not accept payments or donations online, and never asks for card or bank details. Any amount shown beside a pooja is an indication of the customary dakshina; it is given at the temple on the day. If a page ever asks you to pay online, it is not ours — please tell us."
+      },
+      {
+        "h": "3. What you tell us should be accurate",
+        "p": "Please give a name and phone number that actually reach you. A booking may have to be cancelled if we cannot reach you to confirm it. Do not submit a booking in someone else's name without their knowledge."
+      },
+      {
+        "h": "4. Ask a Pandit is an assistant, not a priest",
+        "p": "Ask a Pandit is powered by an AI model. It answers from this temple's own information about timings, poojas, festivals and practice. It can still be incomplete or simply wrong, and it is not a substitute for speaking to the priest.",
+        "items": [
+          "Confirm anything that matters — a date, a timing, a ritual requirement — with the temple before you rely on it.",
+          "Its answers are general information, not religious, legal, medical or financial advice.",
+          "Please do not type personal or sensitive details into the chat.",
+          "Do not use it to send abusive content or to try to make it produce something unrelated to the temple."
+        ]
+      },
+      {
+        "h": "5. The festival calendar",
+        "p": "The dates shown on the calendar are prepared with care, but panchang dates can differ between almanacs and are occasionally revised. Please confirm with the temple before travelling for a particular festival."
+      },
+      {
+        "h": "6. Content on this site",
+        "p": "The text, photographs, recordings and book material on this site belong to the temple or to the people who contributed them. You are welcome to read, print and share them for your own devotional or personal use. Reproducing them commercially, or republishing them as your own, needs our written permission first."
+      },
+      {
+        "h": "7. Fair use of the site",
+        "p": "Please do not attempt to break into the site, disrupt it, collect its contents in bulk by automated means, or impersonate the temple or another devotee. We may suspend an account that does."
+      },
+      {
+        "h": "8. Your account",
+        "p": "Keep your password to yourself and do not let anyone else use your account. Tell us promptly if you think someone has gained access to it."
+      },
+      {
+        "h": "9. Availability",
+        "p": "The site is maintained by the temple and its volunteers. We try to keep it running and accurate, but we cannot promise it will always be available or free of mistakes, and it is provided as it stands. The temple is not liable for loss arising from relying on the site in place of confirming with us — in particular for travel arranged around an unconfirmed booking or an unverified festival date."
+      },
+      {
+        "h": "10. Governing law",
+        "p": "These terms are governed by the laws of Nepal, and the courts of Hetauda, Makwanpur have jurisdiction over any dispute arising from them."
+      },
+      {
+        "h": "11. Changes to these terms",
+        "p": "If these terms change, the date at the top of the page changes with them. Continuing to use the site after that means accepting the revised terms."
+      }
+    ]
+  },
+  "legal": {
+    "questionsTitle": "Questions about this page",
+    "questionsBody": "Write to info@laxminarayanmandir.org, call the temple on the number on our Contact page, or visit us at Shree Laxminarayan Mandir, Hetauda, Makwanpur District, Bagmati Province, Nepal.",
+    "contactLink": "Go to the Contact page",
+    "otherPrivacy": "Read the Privacy Policy",
+    "otherTerms": "Read the Terms of Use"
   }
 }
