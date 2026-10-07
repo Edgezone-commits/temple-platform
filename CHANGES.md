@@ -1,7 +1,6 @@
 # Changes
 
-Everything added, changed or removed, grouped by the four priorities. Five
-commits, oldest first:
+Everything added, changed or removed, grouped by priority. Oldest first:
 
 | Commit | |
 |---|---|
@@ -10,6 +9,8 @@ commits, oldest first:
 | `cfd882f` | `chore: update env examples and docs for Gemini migration` |
 | `4012d06` | `feat(rag): tool-calling LangGraph agent with eval harness` |
 | `197d8b1` | `feat: add Docker and docker-compose for dev and production` |
+| `3e53aa0` | `feat: add bilingual privacy policy and terms of use pages` |
+| `e422d44` | `docs: fix two broken documents found by link validation` |
 
 **Read [§ Verification](#verification) before trusting any of this.** One
 deliverable could not be checked here, and it is named precisely.
@@ -231,6 +232,143 @@ The guide states the reason. Reverting is a one-line change in each place.
 
 ---
 
+## Priority 5 — the privacy policy and terms of use
+
+This was item 8's blocker in *Still yours to do*: **Facebook login cannot be
+published without a privacy policy page, and the site had none.** It is the only
+thing left on that list that a repository can actually produce — everything else
+needs an account, a payment method or the temple's own decision.
+
+### Added
+
+| File | |
+|---|---|
+| `frontend/src/app/[locale]/(site)/privacy/page.tsx` | `/en/privacy`, `/ne/privacy`. |
+| `frontend/src/app/[locale]/(site)/terms/page.tsx` | `/en/terms`, `/ne/terms`. |
+| `frontend/src/components/ui/LegalDoc.tsx` | Renders either page from `messages → <ns>.{updated,intro,sections[]}`, so no prose is hard-coded in a component and both languages stay in the same place as the rest of the site's text. |
+
+### Changed
+
+| File | |
+|---|---|
+| `frontend/src/messages/en.json`, `ne.json` | Added `pages.privacy`, `pages.terms`, the `privacy`, `terms` and `legal` namespaces, and `footer.privacy` / `footer.terms`. Both files have **identical key sets**, list indices included. |
+| `frontend/src/components/layout/Footer.tsx` | Both links in the bottom bar, so the policy is reachable from every page — which is what Facebook's review looks for. |
+| `frontend/src/components/ui/PageHero.tsx` | `Page` union gains `'privacy' \| 'terms'`. |
+| `frontend/src/app/globals.css` | A `.legal-*` block, plus `.footer-legal`. Reuses the existing tokens and the `btn-outline` + local-override pattern the History page already uses for gold buttons on an ivory background. |
+| `MANUAL_STEPS_V2.md` | § M's note rewritten (the page now exists, but § M still has to wait for § P's real domain, because Facebook will not accept `localhost`); § M6 gives the exact three URLs; **new § N4** tells the temple to read both pages, and which clauses to check; § O gains a smoke-test line. |
+| `AUTH_SYSTEM.md` | Rewritten — it documented an architecture that never shipped. See below. |
+| `MANUAL_STEPS.md` | The eleven table-of-contents anchors, all of which were dead. See below. |
+
+### The text is derived from the code, not from a template
+
+Every claim in the policy was checked against what the software does:
+
+- **What it lists as collected** comes from `database/schema_v2.sql` — `profiles`
+  (email, display name, avatar URL, preferred locale), `pooja_bookings`
+  (name, phone, optional email, date, time, gothram, nakshatra, rashi, notes)
+  and `chat_history` (message text, locale, session id).
+- **"The contact form stores nothing on this website"** — `ContactForm.tsx` has
+  no endpoint; it opens a `mailto:` link. So the policy says that, rather than
+  claiming a message store that does not exist.
+- **"No analytics, advertising or tracking cookies"** — a grep for `gtag`,
+  `googletagmanager`, `analytics`, `posthog`, `sentry` and `plausible` across
+  `frontend/src` and `backend/app` returns nothing. The only cookies are
+  Supabase's sign-in cookies, and `localePrefix: 'always'` in
+  `src/i18n/routing.ts` means there is no locale cookie either.
+- **"Local storage keeps your Ask a Pandit conversation"** — `PanditChat.tsx`,
+  which is also why the policy says to keep sensitive details out of the chat.
+- **Terms § 2, "no payment is taken on this website"** — there is no payment
+  integration anywhere (no eSewa, Khalti, Stripe or Razorpay); `price` is a
+  display-only column, and `bookingInfo.payment` already tells devotees payment
+  happens at the temple. The terms now state it as a commitment, and § N4 says
+  the section has to change first if that ever stops being true.
+- **Terms § 1, "a booking request is a request"** — matches
+  `pooja_bookings.status` defaulting to `pending`.
+
+### Two documentation defects found on the way, and fixed
+
+Validating the markdown links turned up two real breaks that predate this work.
+
+**1. `AUTH_SYSTEM.md` described an architecture that never shipped.** It was
+written against the early auth draft the Phase 0 audit found in the working
+tree, and it documented:
+
+- **five `/api/auth/*` route handlers** — `password-login`, `password-signup`,
+  `oauth/[provider]`, `request-otp`, `verify-otp-and-reset`. **None exist.** The
+  only route handler in the app is `/auth/callback`.
+- **`frontend/middleware.ts`** — does not exist. Next 16 renamed middleware to
+  **proxy**, and it is `frontend/src/proxy.ts`. A file named `middleware.ts`
+  would simply be ignored, which makes this the most expensive kind of wrong.
+- **`frontend/src/lib/auth-actions.ts`** with seven functions
+  (`signInWithPassword`, `requestPasswordResetOtp`, `getSession`, …). The real
+  module is `frontend/src/lib/auth/actions.ts` and the real exports are
+  `signIn`, `signUp`, `requestPasswordReset`, `resetPassword`,
+  `signInWithProvider`, `signOut` and `safeNext` — the four form actions taking
+  `(prevState, FormData)` for `useActionState`.
+- the auth pages as **Client Components**. They are Server Components that
+  render client forms from `components/auth/AuthForms.tsx`.
+- a `auth.common.*` translation namespace. Shared labels sit directly on
+  `auth.*`; there is no `common`.
+- `SETUP.md` and `DATABASE_SETUP.sql` as the setup path, both since superseded
+  by MANUAL_STEPS_V2 § C–G and `database/schema_v2.sql`.
+
+Rewritten against the code, every path checked. It now says plainly at the top
+that it had drifted, and that MANUAL_STEPS_V2 — not it — is the setup guide. The
+genuinely useful parts (styling tokens, the security notes) were kept and
+corrected: the security section now also records `safeNext()`'s open-redirect
+guard and why `is_admin()` is `SECURITY DEFINER`.
+
+Its file links also used bare destinations containing `)`, as in
+`](./frontend/src/app/[locale]/(auth)/login/page.tsx)`. Markdown ends the
+destination at the **first** `)`, so each rendered as a link to
+`…/[locale]/(auth` followed by the literal text `)/login/page.tsx)`. They now
+use CommonMark's `](<…>)` form, which permits parentheses — the same class of
+bug as Priority 3's nested angle brackets.
+
+**2. Every link in `MANUAL_STEPS.md`'s table of contents was dead.** All eleven
+anchors were written with a double hyphen (`#part-a--clean-up-old-draft-files`),
+which would be right if the headings read *"Part A — Clean up…"*. They read
+*"Part A: Clean up…"*, and GitHub drops the colon and collapses the single space
+to **one** hyphen. Rewritten from the headings themselves. (`#-troubleshooting`
+was already correct and left alone: `github-slugger` does not trim after
+dropping punctuation, so a heading opening with an emoji keeps a leading
+hyphen.)
+
+Both were missed before because Priority 3's check covered headings and links in
+`MANUAL_STEPS_V2.md` and `README.md` — not the older files. The checker now runs
+over all eight root documents, understands `](<…>)` destinations, and reproduces
+the no-trim slug rule; it was negative-tested to confirm it still fails on a
+genuinely broken link and anchor. **53 internal links, 0 broken.**
+
+### What it is not
+
+These pages are a plain-language description of what this software does. They
+are **not legal advice and were not written by a lawyer**, and § N4 says so in
+the guide as well. The temple's name, address and `info@laxminarayanmandir.org`
+appear in them; § N1's find-and-replace already covers the email and phone
+across both message files, and § N4 asks for the rest to be read once before the
+site is announced.
+
+### Verified
+
+| Check | Result |
+|---|---|
+| `npx tsc --noEmit` | clean |
+| `npx eslint src` | clean |
+| `npm run build` | succeeds; `/[locale]/privacy` and `/[locale]/terms` both in the route list |
+| All four pages fetched from a dev server | 200, and the rendered HTML contains 10 numbered privacy sections, 11 terms sections, the contact block, and no `MISSING_MESSAGE` fallback in either language |
+| Footer links on a rendered page | locale-correct (`/en/privacy` on English pages, `/ne/privacy` on Nepali) |
+| Cross-links inside the pages | `/en/privacy` → `/en/terms` and `/en/contact`; `/ne/terms` → `/ne/privacy` and `/ne/contact` |
+| `en.json` vs `ne.json` key sets | identical, list indices included |
+| Every CSS variable used by `.legal-*` | exists in `globals.css` |
+| Markdown links across all eight root documents | 53 internal links, **0 broken** (was 23 broken, all pre-existing) |
+
+One bug was caught this way and fixed: the list-bullet `content:` value was
+written through a shell heredoc and arrived as `U+0082` followed by `2` instead
+of a bullet. It is now the literal `•`.
+
+---
+
 ## Verification
 
 ### Passing, run here
@@ -311,7 +449,7 @@ payment method, or a decision only the temple can make.
 | 5 | **The three `.env` files** 🔒 — they are git-ignored and must be written by hand on every machine, including the server | § G |
 | 6 | **Promote your own account to admin** — sign up, then one `update` in the SQL editor, then log out and back in | § K |
 | 7 | **Google OAuth app** 🔒 — consent screen, web client, the Supabase callback URL, then publish it | § L |
-| 8 | **Facebook OAuth app** 🔒 — plus **a published privacy policy page, which the site does not have yet** | § M |
+| 8 | **Facebook OAuth app** 🔒 — the privacy policy page it requires now exists; it needs reading once (§ N4) and a real domain (§ P) before § M can be finished | § M |
 | 9 | **Real content** — the phone number and email are placeholders, the sample event dates are fake, and **the festival calendar needs the temple priest to check it against the panchang once** | § N |
 | 10 | **Photos and recordings** — a high-resolution deity photo, a transparent-background logo, book PDFs, bhajan audio, founder portraits | § N3 |
 | 11 | **Domain and DNS** | § P2 |
