@@ -34,7 +34,19 @@ WORKDIR /app/ai-services
 # PyTorch. The stub is then uninstalled so site-packages never keeps a
 # half-empty temple_rag that could shadow the real one.
 COPY pyproject.toml ./
+# PyTorch, CPU build, installed BEFORE the rest.
+#
+# sentence-transformers depends on torch, and torch's default PyPI wheel is the
+# CUDA one: it drags in the whole NVIDIA stack (nvidia-cublas alone is 423 MB,
+# cusparse 146 MB, cudnn, nccl, nvjitlink ...) for well over 2 GB of image that
+# can never be used here. The deployment target is a 2 GB-RAM VPS with no GPU,
+# and the embedding model runs on CPU regardless.
+#
+# Installing torch from the CPU index first means pip already has torch
+# satisfied when it resolves requirements.txt, so it never reaches for the CUDA
+# variant. Keep this line above the requirements install or the bloat returns.
 RUN pip install --upgrade pip \
+ && pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu \
  && mkdir -p temple_rag && touch temple_rag/__init__.py \
  && pip install . \
  && pip uninstall -y temple-rag

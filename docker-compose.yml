@@ -82,7 +82,17 @@ services:
     profiles:
       - tools
     env_file:
-      - ./ai-services/.env
+      # backend/.env is the required one: it already holds SUPABASE_URL and
+      # SUPABASE_SERVICE_KEY, which is all ingestion needs, and temple_rag
+      # reads those names from the environment regardless of which file set
+      # them. Requiring ai-services/.env instead would mean copying a service
+      # key into a second file just to run this job -- and Compose fails the
+      # whole command when a required env_file is absent, which is why that
+      # one is marked optional. It still wins where both set the same name.
+      - path: ./backend/.env
+        required: true
+      - path: ./ai-services/.env
+        required: false
     environment:
       CHROMA_PERSIST_DIR: /app/ai-services/chroma_db
       KNOWLEDGE_BASE_DIR: /app/ai-services/knowledge_base
