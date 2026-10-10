@@ -47,6 +47,15 @@ services:
       # build time (next build reads .env.local from the build context), so
       # changing one needs `up --build`, not just a restart.
       - ./frontend/.env.local
+    environment:
+      # Server Components render inside THIS container, where localhost is the
+      # frontend itself -- so NEXT_PUBLIC_API_URL (http://localhost:8000, which
+      # is correct for the browser) makes server-side fetches fail with
+      # "fetch failed" and the page renders with no events, poojas or timings.
+      # src/lib/apiUrl.ts reads API_URL first for exactly this case: the server
+      # talks to the backend over the compose network by service name, while
+      # the browser keeps using the public URL compiled into the bundle.
+      API_URL: http://backend:8000
     ports:
       - "3000:3000"
     depends_on:
