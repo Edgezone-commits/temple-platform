@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # Get a key at https://aistudio.google.com/apikey. Never put it in the
     # frontend; the browser only ever talks to /api/v1/chat.
     GOOGLE_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-2.5-flash"       # why: see ai-services/temple_rag/config.py
+    GEMINI_MODEL: str = "gemini-3.8-flash"       # why: see ai-services/temple_rag/config.py
     # Chat abuse limits (per client IP)
     CHAT_PER_MINUTE: int = 8
     CHAT_PER_DAY: int = 150

@@ -3,24 +3,36 @@ temple_rag configuration — everything comes from environment variables
 (backend/.env when imported by the FastAPI app, ai-services/.env when the
 ingest script runs on its own).
 
-Model choice (GEMINI_MODEL, default "gemini-2.5-flash")
+Model choice (GEMINI_MODEL, default "gemini-3.8-flash")
 -------------------------------------------------------
 "Ask the Pandit" is a retrieval-grounded Q&A chat with tool calling: the facts
 come from the temple's own database and knowledge base, the model's job is to
 pick the right tool, read a few short passages, answer briefly and accurately
 in English or Nepali, and say "I don't know" when the tools return nothing.
 
-  • gemini-2.5-flash  ← DEFAULT
+  • gemini-3.8-flash  ← DEFAULT
       Fast, cheap, and has a generous free tier (see the pricing page below),
       which matters for a temple running on donations. Strong multilingual
       reading and writing, Nepali/Devanagari included, and reliable function
       calling — which is what this agent depends on.
-  • gemini-2.5-pro
-      Better at long scripture passages and multi-step reasoning, several
-      times the price and noticeably slower. Switch only if you see answers
-      missing nuance.
+  • gemini-3.5-flash
+      The previous stable flash. Keep this name in mind only as a fallback if
+      a 3.8 release ever misbehaves; there is no quality reason to prefer it.
 
-Switching is one env var (GEMINI_MODEL); the code works with both.
+NOT gemini-2.5-flash / gemini-2.5-pro any more. The 2.5 family is still listed
+by models.list() but Google now refuses it for keys created after the cutover:
+
+    404  This model models/gemini-2.5-flash is no longer available to new
+         users. Please update your code to use models/gemini-3.8-flash
+
+So a 2.5 name does not fail at startup — it fails on the first real question,
+which is the worst time to find out. Verified against a fresh AI Studio key on
+2026-10-10: 3.8-flash and 3.5-flash answer; every 2.5 name 404s; the pro tier
+(gemini-3.1-pro-preview, gemini-pro-latest) returns 429 RESOURCE_EXHAUSTED
+because the free tier carries no pro quota. That is why no pro model is
+recommended here: on a donation-funded key it would simply not answer.
+
+Switching is one env var (GEMINI_MODEL); the code is not tied to any of them.
 
   Get a key:  https://aistudio.google.com/apikey
   Pricing:    https://ai.google.dev/pricing
@@ -40,7 +52,7 @@ def _env(name: str, default: str = "") -> str:
 class RagConfig:
     # --- Gemini (server-side only; never sent to the browser) ------------------
     google_api_key: str = field(default_factory=lambda: _env("GOOGLE_API_KEY"))
-    gemini_model: str = field(default_factory=lambda: _env("GEMINI_MODEL", "gemini-2.5-flash"))
+    gemini_model: str = field(default_factory=lambda: _env("GEMINI_MODEL", "gemini-3.8-flash"))
     max_answer_tokens: int = field(default_factory=lambda: int(_env("GEMINI_MAX_TOKENS", "2000")))
     # Low temperature: this is grounded Q&A, not creative writing. The answer
     # should be the same every time the same passages come back.
